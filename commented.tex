@@ -1,0 +1,1714 @@
+% \subsection{Formulación HJM de Modelos de Tipos Spot}
+% Aunque la metodología de Heath-Jarrow-Morton es comúnmente aceptada
+% como la más general para estudiar los derivados sobre tipos de
+% interés, los modelos de  Hull-White y Cox-Ingersoll-Ross, tanto a nivel
+% académico como en la industria financiera. Se suele mencionar que todos estos
+% modelos de tipos a corto son casos particulares de la clase de modelos HJM,
+% sin embargo, la forma precisa en que se establece este vínculo está
+% poco analizada por la literatura como señalan \cite{CK:2001}.  El estudio de la
+% consistencia de los pares $(\mathcal{M},\mathcal{G})$ requiere conocer la
+% formulación HJM que tiene cada modelo particular $\mathcal{M}$. 
+
+% Además, si el objetivo que se persigue consiste en 
+% utilizar métodos numéricos eficientes para la valoración de
+% derivados, es crucial determinar si el tipo instantáneo o, más
+% generalmente, cierto vector de variables de estado de dimensión
+% reducida, tiene la propiedad de Markov. Las difusiones markovianas
+% admiten una modelización basada en ecuaciones en derivadas
+% parciales. Éstas a su vez, pueden ser resueltas eficientemente
+% tanto para derivados de estilo europeo como americano siempre que el
+% número de variables de estado no sea excesivo. 
+
+% Todo ello motiva el siguiente análisis.  
+
+% Partamos de la expresión integral para la clase de modelos HJM:  
+% \begin{equation}
+% \label{eqftT}
+% F(t,T)=F(0,T)+\int_{0}^{t} \alpha(s,T) ds+\sum_{j=1}^q \int_{0}^{t}
+% \sigma_j(s,T) dW_j(s) 
+% \end{equation}
+% El proceso para el tipo {\sl spot} está definido por la ecuación
+% $r(t)=F(t,t)$. A partir de (\ref{eqftT}) es inmediato escribir:
+% \begin{equation}
+% \label{eqRt:1}
+% r(t)=F(0,t)+\int_{0}^{t} \alpha(s,t) ds+\sum_{j=1}^q \int_{0}^{t}
+% \sigma_j(s,t) dW_j(s) 
+% \end{equation}
+
+% \begin{tma}
+% La dinámica del proceso estocástico (\ref{eqRt:1}) viene dada por
+% \begin{equation}
+% \label{eqdRt:1}
+% \begin{split}
+% dr(t) & =\left[\partial_t F(0,t)+\int_{0}^{t} \partial_t\alpha(s,t)
+%   ds+\sum_{j=1}^q \int_{0}^{t} \partial_t\sigma_j(s,t) dW_j(s) \right]
+%   dt\: +\\
+%   & + \sum_{j=1}^q \sigma_j(t,t) dW_j(t)
+% \end{split}
+% \end{equation}
+% \end{tma}
+% \begin{demo}
+% Consúltese Apéndice A.
+% \end{demo}
+% \subsubsection{Estructura de Volatilidades Forward Determinista}
+% Pasemos a examinar con detalle los modelos HJM con estructura de
+% volatilidad particular:
+% \begin{equation}
+% \label{ETVgral:1}
+% \sigma_i(s,t)=\varsigma_i(s) e^{-\int_s^t \kappa_i(u) du}
+% \\end{equation}
+% siendo $\varsigma_i$ y $\kappa_i$ funciones deterministas para
+% $i=1,\dots,q$. 
+
+% Este tipo particular de procesos de volatilidad tienen la propiedad
+% crucial, 
+% \begin{equation}
+% \label{ETVgralProp}
+% \partial_t\sigma_i(s,t)=-\kappa_i(t) \sigma_i(s,t)
+% \\end{equation}
+% permitiendo la simplificación de ciertas integrales estocásticas.
+% \begin{defn}[Variables Estado]
+% Definimos la variables estado $X_i(t)$ y $Y_i(t)$ como
+% \begin{eqnarray}
+% \label{eqXi}
+% X_i(t)& = & \int_0^t \sigma^2_i(s,t) ds\\
+% \label{eqYi}
+% Y_i(t)& = & \int_0^t a_i(s,t) ds + \int_0^t \sigma_i (s,t) dW_i(s)
+% \end{eqnarray}
+% siendo $a_i(s,t)=\sigma_i(s,t)\int_s^t \sigma_i(s,z) dz$.
+% \end{defn}
+% En general, las variables $Y_i(t)$ son procesos estocásticos,
+% mientras que las $X_i(t)$ solamente lo serán si $\sigma_i(s,t)$
+% depende del tipo instantáneo, $r(t)$.
+% \begin{corol}
+% Las ecuaciones diferenciales estocásticas que satisfacen $X_i(t)$ e
+% $Y_i(t)$ son
+% \begin{eqnarray} 
+% dX_i(t)& = & \left[\varsigma_i^2(t)-2\kappa_i(t)X_i(t)\right] dt\nonumber\\
+% \label{eqdYit}
+% dY_i(t)& = & \left[X_i(t)-\kappa_i(t) Y_i(t)\right] dt+\varsigma_i(t) dW_i(t) 
+% \end{eqnarray}
+% \end{corol}
+% \begin{demo}
+% En Apéndice A.
+% \end{demo}
+
+% Combinando la introducción de estas nuevas variables y la estructura
+% de volatilidades particular (\ref{ETVgral:1}), el proceso para el tipo
+% instantáneo deviene:
+% \begin{equation}
+% \label{eqdRt:3}
+% dr(t)=\left[\partial_t
+%   F(0,t)+\sum_{i=1}^q(X_i(t)-\kappa_i(t)Y_i(t))\right] dt+\sum_{i=1}^q
+%   \varsigma_i(t) dW_i(t) 
+% \\end{equation}
+% Utilizando (\ref{eqRt:1}) es posible expresar una de las variables
+% estado $Y_1(t)$ en función del tipo {\sl spot} y los restantes
+% $Y_i(t)$. Para ello empecemos reescribiendo el tipo {\sl spot} en
+% función de las variables estado $Y_i(t)$:
+% \begin{equation}
+% \begin{split}
+% r(t) & = F(0,t)+\sum^q_{i=1}\int_0^t a_i(s,t) ds+\sum_{i=1}^q \int_0^t
+% \sigma_i (s,t) dW_i(s)\: =\\
+% & = F(0,t)+Y_1(t)+\sum_{i=2}^q Y_i(t)
+% \end{split}
+% \\end{equation}
+% donde se ha utilizado la identidad $\alpha(s,t)=\sum_{i=1}^q
+% a_i(s,t)$. Ello permite escribir
+% \begin{equation}
+% \sum_{i=1}^q \kappa_i(t)Y_i(t)=\kappa_1(t) r(t)-\kappa_1
+% F(0,t)+\sum_{i=2}^q(\kappa_i(t)-\kappa_1(t))Y_i(t) 
+% \\end{equation}
+% Por último, sustituyendo la anterior ecuación en (\ref{eqdRt:3}), se
+% obtiene
+% \begin{equation}
+% \label{eqdRt:4}
+% \begin{split}
+% dr(t)& = \left[\partial_t F(0,t)+\kappa_1 F(0,t)+\sum_{i=1}^q
+%   X_i(t)+\sum_{i=2}^q(\kappa_1(t)-\kappa_i(t))Y_i(t)\: -\right.\\
+%   & - \kappa_1(t)r(t)\Bigg]  dt+\sum_{i=1}^q  \varsigma_i(t) dW_i(t)
+% \end{split}
+% \\end{equation}
+% En consecuencia, los procesos $r(t)$, $Y_i(t)$ con $i=2,\dots,q~$ forman un
+% sistema Markoviano de $q$  dimensiones, cuya dinámica está determinada por las
+% (\ref{eqdYit}) y (\ref{eqdRt:4}). Como veremos a
+% continuación, la ecuación (\ref{eqdRt:4}) es fundamental para obtener
+% la generalizaciones multifactorial de la extensión propuesta por
+% \cite{HW:1990} del modelo de Vasicek.  
+% \paragraph{Modelo Vasicek Extendido Multifactorial.}
+% La extensión del modelo de Vasicek propuesta originalmente por Hull
+% y White sólo contempla una única fuente de ruido para el proceso
+% del tipo de instantáneo:
+% \begin{equation}
+% \label{HWV}
+% dr(t)=\left[\theta(t)-a(t) r(t)\right] dt + v(t) dW(t)
+% \\end{equation}
+%  donde $a(t)$ y $v(t)$ son funciones deterministas. Para obtener una
+%  generalización multivariante de este modelo, asumamos que las
+%  volatilidades dadas por (\ref{ETVgral:1}) son puramente
+%  deterministas:
+% $$
+% \sigma_i(s,t)=\varsigma_i(s)e^{-\int_s^t \kappa_i(z) dz}
+% $$
+% En consecuencia, las $q$ variables estado $X_i(t)=\int_0^t
+% \sigma_i^2(z,t) dz$, también lo serán. Por otro lado, podemos
+% reescribir la difusión (\ref{eqdRt:4}) para este caso particular
+% como sigue:
+% \begin{equation}
+% \label{eqdRtHW:1}
+% dr(t) = \left[\psi_q(t) - \kappa_1(t)r(t)\right]  dt+\sum_{i=1}^q \varsigma_i(t) dW_i(t) 
+% \\end{equation}
+% donde se ha introducido la definición
+% \begin{equation}
+% \label{ThetaHW:1}
+% \psi_q(t) = \partial_t F(0,t)+ \kappa_1(t) F(0,t) + \sum_{i=1}^q X_i(t)
+% + \sum_{i=2}^q \left[\kappa_1(t)-\kappa_i(t) \right] Y_i(t)
+% \\end{equation}
+% Las $q-1$ variables estado restantes, $Y_i(t)$, que completan este
+% sistema Markoviano, siguen el proceso multivariante:
+% \begin{equation}
+% \label{eqdYi_HW:1}
+% dY_i(t)=\left[X _i(t)-\kappa_i(t) Y_i(t)\right] dt + \varsigma_i(t)
+% dW_i(t), \quad i=2,\dots,q
+% \\end{equation}
+% Para el caso unifactorial, $q=1$, esta metodología recupera el
+% modelo Vasicek extendido (HW) con las identificaciones obvias,   
+% $$
+% a(t)=\kappa_1(t),\quad v(t)=\varsigma_1(t),\quad \theta(t)=\psi_1(t)
+% $$
+% \subsubsection{Estructura de Volatilidades Dependiente del Tipo Forward }
+% La manera más natural de introducir estructuras de volatilidad
+% estocásticas en el entorno HJM, consiste en incluir en la
+% especificación del coeficiente de difusión $\sigma_i(t,T)$, el
+% tipo instantáneo $F(t,t)=r(t)$ o bien la curva {\sl forward}
+% completa, $F(t,T)$:   
+% \begin{eqnarray} 
+% \label{ETVnl} 
+% % \sigma_i(s,t) & = & \sigma_i(s,t,R(s))\\ 
+% \sigma_i(s,t) & = & \sigma_i(s,t,F(s,t))  
+% \end{eqnarray} 
+% De ese modo, inspirados en el modelo valoración de opciones sobre 
+% acciones de Black-Scholes, cabe proponer un modelo HJM particular con 
+% estructura de volatilidad {\sl separable}      
+% \begin{equation} 
+% \label{ETVBK} 
+% \sigma_i(s,t)=\lambda_i (s,t) F(s,t) 
+% \\end{equation} 
+% siendo $\lambda_i(s,t)$ una función determinista definida 
+% positiva. El coeficiente de deriva de la difusión del tipo {\sl 
+%   forward} implícito sería en ese caso:   
+% $$
+% \alpha(t,T)=\sum_{i=1}^q \lambda_i(t,T) F(t,T)\int_t^T \lambda_i(t,u)
+% F(t,u) du 
+% $$
+% Notemos que la especificación dada en (\ref{ETVBK}) asegura, con 
+% una estructura temporal inicial para los tipos {\sl forward}   
+% implícitos definida positiva, tipos {\sl forward} futuros
+% también positivos.  Sin embargo, esta estructura de volatilidad
+% tiene el serio inconveniente de que  provoca que el proceso pueda {\sl
+%   explotar} con 
+% probabilidad estrictamente positiva. Con una probabilidad no nula de
+% que los tipos de interés se hagan {\sl infinitos}, hace
+% aparición el escenario poco deseable de que títulos financieros
+% --como los bonos cupón cero-- tengan precio cero, proporcionando
+% automáticamente oportunidades de arbitraje.  
+
+% \cite{HJM:1992}, proponen para el caso
+% unifactorial, una solución {\sl adhoc} que permite corregir esta
+% estructura de volatilidades patológica introduciendo la forma
+% acotada $\sigma(t,T)=\sigma \min (F(t,T),\phi) $, siendo
+% $\sigma,~\phi$ constantes positivas. Así, la volatilidad del tipo
+% {\sl forward} se escoge proporcional para valores {\sl pequeños} de
+% los tipos y constante para valores {\sl grandes}. 
+
+% En este mismo contexto de estructuras de volatilidad del tipo 
+% (\ref{ETVnl}), Miltersen (\ref{}) proporciona un conjunto de
+% condiciones suficientes para obtener tipos positivos y no
+% explosivos. Una de las condiciones consiste en tomar una estructura de
+% volatilidades acotada superiormente, condición que, claramente, no
+% satisfacen los modelos del tipo (\ref{ETVBK}). 
+
+% \paragraph{Modelo Black-Karasinski Multifactorial.}
+
+% Dentro de esta categoría de estructuras que originan modelos
+% no exentos de patologías, se encuentran aquéllos con estructura
+% de volatilidades (ETV) de la forma:        
+% \begin{equation}
+% \label{ETVBK:2}
+% \sigma_i(s,t)=\varsigma_i(s) e^{-\int_s^t \kappa_i(z) dz} F(s,t)
+% \\end{equation}
+% Obsérvese como las funciones deterministas
+% $\lambda_i(s,t)=\varsigma_i(s) e^{-\int_s^t \kappa_i(u) du}$, son
+% definidas positivas si lo son las $\varsigma_i(s)$. 
+
+% El análisis de estas estructuras de volatilidad, sin embargo, es
+% interesante en sí, puesto que, como veremos a continuación, son
+% las idóneas para obtener procesos lognormales para el tipo
+% instantáneo.  
+
+% El modelo de Black-Karasinski (BK) asume para el logaritmo del tipo
+% {\sl spot}, $\ln r(t)$, la siguiente ecuación diferencial
+% estocástica   
+% $$
+% d\ln r(t)=\left[\theta(t)- a(t)\ln r(t)\right]+v(t) dW(t)
+% $$ 
+% siendo $a(t), \theta(t)$, y $v(t)$ funciones \emph{deterministas}, y     
+% $W(t)$ un proceso de Wiener estandar.   
+
+% Para obtener modelos del tipo BK, en primer lugar, vamos a utilizar
+% una representación conveniente para la difusión {\sl
+%   forward}. Como punto de partida, notemos que ésta con la ETV 
+% dada en (\ref{ETVBK:2}), tomará la forma
+% \begin{equation}
+% \label{eqdfBK}
+% dF(t,T) =  \alpha(t,T) dt +  F(t,T) \sum_{j=1}^q \lambda_j(t,T) dW_j
+% (t)  
+% \\end{equation}
+% Propongamos una difusión para el proceso $\ln F(t,T)$ 
+% \begin{equation}
+% \label{eqdlogfBK}
+% d\ln F(t,T) =  \tilde{\alpha}(t,T) dt +  \sum_{j=1}^q \lambda_j(t,T)
+% dW_j (t)  
+% \\end{equation}
+% escrita bajo la medida martingala equivalente. El lema de Itô nos
+% permite determinar el coeficiente de deriva bajo esta nueva
+% representación. 
+% \begin{lema}
+% El coeficiente de deriva de la difusión (\ref{eqdlogfBK}) es
+% \begin{equation}
+% \label{eqdlogfBK:deriva}
+% \tilde{\alpha}(t,T)=\sum_{i=1}^q \lambda_i(t,T)\int_t^T \lambda_i(t,s)
+% F(t,s) ds -\frac{1}{2} \sum_{j=1}^q \lambda_j^2 (t,T)
+% \\end{equation}
+% \end{lema}
+% \begin{demo} 
+% Véase Apéndice A.
+% \end{demo} 
+
+% A su vez, la integración de (\ref{eqdlogfBK}) nos proporciona
+% \begin{equation}
+% \begin{split}
+% \ln F(t,T) & =\ln F(0,T)+ \sum_{i=1}^q \int_0^t
+% \left(\lambda_i(u,T)\int_u^T \lambda_i(u,s) F(u,s) ds\right)du - \\
+%            & -\frac{1}{2} \sum_{j=1}^q \int_0^t \lambda_j^2 (u,T) du+ \sum_{j=1}^q \int_0^t \lambda_j (u,T) dW(u)
+% \end{split}
+% \\end{equation}
+% con lo que el proceso para el logaritmo del tipo instantáneo,
+% ~\mbox{$\ln r(t)=\ln F(t,t)$}, tiene la expresión
+% \begin{equation}
+% \label{eqlnR:1}
+% \begin{split}
+% \ln r(t) & =\ln F(0,t)+ \sum_{j=1}^q \int_0^t
+% \left\{\lambda_j(u,t)\int_u^t \lambda_j(u,s) F(u,s) ds - \frac{1}{2}
+%   \lambda_j^2 (u,t)\right\} du +\\  
+% & + \sum_{j=1}^q \int_0^t \lambda_j (u,t) dW(u) 
+% \end{split}
+% \\end{equation}
+% Retomando la definición (\ref{eqdlogfBK:deriva}), y haciendo uso
+% del Teorema A.2 %ver como hacer a newtheorem referencia cruzada
+% se llega fácilmente a la forma diferencial
+% \begin{equation}
+% \label{eqdlnR:1}
+% \begin{split}
+% d\ln r(t) & = \left[\partial_t\ln F(0,t)-\sum_{j=1}^q \frac{1}{2}
+%           \lambda^2_j(t,t) +\sum_{j=1}^q \int_0^t \left(\partial_t
+%           \lambda_j(u,t)\int_u^t\lambda_j(u,s) F(u,s) ds\right) du +
+%           \right.\\      
+%           & \left. + \sum_{j=1}^q  \int_0 ^t\left(\lambda_j^2(u,t)
+%           F(u,t) - \lambda_j(u,t) \partial_t \lambda_j(u,t) \right) du
+%           +\sum_{j=1}^q \int_0^t\partial_t \lambda_j(u,t) dW_j(u) \right]
+%           dt+\\
+% & + \sum_{j=1}^q \lambda_j(t,t) dW_j(t)
+% \end{split}
+% \\end{equation}
+% Recordando que $\lambda_i(t,T)=\varsigma_i(t) e^{-\int_t^T \kappa_i(z)
+%   dz}$ y la propiedad $\partial_t
+% \lambda_i(t,T)=-\kappa_i(t)\lambda_j(t,T)$, la forma diferencial
+% (\ref{eqdlnR:1}) se convierte en 
+%  \begin{equation}
+% \label{eqdlnR:2}
+% \begin{split}
+% d\ln r(t) & = \left[\partial_t\ln F(0,t)-\sum_{j=1}^q \frac{1}{2}
+%           \varsigma^2_j(t) +\sum_{j=1}^q  \kappa_j(t) \int_0^t
+%           \lambda_j^2(u,t) du +\sum_{j=1}^q  \int_0 ^t\lambda_j^2(u,t)
+%           F(u,t) du - \right.\\      
+%           & \left. -\sum_{j=1}^q \kappa_j(t) \int_0^t \left(
+%           \lambda_j(u,t)\int_u^t\lambda_j(u,s) F(u,s) ds\right)du
+%           -\sum_{j=1}^q \kappa_j(t) \int_0^t \lambda_j(u,t) dW_j(u)
+%           \right]  dt+\\
+% & + \sum_{j=1}^q \varsigma_j(t) dW_j(t)
+% \end{split}
+% \\end{equation}
+% Definiendo las variables estado $\zeta_j(t)$, como
+% \begin{equation}
+% \label{eqlnZj}
+% \zeta_j (t)=\int_0^t \left(\lambda_j(u,t)\int_u^t\lambda_j(u,s)
+%   F(u,s) ds\right)du + \int_0^t \lambda_j(u,t) dW_j(u)
+% \\end{equation}
+% con $j=1,\dots,q$. Aplicando el Teorema A.2 es fácil ver que estas 
+% variables satisfarán el sistema diferencial estocástico
+% $$
+% d\zeta_j(t)=\left[\int_0^t \lambda_i^2(u,t) F(u,t) du-
+%   \kappa_j(t)\zeta_j(t) \right] dt+\varsigma_j(t) dW_j(t)
+% $$
+% y, las ecuaciones (\ref{eqlnR:1}) y (\ref{eqdlnR:1}) pueden escribirse  
+% \begin{equation}
+% \label{eqlnR:2}
+% \begin{split}
+% \ln r(t) & =\ln F(0,t) - \frac{1}{2} \lambda_j^2 (u,t) du +
+% \sum_{j=1}^q \zeta_j(t)
+% \end{split}
+% \\end{equation}
+% %
+% \begin{equation}
+% \label{eqdlnR:3}
+% \begin{split}
+% d\ln r(t) & = \left\{\partial_t\ln F(0,t)-\sum_{j=1}^q \frac{1}{2}
+%           \varsigma^2_j(t) +\sum_{j=1}^q  \kappa_j(t) \int_0^t 
+%            \lambda_j^2(u,t) du + \right.\\   
+%          & \left.+\sum_{j=1}^q  \int_0 ^t\lambda_j^2(u,t) F(u,t) du 
+%           +\sum_{j=2}^q [\kappa_1(t)
+%           -\kappa_j(t)]\zeta_j(t) - \right.\\       
+%           & \left. -\kappa_1(t) \left[\ln r(t)-\ln
+%           F(0,t)+\frac{1}{2} \sum_{j=1}^q \int_0^t \lambda^2_j(u,t) du
+%           \right] \right\}  dt+\\
+% & + \sum_{j=1}^q \varsigma_j(t) dW_j(t)
+% \end{split}
+% \\end{equation}
+
+% Finalmente, la ecuación\footnote{Para obtener la anterior
+%   ecuación se puede proceder  de manera análoga al caso del
+%   modelo de Vasicek extendido, eliminando una de las variables estado
+%   utilizando la ligadura (\ref{eqlnR:2}).}  
+% (\ref{eqdlnR:3}) admite la expresión más compacta 
+% \begin{equation}
+% \label{eqdlnR:4}
+% 7\begin{split}
+% d\ln r(t) & = \left[ \psi_q(t)-\kappa_1(t)\ln r(t)+\sum_{j=2}^q [\kappa_1(t)
+%           -\kappa_j(t)]\zeta_j(t) \right] dt\\       
+% & + \sum_{j=1}^q \varsigma_j(t) dW_j(t)
+% \end{split}
+% \\end{equation}
+% utilizando la definición
+% \begin{equation}
+% \begin{split}
+% \psi_q(t) & = \partial_t\ln F(0,t)-\kappa_1(t) \ln F(0,t)+\sum_{j=1}^q
+% \frac{1}{2}\varsigma^2_j(t) +\\ 
+% & + \sum_{j=1}^q \left[\kappa_j(t)-\frac{1}{2}\kappa_1(t)\right]
+% \int_0^t \lambda_j^2(u,t) du  + \sum_{j=1}^q  \int_0
+% ^t\lambda_j^2(u,t) F(u,t) du  
+% \end{split}
+% \\end{equation}
+% Si particularizamos para el caso $q=1$, el modelo se reduce --al menos
+% formalmente-- al modelo de Black-Karasinski, sin más que hacer las
+% identificaciones obvias.
+% $$
+% a(t)=\kappa_1(t),\quad v(t)=\varsigma_1(t),\quad \theta(t)=\psi_1(t)
+% $$
+% Cabe hace notar, sin embargo, que ya en las definiciones escogidas para las
+% variables estado, $\zeta_i(t)$,  y en la definición de $\psi_q(t)$,
+% el término\footnote{Además, añadiendo estas $q$ nuevas
+%   variables estado, $\eta_i(t)$, el sistema diferencial resultante
+%   continua exhibiendo \emph{path-dependence}.} 
+% $$ 
+% \eta_i(t)=\int_0^t \lambda_i^2(s,t)
+% F(s,t)~ds
+% $$
+%  además de ser estocástico, no es Markoviano. A diferencia de la
+%  formulación original de \cite{BK:1991}, un modelo
+%  lognormal para el tipo instantáneo que provenga de  la elección
+%  particular de la ETV (\ref{ETVBK:2}), tiene la complicación adicional
+%  de que presenta un término de deriva no Markoviano.
+
+% \paragraph[CIR]{El Modelo CIR extendido.}
+ 
+% La extensión tipo CIR propuesta por Hull y White, supone una
+% evolución para los tipos {\sl spot} de la forma
+% \begin{equation}
+% \label{eqdRCIR}
+% dr(t)=\left[\theta(t)-a(t) r(t)\right] dt + v(t) \sqrt{r(t)}dW(t)
+% \\end{equation}
+% bajo la medida neutral al riesgo. En primer lugar, definamos, para
+% mayor simplicidad en la notación, los coeficientes de deriva y de
+% difusión de la anterior ecuación diferencial estocástica:
+% \begin{equation}
+% \label{defCIR} 
+% \left.
+% \begin{array} {rcl}
+% \mu_R\left(t,r(t)\right) & = & \theta(t)-a(t) r(t)\\
+% \sigma_R\left(t,r(t)\right) & = & v(t) \sqrt{r(t)}
+% \end{array}
+% \right\}
+% \\end{equation}
+% Supondremos, en consecuencia, que el tipo instantáneo $r(t)$, satisface el
+% siguiente proceso de Itô  
+% \begin{equation}
+% dr(t)=\mu_R\left(t,r(t))\right) dt +\sigma_R\left(t,r(t)\right) dW(t)
+% \end{equation}
+% Por otra parte, el precio de un activo derivado que tenga como subyacente el
+% tipo {\sl spot}, seguirá la difusión\footnote{Con el fin de aligerar notación,
+%   se han tomado las identificaciones $\mu_R(t,r(t))\equiv \mu$ y
+%   \mbox{$\sigma_R(t,r(t))\equiv \sigma$.}}: 
+% \begin{equation}
+% \begin{array}{rcl}
+% dV(t,T) & = & (V_t dt + V_R dR+ \frac{1}{2} V_{RR} (dR)^2) \\
+%             & = & (V_t+\mu V_r+\frac{1}{2} \sigma^2 V_{RR})  dt +\sigma V_R dW(t) \\
+% & = & V(t,T)\left(m(t,T)dt+s(t,T) dW(t)\right)
+% \end{array}
+% \end{equation}
+% donde 
+% \begin{equation}
+% \label{eqEDP:1}
+% \begin{array}{rcl}
+% m(t,T)&=& \frac{1}{V(t,T)}(V_t+\mu V_R+\frac{1}{2} \sigma^2 V_{RR}) \\
+% s(t,T)&=& \frac{\sigma}{V(t,T)} V_R(t,T)
+% \end{array}
+% \end{equation}
+% A su vez, cualquier activo que dependa del tipo instantáneo $r(t)$, en
+% particular el bono de descuento tal y como se explicita en la ecuación
+% (\ref{eqdP:3}), debe satisfacer bajo neutralidad al riesgo la condición de
+% deriva: 
+%  $$m(t,T)=r(t)$$
+%  Por lo tanto, partiendo de la expresión para el {\sl drift} dada en
+%  (\ref{eqEDP:1}), la ecuación en derivadas parciales (EDP) que cumple el precio
+%  $V$ es: 
+%  \begin{equation}
+% \label{eqEDP1Dgral}
+% V_t+\mu(t,R) V_R+\frac{1}{2} \sigma^2(t,R) V_{RR}-R V=0
+% \end{equation}
+% Con las definiciones hechas en (\ref{defCIR}), para el caso concreto del modelo
+% tipo CIR que nos ocupa, la anterior EDP general (\ref{eqEDP1Dgral}), adopta la
+% expresión particular: 
+%  \begin{equation}
+%  \label{eqEDP:3}
+% V_t+[\theta(t)- a(t) R] V_R+\frac{1}{2} v^2(t) R V_{RR}-R V=0
+% \end{equation}
+% Consideremos soluciones de la forma:
+% \begin{equation}
+% \label{formaAFIN}
+% V=e^{A(t,T)+B(t,T) R}
+% \end{equation}
+% Esta especificación funcional,  cumple (\ref{eqEDP:3}), cuando
+% \begin{equation}
+% \label{sistemEDO}
+% \begin{array}{rcc}
+% \theta(t) B(t,T) + \partial_t A(t,T) & = & 0\\
+% \frac{1}{2}v^2(t) B^2(t,T) - a(t) B(t,T) + \partial_t B(t,T) & = & 1
+% \end{array}
+% \end{equation}
+% Si $A$ y $B$ son soluciones de las ecuaciones diferenciales ordinarias (\ref{sistemEDO}) sujetas a las condiciones terminales $A(T,T)=0$ y $B(T,T)=0$, la ecuación (\ref{formaAFIN}) proporciona la valoración del bono de descuento en cualquier instante $ 0 \leq t \leq T$. Tomemos en consideración el caso en el que tanto $a(t)$ como $v(t)$ sean funciones constantes. En esta situación, la segunda de las ecuaciones diferenciales es una ecuación escalar de Ricatti con coeficientes constantes\footnote{Aunque puede ser resuelta mediante cuadraturas, en el Apéndice A se proporciona su integración haciendo uso de la transformación de Hopf-Cole.}, con solución analítica:
+% \begin{equation}
+% B(t,T)=-\frac{2(e^{\gamma(T-t)}-1)}{(a+\gamma)(e^{\gamma(T-t)}-1)+2\gamma}
+% \end{equation}
+% siendo $\gamma^2=a^2+2v^2$.
+
+% A partir de la expresión del coeficiente de difusión derivada en (\ref{eqEDP:1}), se tiene que la volatilidad del bono cupón cero es:
+% $$
+% s(t,T)=B(T-t) v \sqrt{r(t)}
+% $$
+% Por otro lado, en el contexto de modelos HJM, la volatilidad del bono cupón cero está ligada a la estructura de volatilidades {\sl forward} $\sigma_j(t,T)$ a través de la expresión (\ref{eqdP:2}). Para ser consistente con el modelo CIR extendido propuesto, la estructura de volatilidades {\sl forward} unidimensional debe, por tanto, satisfacer la relación\footnote{Por conveniencia, se ha hecho uso del principio de reflexión del proceso de Wiener $W(t)$ con el fin de obtener una estructura de volatilidades definida positiva.},
+% $$
+% \int_t^T \sigma(t,s) ds=-B(T-t) v\sqrt{r(t)}
+% $$
+% y, en definitiva, tomando derivadas parciales con respecto al parámetro $T$, se tiene
+% \[
+% {\fboxsep 8pt
+% \fbox{$\displaystyle \sigma(t,T)=-B'(T-t)v \sqrt{r(t)}$}}
+% \]
+% Es interesante anotar que la anterior estructura de volatilidades {\sl forward} es {\sl separable} como en el caso del modelo BK:
+% $$
+% \sigma(t,T)=\lambda(t,T) \phi(F(t,t))
+% $$
+% siendo $\lambda(t,T)=- \partial_T B(T-t)$ y $\phi(F(t,t))=\sqrt{v^2
+%   F(t,t)}$. Esta propiedad de la ETV, junto con el hecho de que se trate de un
+% modelo afín, es {\sl fundamental} pues -como veremos- asegura la existencia de
+% variedades invariantes y, por tanto, permite completar {\sl a posteriori} la
+% construcción de la pareja consistente $\mathcal{(M,G)}$. 
+
+% Finalmente,  cabe el análisis de cómo determinar la función $\theta(t)$. Esta
+% función permite el ajuste del modelo a una determinada curva {\sl forward}
+% inicial, una vez ésta haya sido construída de manera que sea consistente con la
+% dinámica impuesta en cualquier instante $0<t\leq T$. La integración de la
+% primera de las EDOs en (\ref{sistemEDO}) proporciona la identidad 
+% $$
+% A(t,T)=\int_t^T \theta(s) B(T-s) ds
+% $$
+% Por otro lado, de la aplicación de (\ref{formaAFIN})  al bono cupón cero al instante particular $t=0$:
+% $$
+% \overline{P}(0,T)=e^{A(0,T)+B(T) \overline{R}(0)}
+% $$
+% y, en consecuencia:
+% $$
+% \log \overline{P}(0,T)=B(T)\overline{R}(0)+\int_0^T \theta(s) B(T-s) ds
+% $$
+% Recordando la definición $F(t,T)=-\partial_T \log P(t,T)$, se tiene
+% $$
+% \overline{f}(0,T)=-B'(T)\overline{R}(0)-\partial_T \int^T_0 \theta(s) B(T-s) ds
+% $$
+% Aplicando la regla completa de Leibniz sobre la integral, $B(T-T)=0$, se llega a la expresión implícita para $\theta(t)$:
+% \begin{equation}
+% \label{thetaCIR}
+% \overline{f}(0,T)=-B'(T)\overline{f}(0,0)-\int^T_0 \theta(s) B'(T-s) ds
+% \end{equation}
+% Supongamos dada una estimación de la curva {\sl forward} inicial
+% $\overline{f}(0,T)$ a partir de una familia parametrizada consistente $G(z,x)$
+% con el modelo CIR. De acuerdo con \cite{HJM:1992}, se
+% puede demostrar que esta ecuación integral tiene una solución única $\theta(t)$,
+% sin embargo, no admite forma explícita por lo que debe ser resuelta
+% numéricamente. Además, no se puede asegurar que esta solución tenga las
+% propiedades necesarias para garantizar que el proceso del tipo instantáneo
+% $r(t)$ esté bien definido. Claramente, una condición necesaria\footnote{Nótese
+%   que $-B'(T-t)$, con  $T>t$, es definida positiva, puesto que  
+% $$
+% \partial_T B(T-t)=-\frac{4\gamma^2e^{\gamma(T-t)}}{((\gamma+a)(e^{\gamma(T-t)}-1)+2\gamma)^2}
+% $$} para que $\theta(t)$ sea no negativa para todo $t$ es
+% $$
+% \overline{f}(0,T)\geq \overline{f}(0,0) \left(-B'(T)\right),\quad T>0
+% $$
+% En consecuencia, a diferencia del modelo de Vasicek extendido, en el caso del modelo CIR el problema a resolver consiste en encontrar una familia de curvas {\sl forward} consistente con la ETV del modelo que además proporcione una difusión para el tipo a corto bien definida.
+
+% \subsection{La Parametrización de Musiela}
+% \cite{Mu:1993} propuso la reparametrización 
+% \begin{equation}
+% r(t,x):=f(t,t+x),
+% \end{equation}
+% por ser más acorde con la naturaleza de la curva {\sl forward} $x \mapsto r(t,x)$ como variable estado de dimensión infinita, siendo $x$ el tiempo restante hasta vencimiento, $x=T-t\geq 0$. Las razones por las que esta reparametrización es la idónea para abordar el problema que es objeto del presente trabajo, se detallan en \cite{Fil:2001}.
+
+% Evidentemente, esta reparametrización introduce modificaciones en la especificación del proceso estocástico propuesto originalmente por Heath, Jarrow y Morton  para $f(t,t+x)$, puesto que ahora $x$ no se considera una variable fija parametrizando la dinámica de los {\sl forward} instantáneos. 
+
+% Planteemos pues, un modelo {\sl forward} de la forma 
+% \begin{equation}
+% \left\{
+% \begin{array}{rcl}
+% dr(t,x) & = & \alpha_m(t,x)dt+\sigma_m(t,x) dW(t)\\
+% r(0,x) & = & \overline{r}(0,x)
+% \end{array}
+% \right.
+% \end{equation}
+% donde, nuevamente, la curva inicial $\{\overline{r}(0,x); x\geq 0\}$ debe ser interpretada como la curva {\sl forward} {\it observada} inicialmente. La condición (\ref{HJMDriftCondition}) que asegura la AOA en el entorno estándar HJM, tiene sencilla transcripción bajo la reparametrización de Musiela.
+% \begin{propos}
+% Bajo la medida martingala Q, la dinámica {\sl forward} viene determinada por 
+% \begin{equation}
+% \label{eqHJMM}
+% \begin{array}{rcl}
+% dr(t,x) &= & \left\{ \frac{\partial}{\partial x}r(t,x)+\sum_{j=1}^q\sigma_m^{(j)}(t,x)\int_0^x \sigma_m^{(j)} (t,u) du\right\} dt +\sum_{j=1}^q \sigma_m^{(j)} (t,x) dW_j(t)\\
+% r(0,x)&=&\overline{r}(0,x)
+% \end{array}
+% \end{equation}
+% donde se ha introducido la definición $\sigma_m(t,x):=\sigma(t,t+x)$.
+% \end{propos}
+% \begin{demo}
+% En el Apéndice A, se da una justificación basada en el teorema de Fubini en sus
+% versiones estocástica y determinista. Puede encontrarse otras demostraciones en
+% \cite{Mu:1993} y \cite{B:1997}.
+% \end{demo}
+% \subsubsection{Estructuras de Volatilidad Homogéneas Temporalmente}
+% Con el fin de  ilustrar con una mayor simplicidad el concepto de {\sl
+%   consistencia} en el contexto de modelos HJM, vamos 
+% a restringir nuestro análisis, al caso en que la estructura de
+% volatilidad es homógenea temporalmente, $\sigma_m=\sigma_m(r,x)$. El caso en el
+% que ésta sea de la forma $\sigma_m=\sigma_m(t,r,x)$  se trata de modo análogo en
+% el trabajo \cite{BC:1999}.  
+% A continuación, sintetizamos aquellas estructuras de volatilidad homogéneas
+% ligadas a los modelos populares que han sido presentados previamente en este
+% trabajo.    
+% \begin{description}
+% \item[Hull-White Multifactorial.] Retomemos la estructura de volatilidades para
+%   el {\sl forward} coherente con la dinámica para el tipo instantáneo. 
+
+% Con $T=t+x$:
+% $$
+% \sigma_j(t,t+x)=\varsigma_j(t) \exp \left( -\int_t^{t+x} \kappa_j(z) dz \right)
+% $$
+% Observemos que bajo la restricción, $\varsigma_j(t)=\varsigma_j$ y
+% $\kappa_j(t)=\kappa_j$, esta estructura de volatilidad deviene 
+% \begin{equation}
+% \sigma_j(x)=\varsigma_j e^{-\kappa_j x}=\sigma_m^{(j)}(x)
+% \end{equation}
+
+% \item[Black-Karasinski Multifactorial.] De nuevo, con $T=t+x$ y tomando
+%   cons\-tan\-tes los parámetros $\varsigma_j$ y $\kappa_j$, 
+% $$
+% \sigma_j(t,t+x)=\varsigma_j e^{-\kappa_j x} f(t,t+x)=\lambda(x)\: r=\sigma^{(j)}_m (r,x)
+% $$
+% \item[CIR.] En este caso, la ETV es homogénea por construcción
+% $$
+% \sigma(t,t+x)=\lambda(x) \sqrt{\alpha R} = \sigma_m (r(0),x)
+% $$
+% donde $\lambda(x)=-B'(x)$ y $\alpha=v^2$.
+
+
+% \end{description}
+% \section{Condiciones de Consistencia}
+% Resulta crucial trazar una  correspondencia entre las familias de curvas {\sl forward}
+%  consistentes y un objeto matemático conocido como {\sl variedad invariante}.   
+% A través de esta identificación, posibilitamos el estudio de las condiciones bajo las
+% cuales, una determinada familia de curvas {\sl forward}, resulta ser
+% {\it invariante} cuando se somete a la acción de un modelo de tipos
+% de interés. 
+
+% \subsection{La Recalibración}
+% Los operadores de la mayoría de instituciones financieras, con una
+%   frecuencia\footnote{Ésta puede oscilar entre 
+%   un solo día y cinco días de negociación dependiendo de las
+%   circunstancias más o menos turbulentas de los mercados financieros.}
+%   de actualización elevada y como paso previo a la gestión racional de
+%   sus carteras de derivados sobre tipos de interés, acostumbran a
+%   seguir el siguiente patrón de actuación:
+% \begin{enumerate}
+% \item En la fecha de valoración $t_0$, utilizan los precios de bonos para ajustar
+%   el modelo de manera que replique perfectamente la estructura
+%   temporal de tipos {\sl forward} observada\footnote{Equivalentemente, la
+%   ETTI.}. El vínculo existente entre la función determinista que
+%   caracteriza el {\sl drift} de un determinado modelo a corto y
+%   características de la curva inicialmente observada, permite esta
+%   primera tarea. 
+% \item En ese mismo instante, una vez garantizada la obtención exacta de la
+%   curva de descuento, se elimina la arbitrariedad que supone el resto
+%   de parámetros libres del modelo, fijándolos a aquéllos valores que
+%   minimicen los errores de valoración  de ciertas {\sl opciones} sobre
+%   tipos de interés de enorme liquidez, como los {\sl caps} y opciones
+%   sobre {\sl swap} de estilo europeo.
+% \item En una fecha posterior, $t_1>t_0$ se retoma el procedimiento
+%   esbozado en 1., con el fin de reajustar ({\sl recalibrar}) el modelo a las nuevas
+%   circunstancias reflejadas en los mercados, se prosigue con 2., y así
+%   sucesivamente. 
+% \end{enumerate}
+
+% Para poder llevar a cabo este algoritmo, el analista debe
+% recurrir a reconstruir una curva {\sl forward} contínua
+% $\{\overline{r}(0,x); x\geq 0\}$, a partir de un conjunto discreto de
+% datos provenientes de bonos; y, en este proceso de interpolación, se
+% opta inevitablemente por el uso de unas determinadas funciones {\sl
+%   spline} o familias parametrizadas como la de Nelson-Siegel.  
+
+% La razón por la que se insiste en repetir, con una determinada
+% frecuencia, el algoritmo propuesto, radica en el hecho de que el modelo en
+% cuestión no es más que una descripción 
+% aproximada de la realidad manifiesta en los mercados financieros, y la
+% {\sl recalibración} consigue incorporar la llegada de nueva información
+% a esta descripción. En definitiva, el ajuste exacto a estructuras
+% iniciales que se realiza con determinados modelos de tipos de
+% interés, presupone que éste se repetirá cada cierto tiempo
+% para evitar que el modelo carezca de ninguna utilidad, transcurridos
+% unos cuantos días de negociación. Aparentemente, la manera
+% óptima para llevar a cabo este proceso repetitivo debería
+% mezclar datos de series temporales con datos en sección cruzada,
+% sin embargo, el procedimiento que comúnmente sigue la industria
+% olvida la información contenida en estructuras temporales {\sl
+%   pasadas}, centrándose en el uso de, única y exclusivamente, la
+% información contenida en las curvas observadas en el presente. No
+% cabe duda, por lo tanto, que esta elección de la información que
+% debe ser considerada en la {\sl recalibración} resulta un tanto
+% pragmática y sin ningún fundamento teórico.  
+
+% Es en este sentido, donde el concepto de {\sl consistencia} cobra
+% especial relevancia. De ese modo, si consideramos un par $\mathcal{(M,G)}$
+% inconsistente, el modelo de tipos de interés producirá curvas {\sl
+%   forward} ajenas a la familia utilizada durante la {\sl calibración}
+% inicial; y, como consecuencia de ello, 
+% el analista se verá forzado a cambiar significativamente los
+% parámetros en las siguientes {\sl recalibraciones} y no porque el
+% modelo sea una mala representación de la realidad, sino porque la
+% familia escogida inicialmente no funciona con ese modelo.
+
+% Dicho de otro modo, si se utiliza un determinado modelo de tipos de
+% interés $\mathcal{M}$, y se plantea el uso de la {\sl
+%   recalibración} como tradicionalmente ha sido planteada desde la
+% industria, sólo se puede garantizar resultados {\it controlables}
+% partiendo de curvas {\sl forward} que sean consistentes con este
+% modelo. De alguna manera, la utilización de pares consistentes
+% ($\mathcal{M,G}$), suple la ausencia de información pasada en las
+% sucesivas calibraciones. Genera por sí sola, un marco de
+% actuación en el que las estimaciones de los parámetros
+% necesariamente se mantendrán más estables, puesto que, por
+% construcción, se garantiza que el modelo dinámico bajo estudio, siempre
+% producirá curvas {\sl forward} futuras de la misma familia que la que fue
+% escogida para la calibración inicial.    
+
+% Si se opta definitivamente por realizar {\sl recalibraciones consistentes}, es
+% deseable dar respuestas a cada una de las siguientes cuestiones:  
+
+% \begin{enumerate}
+% \item Propongamos una pareja ($\mathcal{M,G}$), ¿cuáles son las condiciones
+%   necesarias y suficientes para que ésta sea consistente?  
+% \item Escojamos una familia parametrizada $\mathcal{G}$. ¿Existe algún modelo
+%   consistente con $\mathcal{G}$? 
+% \item Finalmente, fijemos un determinado modelo de tipos $\mathcal{M}$, ¿existe
+%   alguna familia parametrizada consistente con ese modelo? 
+% \end{enumerate} 
+
+% En esta sección desarrollamos los aspectos que dan respuesta a la primera de las
+% preguntas y reservamos la siguiente para analizar la resolución del problema
+% formulado por la tercera. Pueden encontrarse respuestas parciales a la segunda
+% pregunta en los trabajos \cite{Fil:1999a,Fil:1999b}. 
+
+% \subsection{El Enfoque Geométrico} 
+% %\label{subsec:GeomView}
+% Hemos dado una primera interpretación de la ecuación  (\ref{eqHJMM}) como un
+% sistema de ecuaciones diferenciales estocásticas (EDE) de dimensión infinita. Para
+% cada valor de $x$ tenemos una EDE, por lo tanto, se  está lidiando con un {\sl
+%   contínuo} de EDEs.
+
+% Existe una alternativa a esta intepretación y tiene un claro matiz
+% geométrico. Se fundamenta en considerar la dinámica {\sl forward} como una {\bf
+%   única ecuación} formulada para un {\bf objeto infinito-dimensional}. Este
+% objeto de dimensión infinita no es otro que la {\bf curva forwad}, $x\mapsto
+% r_t(x)$.  Denotando la instantánea de la curva {\sl forward} a tiempo $t$, por
+% $r_t$, y el proceso para la curva {\sl forward} en su conjunto, por $r$, ahora
+% es posible pensar en $r$ como un proceso que evoluciona en un espacio de
+% funciones infinito-dimensional $\mathcal{H}$. Para instantes precisos $t$,
+% $r_t$ no será más que un {\sl vector} (o punto) de $\mathcal{H}$. Por el
+% momento, tomaremos $\mathcal{H}$ como uno espacio de funciones $C^{\infty}$ y,
+% en lo sucesivo, asumiremos que todas las EDEs que aparezcan admiten soluciones
+% fuertes.  
+
+% Con el fin de enfatizar este nuevo enfoque, reescribiremos la ecuación {\sl
+%   forward} (\ref{eqHJMM}) como
+% \begin{eqnarray}
+% \label{eqHJMMgeom}
+% dr_t & = &\left[\mathbf{F}r_t+\sigma_m\mathbf{H}\sigma'_m\right] dt+\sigma_m dW_t\\
+% r_0 & = & \overline{r} \nonumber
+% \end{eqnarray}
+% donde los operadores $\mathbf{F}$ y $\mathbf{H}$ definidos en $\mathcal{H}$,
+% vienen dados por
+% \begin{eqnarray}
+% \mathbf{F} & = & \frac{\partial}{\partial x}\\
+%  (\mathbf{H}f)(x) & = & \int_0^x f(s) ds,\quad f\in \mathcal{H} 
+% \end{eqnarray}
+% \subsection{Variedades Invariantes}
+% La formalización matemática precisa del concepto de consistencia se consigue
+% introduciendo las {\sl variedades invariantes}, pues como mostraremos
+% intuitivamente, éstas admiten una identificación plena con las familias
+% parametrizadas de curvas {\sl forward} consistentes.  
+
+% \begin{defn}[Variedad Invariante] Retomemos la dinámica {\sl forward} reescrita
+%   bajo la parametrización de Musiela (\ref{eqHJMMgeom}). Consideremos una familia ({\sl
+%     variedad}) de curvas de tipos {\sl forward} $\mathcal{G}$. Esta familia
+%   $\mathcal{G}$ es invariante bajo la acción de la dinámica para $r$, si,
+%   $\forall (s,r) \in R_+ \times \mathcal{G}$, la condición $r_s\in\mathcal{G}$
+%   implica que $r_t\in\mathcal{G}$, en un intervalo temporal $t-s>0$. 
+% \end{defn} 
+
+% Las {\sl variedades} son los objetos fundamentales de la geometría diferencial y 
+% generalizan los conceptos de curva y superficie en un espacio de tres
+% dimensiones. Generalmente, una variedad es un espacio que localmente tiene las
+% propiedades de un espacio euclídeo convencional pero que globalmente puede tener
+% propiedades enteramente diferentes. Un introducción al concepto de {\sl
+%   variedad}, exhaustiva a la par que sencilla,  puede encontrarse en la
+% referencia clásica \cite{Olv:1993}. 
+
+% A continuación, sirviéndonos de un ejemplo sencillo, tratamos de dar una idea
+% intuitiva de {\sl variedad invariante}. Consideremos el siguiente sistema
+% dinámico determinista de dos dimensiones:
+% \begin{eqnarray}
+% \frac{dx}{dt} & = & -y \\
+% \frac{dy}{dt} & = & x  \nonumber
+% \end{eqnarray}
+% Para este sistema, es obvio\footnote{Puede resultar de ayuda introducir el
+%   cambio a coordenadas polares, $x=\rho \cos\phi$, $y=\rho \sin\phi$ y
+%   resolver el sistema desacoplado resultante.} que la {\sl variedad},
+% $$
+% \mathcal{S}^1=\{(x,y):\: x^2+y^2=1\}
+% $$
+% que identificamos con la circunferencia de radio unidad, es {\sl
+%   invariante}. De hecho, este ejemplo geométrico se corresponde bastante bien
+% con el sistema estocástico de dimensión infinita que nos ocupa. Así, si somos
+% capaces de dar con una {\sl variedad} análoga a la curva expuesta, estamos
+% garantizando que las ``trayectorias'' futuras de las curvas {\sl forward},
+% sometidas al dictado de la dinámica (\ref{eqHJMMgeom}), no escaparán de un punto
+% interior a  ésta. 
+
+% \subsection{La Formalización Concreta del Problema}
+% El espacio básico donde poder formular las condiciones de consistencia
+% para la pareja  $\mathcal{(M,G)}$, es el siguiente:  
+% \begin{defn}
+% El espacio Hilbert $\mathcal{H}$ de funciones infinitamente diferenciables:
+% $$
+% r: R_+ \to R
+% $$
+% con producto interno $\langle r|q \rangle$:
+% $$
+% \langle r|q \rangle=\sum_{n=0}^\infty 2^{-n} \int_0^\infty
+% \left(\frac{d^nr}{dx^n}(x)\right)\left(\frac{d^nq}{dx^n}(x)\right)e^{-\gamma x}\: dx,
+% $$
+% y norma $\|r\|^2<\infty$ (acotada), siendo $\gamma$ un número real positivo.  
+% \end{defn}
+% Utilizaremos $r$ para denotar un punto genérico (curva {\sl forward}) del
+% espacio $\mathcal{H}$.
+
+% \begin{rmk}
+% La razón de esta elección para $\mathcal{H}$ como espacio soporte no es, en
+% absoluto, caprichosa. El operador lineal $\mathbf{F}=\partial/\partial x$ es
+% acotado en este espacio, y con las precisiones hechas más arriba, implica que
+% tanto $\alpha_m$ como $\sigma_m$ van a ser {\bf campos vectoriales}
+% diferenciables definidos sobre $\mathcal{H}$. Este detalle asegura la existencia
+% y unicidad de solución local fuerte para la ecuación {\sl forward} sea cual sea
+% el {\bf punto inicial} 
+% $\overline{r}\in\mathcal{H}$ 
+% \end{rmk}
+% \subsubsection{La Variedad de Curvas Forward}
+% Dado un espacio de funciones lo suficientemente regular\footnote{Es fácil
+%   adivinar que este espacio de funciones generaliza el espacio euclídeo con 
+%   producto escalar, de hecho, no es raro encontrar que los elementos de este
+%   espacio abstracto reciban el nombre de {\sl vectores}, como se ha venido
+%   anticipando. Por otra parte, es el marco natural para la teoría de procesos
+%   estocásticos de cuadrado integrable, véase \cite{PZ:1992}.}, consideremos la
+% correspondencia  
+% $$
+% G: \mathcal{Z} \to \mathcal{H}
+% $$
+% donde el espacio $\mathcal{Z}$ es un abierto conexo de $R^d$. Entonces, para
+% cada valor del parámetro $z\in\mathcal{Z}\subseteq R^d$ se tiene la curva
+% $G(z)\in\mathcal{H}$.  El valor de la curva en cada punto $x\in R_+$ será denotado por
+% $G(z,x)$, por lo tanto, $G$ también admite interpretarse como la correspondencia 
+% $$
+% G:\mathcal{Z}\times R_+ \to R
+% $$
+% Esta correspondencia $G$ no es más que una formalización de la idea de familia
+% de curvas {\sl forward} finitamente parametrizada. La {\sl variedad de curvas
+%   forward} es el conjunto de todas las curvas {\sl forward} producidas por la
+% familia:
+% \begin{defn}
+% La {\bf variedad} de {\bf curvas forward} $\mathcal{G}\subseteq \mathcal{H}$ se define
+% como 
+% $$
+% \mathcal{G}=Im(G)
+% $$
+% \end{defn}
+% De hecho, esta es una definición muy conveniente pues es plenamente descriptiva
+% de la operativa real. El gestor de una determinada institución financiera optará
+% por un determinado método de interpolación, representado por la familia
+% $G=G(z)$. El propio proceso de {\sl recalibración}, hará que los parámetros
+% $z\in \mathcal{Z}$ barran una determinada zona de $R^d$, $\mathcal{Z}$; de ese
+% modo, se generará al final del proceso un conjunto de curvas {\sl forward} que
+% identificamos con la variedad $\mathcal{G}$. 
+% \subsubsection{El Modelo de Tipos de Interés}
+% Nuestro modelo de tipos de interés $\mathcal{M}$, vendrá caracterizado por una
+% estructura de volatilidades, $\sigma_m$,  homogénea de la forma  
+% $$
+% \sigma_m: \mathcal{H}\times R_+ \to R^q \:.
+% $$
+% $\sigma_m(r,x)$ es un {\sl funcional} del proceso infinito-dimensional $r$ y una 
+% función de la variable real $x$. Es más provechoso, como anticipamos en el
+% apartado 3.2, %\ref{subsec:GeomView} 
+% considerar que cada componente $\sigma_m^{(j)}$ de la ETV {\sl forward} 
+% es una aplicación que hace correponder a cada elemento $r\in \mathcal{H}$, la
+% función de variable real $\sigma_m^{(j)}(r,\cdot)$. De hecho, asumiremos que
+% $\sigma_m^{(j)}$ es un elemento de $\mathcal{H}$ y, por lo tanto, cada
+% componente $\sigma_m^{(j)}$ un {\sl campo vectorial} $\sigma_m^{(j)}:
+% \mathcal{H} \to \mathcal{H}$ sobre este 
+% espacio. Si adoptamos la notación $r(t,\cdot)=r_t$ para 
+% la curva {\sl forward} conjunta, la dinámica Heath-Jarrow-Morton-Musiela deviene 
+% $$
+% dr_t(x)=\left[\frac{\partial}{\partial
+%     x}r_t(x)+\sum_{j=1}^q\sigma_m^{(j)}(r_t,x)\int_0^x \sigma^{(j)}_m(r_t, z)dz
+% \right] dt+\sum_{j=1}^q\sigma^{(j)}_m(r_t,x) dW_j(t) 
+% $$ 
+% Rigurosamente hablando, son necesarios algunos supuestos adicionales. No los
+% mencionaremos aquí, pues no resultan ser cruciales para la comprensión de las
+% implicaciones de desarrollos posteriores. Remitimos al lector al trabajo
+% \cite{BC:1999} para consultar los detalles.  
+% \subsection{Las Condiciones de Invariancia}
+% \newcommand{\irmodel}{$\mathcal{M}$}
+% \newcommand{\manifold}{$\mathcal{G}$}
+% \newcommand{\pareja}{$\mathcal{(M,G)}$}
+
+% Como adelantamos más arriba, dedicamos el resto de la sección a caracterizar la
+% consistencia de las parejas \pareja. Supondremos que el modelo \irmodel~viene
+% especificado a través de la correspondiente ETV {\sl forward} bajo la
+% parametrización de Musiela, $\sigma_m$. Fijaremos, además, una familia
+% parametrizada $G$~y, por tanto, nuestra variedad \manifold. Conviene
+% compactificar notación introduciendo las siguientes puntualizaciones:
+% \begin{defn}
+% Sea $\mathbf{H}\sigma_m$
+% $$
+% \mathbf{H}\sigma_m(r,x)=\int_0^x \sigma_m(r,s) ds
+% $$
+% \end{defn}
+% \begin{defn}
+% Introduzcamos el operador lineal 
+% $$
+% \mathbf{F}=\frac{\partial}{\partial x}
+% $$
+% \end{defn}
+% \begin{rmk} 
+% Omitiremos los subíndices que acompañan tanto al coeficiente de deriva, $\alpha_m$,
+% como al de difusión, $\sigma_m$, entendiendo en todo momento que estos 
+% coeficientes se refieren  a la parametrización de Musiela. 
+% \end{rmk}
+
+% Retomemos el proceso de Itô para el {\sl forward} escrito en forma
+% geométrica\footnote{Adviértanse las notaciones matriciales.}:       
+% \begin{equation}
+% \label{eqHJMMcompacta}
+% dr_t=\alpha(r_t) dt + \sigma(r_t) dW(t)
+% \end{equation}
+% siendo $\alpha(r_t)=\mathbf{F}r_t+\sigma(r_t)\mathbf{H}\sigma(r_t)'$.
+
+% La expresión formal\footnote{Es bien sabido, que esta expresión no está bien
+%   definida, pues el movimiento browniano multidimensional no es difenciable en
+%   ningún punto} que resulta al {\sl dividir por $dt$}, es  
+
+% \begin{equation}
+% \label{eqHJMMformal}
+% \frac{dr_t}{dt}=\alpha(r_t) + \sigma(r_t) \frac{dW}{dt}(t)
+% \end{equation}
+% Esta ecuación puede ser interpretada como una ecuación determinista perturbada
+% por la señal aleatoria (ruido blanco) $\frac{dW(t)}{dt}$. Establezcamos pues,
+% una analogía con el sistema determinista controlado
+% \begin{equation}
+% \label{eqControl}
+% \frac{dr_t}{dt}=\alpha(r_t) + \sigma(r_t) u(t)
+% \end{equation}
+% donde $u(t)$ es, esta vez, una señal determinista. Aunque el razonamiento es
+% heurístico, pues la analogía entre las ecuaciones (\ref{eqHJMMformal}) y
+% (\ref{eqControl}) sólo se puede mantener a un nivel puramente formal, es
+% plausible conjeturar que \manifold~ será invariante bajo (\ref{eqHJMMcompacta})
+% si y sólo si \manifold~es invarianto bajo (\ref{eqControl}), para todas las
+% posibles elecciones de la señal $u$. 
+
+% La condición necesaria y suficiente para que \manifold~sea invariante bajo la
+% dinámica (\ref{eqControl}) es que el vector {\sl velocidad} $\alpha(r)+\sigma(r) u$
+% sea tangente a \manifold~en todos los puntos de $r\in\mathcal{G}$ y todas las
+% posibles elecciones de $u\in R^q$. Puesto que el espacio tangente de
+% \manifold~en un punto $r=G(z)$ viene dado por el conjunto $Im[G'_z(z)]$, siendo
+% $G'_z(z)$ el Jacobiano, cabe preguntarse si nuestra analogía formal puede llevar
+% a afirmar que nuestra variedad problema \manifold~ va a ser invariante si se
+% cumplen las condiciones\footnote{En el caso multifactorial, la segunda de las
+%   condiciones debe entenderse formulada para cada una de las componentes de la
+%   ETV.},  
+% $$
+% \begin{array}{rcl}
+% \alpha(G(z)) & \in & Im[G'_z(z)]\\
+% \sigma(G(z)) & \in & Im[G'_z(z)],
+% \end{array}
+% $$
+% pues la perturbación $u$, no depende del punto de la variedad donde se construya
+% el espacio tangente, $T\mathcal{G}\left|_r$.   
+
+%   Sin embargo, hay un abismo entre el sistema determinista propuesto en
+%   (\ref{eqControl}) y el que realmente nos ocupa (\ref{eqHJMMcompacta}). Así,
+%   las afirmaciones hechas para sistemas deterministas {\sl perturbados} por una
+%   señal de idéntica naturalaza no son directamente exportables a un proceso de
+%   Itô infinito-dimensional, pues hay diferencias manifiestas entre el cálculo
+%   diferencial ordinario y el cálculo de Itô. Afortunadamente, contamos con la
+%   interpretación de Stratonovich de los procesos estocásticos, la cual permite
+%   aplicarles directamente las reglas del cálculo diferencial ordinadorio. Para
+%   poder reescribir la dinámica estocástica (\ref{eqHJMMcompacta}) utilizando esta 
+%   interpretación, se debe sustituir la integral estocástica de Itô por la
+%   correspondiente Stratonovich:
+
+% \begin{defn}
+% Sean $X$ e $Y$ semimartingalas, definimos la integral de Stratonovich del $X$
+% con respecto a $Y$, $\int_0^t X(s) \circ dY(s)$, como
+% $$
+% \int_0^t X_s\circ dY_s=\int_0^t X_s\cdot dY_s+\frac{1}{2} dX_t\cdot dY_t
+% $$
+% \end{defn}
+
+% \begin{rmk} 
+% En la conversión, debe tenerse en cuenta las reglas para el producto $dW\cdot
+% dt=dt\cdot dt=0$, $dW\cdot dW=dt$. 
+% \end{rmk}
+% Introduciendo la interpretación de Stratonovich en la ecuación (\ref{eqHJMMcompacta}), la
+% dinámica se escribe ahora 
+% \begin{equation} 
+% \label{eqHJMMStratonovich1}
+% \begin{split} 
+% dr_t & =\left[ \mathbf{F}r_t+\sigma(r_t)\mathbf{H}\sigma(r_t)' \right] dt -
+% \frac{1}{2} d\sigma(r_t) \cdot dW(t)+\sigma(r_t)\circ dW(t) 
+% \end{split} 
+% \end{equation}
+% Como vemos aparece un término $\mathcal{O}(dt) $, comúnmente denominada {\sl 
+%   corrección de Stratonovich}. Para determinarlo explícitamente se debe recurrir
+% a la fórmula de Itô infinito-dimensional \cite{PZ:1992},  
+% $$
+% d\sigma(r_t)=\mathcal{O} (dt) + \sigma'_r(r_t) \sigma(r_t) dW(t)
+% $$
+% donde $\sigma'_r$ denota la {\sl derivada de Frechet}\footnote{Generaliza el
+%   concepto de derivada aplicada al caso de una funcional.} de $\sigma$ con
+% respecto a la variable infinito-dimensional $r$, aunque, en términos prácticos, basta
+% con trabajar como si se tratara de la fórmula de Itô ordinaria. De las reglas
+% del producto enunciadas anteriormente, se concluye
+% $$
+% d\sigma \cdot dW(t)=\sigma' (r_t) \sigma(r_t) dt.
+% $$
+
+% En consecuencia, la ecuación (\ref{eqHJMMStratonovich1}) se escribe como
+% \begin{equation}
+% dr_t=\mu(r_t) dt+\sigma(r_t)\circ dW_t
+% \end{equation}
+% donde hemos introducido el coeficiente de deriva $\mu$, correspondiente a la
+% representación de Stratonovich,
+% $$
+% \mu(r,x)=\partial_x r_t(x)+\sigma(r_t,x)\int_0^x \sigma(r_t,z)' \:
+% dz-\frac{1}{2}\left(\sigma'_r(r_t) \sigma(r_t)\right) (x) 
+% $$
+
+% Proporcionados los razonamientos heurísticos que permiten corregir la diferencia
+% existente entre el cálculo ordinario y el cálculo estocástico sobre variedades,
+% se está en disposición de dar el resultado fundamental.  La prueba rigurosa,
+% pero de excesiva aparatosidad técnica, puede encontrarse en \cite{BC:1999}. 
+% \begin{tma}[Teorema de Consistencia]
+% \label{Tma:Invariancia}
+% La variedad de curvas forward es invariante bajo el proceso $r_t$ si y sólo si,
+% las condiciones
+% \begin{eqnarray}
+% \label{eq:CDC}
+% \mathbf{F} r+\sigma(r)\mathbf{H}\sigma(r)' -\frac{1}{2} \sigma'_r(r) \sigma(r)
+% & \in & T\mathcal{G}\left|_r\\
+% \label{eq:CVC}
+% \sigma(r) & \in & T\mathcal{G}\left|_r
+% \end{eqnarray}
+% se cumplen $\forall z \in \mathcal{Z}$ con $r=G(z)$. La condición (\ref{eq:CVC}),
+% se debe cumplir para cada uno de los $q$ factores. 
+% \end{tma}
+% \subsection{Ejemplos} 
+% Hemos sido capaces de materializar un conjunto de requisitos fundamentales
+% (\ref{eq:CDC}) y  (\ref{eq:CVC}) para garantizar que la pareja \pareja~sea consistente.
+% Nuestro desarrollo no ha estado exento de cierta abstracción; sin embargo, como
+% analizaremos a continuación, la aplicación del teorema (\ref{Tma:Invariancia}) a
+% ejemplos concretos es extremadamente sencilla, lo cual demuestra que esta teoría
+% puede resultar una herramienta de extraordinaria utilidad a la hora de gestionar
+% correctamente carteras de activos derivados sobre tipos de interés
+% \cite{AH:2005}.   
+
+
+
+
+% \newpage
+% \section{Existencia de Familias Consistentes (OK)}  
+% \subsection{Álgebra de Lie Asociada}
+% \subsection{Condiciones de Existencia}
+% \subsubsection{Volatilidad Constante}
+% \subsubsection{Volatilidad de Dirección Constante}
+% \newpage
+% \section{Construcción de Familias Consistentes (en progreso)}
+% \subsection{Algoritmo de Construcción}
+% \subsection{Volatilidad Constante}
+% \subsubsection{Hull-White}
+% \subsection{Volatilidad de Dirección Constante}
+% \subsubsection{Black-Karasinski}
+% \subsubsection{CIR}
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \newpage
+% \appendix 
+% \section{La Metodología HJM}
+% \begin{tma}[Regla de Leibniz para Integrales Estocásticas]
+% Consideremos para cualquier parámetro $s \in [t_0, T]$ fijo,  el proceso
+% de Itô definido por la dinámica 
+% \begin{equation}
+% \label{eqdf}
+% dg(t,s) =  \alpha(t,s) dt + \sum_{j=1}^q S_j(t,s)dW_j (t) 
+% \end{equation}
+% con $ t \in [t_0,s]$. Entonces, la dinámica del proceso estocástico
+% $H(t,T)=\int_t^T g(t,s) ds$ viene determinada por
+% \begin{equation}
+% \label{eqdZ}
+% dH(t,T)=\left[\left(\int_t^T \alpha(t,s) ds\right) - g(t,t) \right] dt
+% + \sum_{j=1}^q \int_t^T S_j(t,s) ds~dW_j (t).
+% \end{equation}
+% \end{tma} 
+% \begin{demo} 
+% Para abreviar, ténganse en cuenta las notaciones matriciales: 
+% $$
+% S(t,T) = \left( \begin{array}{cccc}
+% S_1(t,T) & S_2(t,T) & \cdots & S_q(t,T)
+% \end{array} \right) 
+% $$
+
+% $$
+% W'(t) = \left( \begin{array}{cccc}
+% W_1(t) & W_2(t) & \cdots & W_q(t) 
+% \end{array} \right) 
+% $$
+% donde $'$ indica trasposición. 
+
+% Nótese que podemos escribir para cada $t_1 \in [t_0,T]$ la expresión
+% (\ref{eqdf}) en forma integral:  
+% \begin{equation}
+% \label{eqft0t1}
+% g(t_1,s)=g(t_0,s)+\int_{t_0}^{t_1} \alpha(t,s) dt+\int_{t_0}^{t_1}
+% S(t,s) W(t)
+% \end{equation}
+% Entonces,
+% $$
+% \begin{array}{ccl}
+% H(t_1,T) & = & \int_{t_1}^T g(t_1,s) ds\\
+%          & = & \int_{t_1}^T g(t_0,s) ds + \int_{t_1}^T
+%          \left(\int_{t_0}^{t_1} \alpha(t,s) dt\right) ds +
+%          \int_{t_1}^T \left(\int_{t_0}^{t_1} S(t,s) dW(t)\right)
+%          ds\\ 
+%       *  & = &\int_{t_1}^T g(t_0,s) ds +
+%          \int_{t_0}^{t_1}\left(\int_{t_1}^T \alpha(t,s) ds\right) dt + 
+%           \int_{t_0}^{t_1}\left(\int_{t_1}^T S(t,s)
+%          ds\right)dW(t) \\  
+%          & = &\int_{t_0}^T g(t_0,s) ds- \int_{t_0}^{t_1} g(t_0,s) ds +
+%          \int_{t_0}^{t_1}\left(\int_t^T \alpha(t,s) ds\right) dt -
+%          \int_{t_0}^{t_1}\left(\int_t^{t_1} \alpha(t,s) ds\right) dt + \\
+%          &   & +  \int_{t_0}^{t_1}\left(\int_t^T S(t,s) ds\right)dW(t)-
+%          \int_{t_0}^{t_1}\left(\int_t^{t_1} S(t,s) ds\right)dW(t)
+%          \\  
+%       **  & = & H(t_0,T) + \int_{t_0}^{t_1}\left(\int_t^T \alpha(t,s) ds\right) dt + \int_{t_0}^{t_1}\left(\int_t^T S(t,s) ds\right)dW(t)  - \\ 
+%          &   & - \int_{t_0}^{t_1} g(t_0,s) ds -
+%          \int_{t_0}^{t_1}\left(\int_{t_0}^s  \alpha(t,s) dt\right) ds
+%          - \int_{t_0}^{t_1}\left(\int_{t_0}^s S(t,s) dW(t)\right)
+%          ds\\
+%          & = & H(t_0,T) + \int_{t_0}^{t_1}\left(\int_t^T \alpha(t,s) ds\right) dt + \int_{t_0}^{t_1}\left(\int_t^T S(t,s) ds\right)dW(t)  - \\ 
+%          &   & - \int_{t_0}^{t_1} \left(g(t_0,s) + \int_{t_0}^s
+%          \alpha(t,s) dt + \int_{t_0}^s S(t,s) dW(t)\right) ds\\ 
+%    ***   & = & H(t_0,T) + \int_{t_0}^{t_1}\left(\int_t^T \alpha(t,s)
+%          ds\right) dt + \int_{t_0}^{t_1}\left(\int_t^T S(t,s)
+%          ds\right)dW(t)  -  \int_{t_0}^{t_1} g(s,s) ds\\
+%          & = & H(t_0,T) + \int_{t_0}^{t_1}\left[\int_t^T \alpha(t,s)
+%          ds-g(t,t)\right] dt+ \int_{t_0}^{t_1}\left(\int_t^T S(t,s)
+%          ds\right)dW(t)
+
+% \end{array}
+% $$
+% de donde se deduce la expresión para la diferencial formal del proceso
+% $H(t,T)$ dada en (\ref{eqdZ}). En las igualdades (*) y (**) se ha
+% empleado el Teorema de Fubini en su versión determinista y su
+% generalización para integrales estocásticas, véase Ikeda y Watanabe
+% \cite{IW:1981} y Heath et al. \cite{HJM:1992}. En la igualdad (***) se
+% ha empleado (\ref{eqft0t1}). 
+% \end{demo}
+
+%  \begin{tma}
+%  La dinámica del proceso estocástico,
+%  \begin{equation}
+%  \label{eqXt}
+%  X(t)=Y(0,t)+\int_{0}^{t} \alpha(s,t) ds+\sum_{j=1}^q \int_{0}^{t}
+%  S_j(s,t) dW_j(s) 
+%  \end{equation}
+%  siendo $Y(0,t)=y(t)$ una función determinista que cumple $Y(0,0)=X(0)$;
+%  y, $\alpha(s,t)$, $S_j(s,t)$ procesos adaptados parametrizados por
+%  $t\geq s$, viene dada por 
+%  \begin{equation}
+%  \label{eqdXt}
+%  \begin{split}
+%  dX(t) & = \left[\frac{\partial Y}{\partial t}(0,t)+\alpha(t,t)+\int_{0}^{t}
+%    \frac{\partial\alpha}{\partial t} (s,t)
+%    ds+\sum_{j=1}^q \int_{0}^{t} \frac{\partial S_j}{\partial
+%    t}(s,t) dW_j(s) \right] dt\\
+%  & +\sum_{j=1}^q S_j(t,t) dW_j(t)
+%  \end{split}
+%  \end{equation}
+%  \end{tma}
+
+%  \begin{demo}
+%  Esta demostración se inspira en la prueba de la Proposición 15.5 del
+%  libro de Björk \cite{B:1998}. 
+
+%  Fijemos un $0 \leq s\leq t < \infty$. Asumamos que $\forall \omega \in \Omega$, el teorema fundamental del cálculo permite reescribir $\alpha(s,t)$ y el vector $S(s,t)$ como sigue,     
+%  \begin{equation}
+%  \label{Barrow:1}
+%  \begin{split}
+%  \alpha(s,t) (\omega)& = \alpha(s,s)(\omega)+\int_s^t \frac{\partial\alpha}{\partial z}
+%  (s,z) (\omega) dz\\ 
+%  S(s,t) (\omega) & = S(s,s)(\omega)+\int_s^t \frac{\partialS}{\partial z}
+%  (s,z) (\omega) dz
+%  \end{split}
+%  \end{equation}
+%  Con $s=0$, un razonamiento idéntico conduce a expresar $Y(0,t)$ como
+%  \begin{equation}
+%  \label{Barrow:2}
+%  Y(0,t) (\omega)= Y(0,0)(\omega)+\int_0^t \frac{\partial Y}{\partial z} (0,z) (\omega) dz.
+%  \end{equation}
+%  Por simplicidad, omitamos $\omega$ en lo que sigue. La sustitución de las ecuaciones (\ref{Barrow:1}) y (\ref{Barrow:2})
+%    en (\ref{eqXt}) proporciona 
+%  \begin{equation}
+%  \begin{split}
+% % \begin{array}{rcl}
+%  X(t) & = X(0)+\int_0^t \frac{\partial Y}{\partial z}(0,z) dz 
+%       + \int_0^t \alpha (z,z) dz +\int_0^t\left(\int_s^t
+%       \frac{\partial\alpha}{\partial z}(s,z) dz\right) ds\: +\\
+%  & +\:\int_0^t\left(\int_s^t \frac{\partialS}{\partial z}(s,z)
+%       dz\right) dW(s) + \int_0^t S(z,z) dW(z)
+% % \end{array}
+%  \end{split}
+%  \end{equation}
+%  El recinto de las integración de las integrales dobles es
+%  triangular, 
+%  puesto que la variable en las integrales exteriores aparece como
+%  límite de integración en las
+%  interiores. Dibujando\footnote{Nótese que el área del recinto
+%  es la misma.} un pequeño esquema es fácil 
+%  convencerse que  
+%  $$
+%  \int_0^t\:\int_s^t \dots\: dz ds=\int_0^t\:\int_0^z \dots\: ds dz
+%  $$
+%  Haciendo uso de la versión estocástica del teorema de Fubini, es
+%  posible extender este razonamiento a la integral doble que contiene el
+%  movimiento Browniano multidimensional. Por lo tanto,
+% \begin{equation}
+% \label{Fubini}
+% \begin{split}
+%  X(t) & = X(0)+\int_0^t \frac{\partial Y}{\partial z}(0,z) 
+%       dz+\int_0^t \alpha (z,z) dz +
+%       \int_0^t\left(\int_0^z \frac{\partial\alpha}{\partial z}(s,z) 
+%       ds\right) dz\: +\\ 
+%  & +\:\int_0^t\left(\int_0^z \frac{\partialS}{\partial z}(s,z)
+%       dW(s)\right) dz + \int_0^t S(z,z) dW(z) 
+%  \end{split}
+%  \end{equation}
+%  y, agrupando convenientemente
+%  \begin{equation}
+%  \begin{split}
+%  X(t) & = X(0)+\int_0^t \left[\left(\frac{\partial Y}{\partial z}(0,z)
+%       + \alpha (z,z)+ \int_0^z \frac{\partial\alpha}{\partial z}(s,z) ds\: +
+%       \right. \right.\\ 
+%       & + \left. \left. \int_0^z \frac{\partialS}{\partial z}(s,z)
+%       dW(s)\right) dz + S(z,z) dW(z)\right]  
+%  \end{split}
+%  \end{equation}
+%  De donde se deduce la expresión diferencial formal (\ref{eqdXt}).
+%  \end{demo}
+
+% \begin{tma}[Proceso del Tipo Instantáneo en el Entorno HJM]
+% La dinámica del proceso estocástico (\ref{eqRt:1}) viene dada por
+% \begin{equation}
+% \label{eqdRt:2}
+%  \begin{split}
+% dr(t)& = \left[\partial_t f(0,t)+\int_{0}^{t} \partial_t\alpha(s,t)
+%   ds+\sum_{j=1}^q \int_{0}^{t} \partial_t\sigma_j(s,t) dW_j(s) \right]
+%   dt\: +\\
+%   & + \sum_{j=1}^q \sigma_j(t,t) dW_j(t)
+% \end{split}
+% \end{equation}
+% \end{tma}
+% \begin{demo}
+% Utilizando el teorema anterior y las siguientes identificaciones:
+% \begin{eqnarray*}
+% \begin{split}
+% % \alpha(s,t) & =\alpha(s,t)\\
+% S_j(s,t)& =\sigma_j(s,t)\\
+% Y(0,t)& =f(0,t)
+% \end{split} 
+% \end{eqnarray*}
+% se tiene,
+% \begin{equation}
+% \label{eqdRt:3}
+% \begin{split}
+%    dr(t)& =\left[\partial_t f(0,t)+\alpha(t,t)+\int_{0}^{t}
+%   \partial_t\alpha(s,t) ds+\sum_{j=1}^q \int_{0}^{t}
+%   \partial_t\sigma_j(s,t) dW_j(s) \right] dt\:+\\ 
+% & + \sum_{j=1}^q \sigma_j(t,t) dW_j(t)
+% \end{split}
+% \end{equation}
+% La AOA concluye el resultado (Corolario 1.2).
+% \end{demo}
+% \begin{corol}
+% Las ecuaciones diferenciales estocásticas que satisfacen 
+% \begin{eqnarray}
+% \label{eqXi:Ap}
+% X_i(t)& = & \int_0^t \sigma^2_i(s,t) ds\\
+% \label{eqYi:Ap}
+% Y_i(t)& = & \int_0^t a_i(s,t) ds + \int_0^t \sigma_i (s,t) dW_i(s)
+% \end{eqnarray}
+% con $\sigma_i(s,t)=\varsigma_i(s) e^{-\int_s^t \kappa(z) dz}$, son
+% \begin{eqnarray} 
+% dX_i(t)& = & \left[\varsigma_i^2(t)-2\kappa_i(t)X_i(t)\right] dt\\
+% dY_i(t)& = & \left[X_i(t)-\kappa_i(t) Y_i(t)\right] dt+\varsigma_i(t) dW_i(t) 
+% \end{eqnarray}
+% \end{corol}
+% \begin{demo}
+% \begin{itemize}
+% \item Utilizando el Teorema A.2 con las particularizaciones
+% \begin{eqnarray*}
+% \begin{split}
+% \alpha(s,t) & =\sigma_i^2(s,t)\\
+% S_j(s,t)& =0\\
+% Y(0,t)&=0
+% \end{split}
+% \end{eqnarray*}
+% se llega a 
+% $$
+% dX_i(t) = \left[\sigma_i^2(t,t)+\int_0^t \partial_t \sigma^2_i(s,t)
+%   ds\right] dt 
+% $$
+% La ecuación (\ref{ETVgral:1}), la propiedad (\ref{ETVgralProp}) y la
+% definición (\ref{eqXi}) permiten concluir. 
+% \item Utilizando el Teorema A.2 con las particularizaciones
+% \begin{eqnarray*}
+% \begin{split}
+% \alpha(s,t) & =a_i(s,t)\\
+% S_j(s,t)& =\delta_{ij}\sigma_i(s,t)\\
+% Y(0,t)&=0
+% \end{split}
+% \end{eqnarray*}
+% se llega a
+% \begin{equation}
+% \label{eqdYi_HW:1}
+% \begin{split}
+% dY_i(t) & = \left[a_i(t,t)+\int_{0}^{t}
+%   \frac{\partial a_i}{\partial t} (s,t)
+%   ds+ \int_{0}^{t} \frac{\partial \sigma_i}{\partial
+%   t}(s,t) dW_i(s) \right] dt\\
+% & +\sigma_i(t,t) dW_i(t)
+% \end{split}
+% \end{equation}
+% Por otra parte, la AOA implica que $a_i(t,t)=0$, mientras que 
+% $$
+% \partial_t a_i(s,t)=-\kappa_i(t) a_i(s,t)+\sigma_i^2(s,t)
+% $$
+% La propiedad (\ref{ETVgralProp}) y las definiciones (\ref{eqXi:Ap}) y
+% (\ref{eqYi:Ap}) concluyen.  
+% \end{itemize}
+% \end{demo}
+% \begin{lema}[Generalización Multifactorial del Modelo BK] 
+% El coeficiente de deriva de la difusión (\ref{eqdlogfBK}) es
+% \begin{equation}
+% \label{eqdlogfBK:deriva}
+% \tilde{\alpha}(t,T)=\sum_{i=1}^q \lambda_i(t,T)\int_t^T \lambda_i(t,s)
+% f(t,s) ds -\frac{1}{2} \sum_{j=1}^q \lambda_j^2 (t,T)
+% \\end{equation}
+% \end{lema}
+% \begin{demo} 
+% Retomemos la difusión (\ref{eqdlogfBK})
+% $$
+% d\ln f(t,T) =  \tilde{\alpha}(t,T) dt +  \sum_{j=1}^q \lambda_j(t,T)
+% dW_j (t)  
+% $$
+% Considerésele como proceso de Itô función de la difusión para el tipo {\sl forward} instantáneo dada en (\ref{eqdfBK}):
+% $$
+% g(f(t,T))=\ln f(t,T)
+% $$
+% El lema de Itô multidimensional proporciona la forma diferencial para $g$:
+% $$
+% dg(t,T)=d\ln f(t,T)=\left(\frac{1}{f(t,T)} \alpha(t,T) - \frac{1}{2} \sum_{i=1}^q \lambda^2(t,T) \right) dt + \sum_{i=1}^q \lambda_i (t,T) dW_i(t)
+% $$
+% Identificando el coeficiente de deriva de esta última expresión con el de la difusión (\ref{eqdlogfBK}), se tiene:
+
+% \begin{equation}
+% \label{derivalnBK}
+% \tilde{\alpha}(t,T)=\frac{1}{f(t,T)} \alpha(t,T) - \frac{1}{2} \sum_{i=1}^q \lambda^2(t,T) 
+% \end{equation}
+
+% Por otra parte, la combinación de la AOA  con la estructura de volatilidades particular escogida para la generalización multifactorial del modelo de Black-Karasinski, proporciona la siguiente expresión para el proceso adaptado $\alpha(t,T)$:
+% $$
+% \alpha(t,T)=\sum_{i=1}^q \lambda_i(t,T) f(t,T)\int_t^T \lambda_i(t,s) f(t,s) ds
+% $$
+% Sustituyendo este último resultado en (\ref{derivalnBK}), se recupera finalmente (\ref{eqdlogfBK:deriva}).
+% \end{demo} 
+% \begin{propos}[Modelo CIR Extendido]
+% La ecuación escalar de Ricatti con coeficientes constantes:
+% %\begin{equation}
+% $$
+% \left. 
+% \begin{array}{rcl}
+% \frac{dB}{dt}(t,T)-a B(t,T)+\frac{1}{2}v^2 B^2(t,T) & = & 1\\
+% B(T,T) & = & 0
+% \end{array}\right\}
+% $$
+% %\end{equation}
+
+% tiene como solución
+
+% \begin{equation}
+% B(t,T)=-\frac{2(e^{\gamma(T-t)}-1)}{(a+\gamma)(e^{\gamma(T-t)}-1)+2\gamma}
+% \end{equation}
+
+% \end{propos}
+% \begin{demo}
+% Dado que la ecuación es homogénea temporalmente, propongamos soluciones de la forma $B(t,T)=B(T-t)$. 
+
+% Introduzcamos, el cambio de variable $x=T-t$.
+
+% La EDO inicial adopta la forma 
+% $$
+% \left. 
+% \begin{array}{rcl}
+% -1-a~B(x)+\frac{1}{2}v^2 B(x)^2  & = & B'(x)\\
+% B(0) & = & 0
+% \end{array}\right\}
+% $$ 
+% siendo $B'(x)=\frac{d}{dx}B(x)$. 
+% Introduzcamos, a continuación, la transformación de Hopf-Cole 
+% $$
+% z(x)=\exp \left(-\frac{v^2}{2}\int_0^x B(\xi) d\xi\right)
+% $$
+% Esta transformación suele ser utilizada como método para resolver cierto tipo de ecuaciones diferenciales no lineales en el contexto de sistemas integrables. De hecho, el ejemplo paradigmático en el que ésta funciona, es precisamente la ecuación de Ricatti con coeficientes constantes, que es un tipo particular de EDO no lineal.
+
+% Calculemos las derivadas sucesivas de la función $z(x)$:
+% $$
+% \begin{array}{rcl}
+% z'(x) &= & -\frac{v^2}{2} z(x) B(x)\\
+% z''(x) & = & -\frac{v^2}{2} z(x) \left( B'(x)-\frac{v^2}{2} B(x)^2\right)
+% \end{array}
+% $$
+
+% Notemos que de ellas se derivan fácilmente las identidades
+% \begin{equation}
+% \label{HCIdentidades}
+% \begin{array}{rcl}
+% B(x) & = & -\frac{2}{v^2} \frac{z'(x)}{z(x)}\\
+% B'(x)-\frac{v^2}{2} B(x)^2  & = & -\frac{2}{v^2} \frac{z''(x)}{z(x)}
+% \end{array}
+% \end{equation}
+% y, en consecuencia, la ecuación diferencial lineal de segundo orden asociada a la original:
+% $$
+% \left. 
+% \begin{array}{rcl}
+% z''(x)+a z'(x)-\frac{v^2}{2}z(x) & = & 0\\
+% z(0) & = & 1\\
+% z'(0) & = & 0
+% \end{array}\right\}
+% $$ 
+% La solución de este problema de condiciones iniciales es:
+% \begin{equation}
+% \label{HCSolution}
+% z(x)=\frac{1}{2\gamma}e^{-\frac{1}{2}a x}\left[(\gamma+a)e^{\frac{1}{2}\gamma x}+(\gamma-a)e^{-\frac{1}{2}\gamma x}\right]
+% \end{equation}
+% donde se ha introducido la constante $\gamma^2=a^2+2v^2$.
+% Si se calcula la función derivada $z'(x)$:
+% \begin{equation}
+% \label{HCDiffSolution}
+% z'(x)=\frac{1}{4\gamma}(\gamma^2-a^2) e^{-\frac{1}{2}a x}\left(e^{\frac{1}{2}\gamma x}-e^{-\frac{1}{2}\gamma x}\right)
+% \end{equation}
+% con lo que, si se construye el cociente de las expresiones (\ref{HCDiffSolution}) y (\ref{HCSolution}) se obtiene,
+% $$
+% \frac{z'(x)}{z(x)}=\frac{\gamma^2-a^2}{2}\frac{e^{\frac{1}{2}\gamma x}-e^{-\frac{1}{2}\gamma x}}{(\gamma+a)e^{\frac{1}{2}\gamma x}+(\gamma-a)e^{-\frac{1}{2}\gamma x}}=\frac{\gamma^2-a^2}{2}\frac{e^{\gamma x}-1}{(\gamma+a)e^{\gamma x}+\underbrace{(\gamma-a)}_{2\gamma-(\gamma+a)}}
+% $$
+% Teniendo en cuenta que $v^2=\frac{\gamma^2-a^2}{2}$, se llega a la expresión conveniente:
+% \begin{equation}
+% \frac{z'(x)}{z(x)}=v^2 \frac{e^{\gamma x}-1}{(\gamma+a)(e^{\gamma x}-1)+2\gamma}
+% \end{equation}
+% Por otro lado, la primera de las identidades deducidas en (\ref{HCIdentidades}), implica
+% $$
+% B(x)=-\frac{2(e^{\gamma x}-1)}{(\gamma+a)(e^{\gamma x}-1)+2\gamma}
+% $$
+% y recordando la definición $x=T-t$, la prueba concluye.
+% \end{demo}
+% \begin{propos}[La Parametrización de Musiela]
+% Bajo la medida martingala Q, la dinámica {\sl forward} viene determinada por 
+% \begin{equation}
+% \label{Musiela}
+% \begin{array}{rcl}
+% dr(t,x) &= & \left\{ \frac{\partial}{\partial x}r(t,x)+\sum_{j=1}^q\sigma_m^{(j)}(t,x)\int_0^x \sigma_m^{(j)} (t,u) du\right\} dt +\sum_{j=1}^q \sigma_m^{(j)} (t,x) dW_j(t)\\
+% r(0,x)&=&\overline{r}(0,x)
+% \end{array}
+% \end{equation}
+% donde se ha introducido la definición $\sigma_m(t,x):=\sigma(t,t+x)$.
+% \end{propos}
+% \begin{demo}\newline
+% \vskip 0.025cm
+% \noindent
+% {\bf Paso 1:}\\
+% El entorno HJM y la definición $r(t):=f(t,t)$, proporcionan la siguiente representación integral\footnote{Considérese notación matricial para la generalización al caso de $q$-factores.} del proceso del tipo instantáneo:
+% $$
+% r(t)=f(0,t)+\int_0^t \alpha(s,t) ds+\int_0^t \sigma(s,t) dW(s)
+% $$
+% Aplicando el resultado (\ref{Fubini}) de la demostración del Teorema A.2, el cual se fundamenta en el teorema de Fubini en sus versiones estocástica y determinista, a través de las identificaciones oportunas se tiene:
+% \begin{equation}
+% \label{Fubini2}
+% \begin{split}
+% r(t) & = R(0)+\int_0^t \partial_z f(0,z) dz+\int_0^t \alpha(z,z) dz+\int_0^t \sigma(z,z) dW(z)+\\
+%       &  + \int_0^t  \left( \int_0^u \partial_u \alpha(z,u) dz+\int_0^u \partial_u \sigma(z,u) dz \right) du
+% \end{split}
+% \end{equation}
+
+% Recuérdese, por otro lado, que
+% $$
+% f(t,T)=f(0,T)+\int_0^t \alpha(z,T) ds+\int_0^t \sigma(z,T) dW(s)
+% $$
+% Fíjese $T=t=u$. En consecuencia, tomando derivadas parciales sobre segundos argumentos en la anterior expresión, se deduce:
+% $$
+% \partial_2 f(u,u)-\partial_u f(0,u)=\int_0^u \partial_u \alpha(z,u) dz+\int_0^u \partial_u \sigma(z,u) dW(z)
+% $$
+% donde el operador $\partial_2$ indica la derivada parcial sobre el segundo argumento.
+% Sustituyendo en (\ref{Fubini2}), se obtiene
+% \begin{equation}
+% \label{MusielaPre1}
+% r(t)=R(0)+\int_0^t \left(\alpha(z,z)+\partial_2 f(s,s)\right) ds+\int_0^t \sigma(s,s) dW(s)
+% \end{equation}
+% {\bf Paso 2:} Tómese un $x\geq 0$ arbitrario y considérese la reparametrización
+% $$
+% r(t,x):= f(t,t+x)
+% $$
+% así como las definiciones:
+% $$
+% \begin{array}{rcl}
+% \hat{f}(t,T) & := & f(t,T+x)\\
+% \hat{\alpha}(z,T) & := & \alpha(z,T+x)\\
+% \hat{\sigma}(z,T) & := & \sigma(z,T+x)
+% \end{array}
+% $$
+% Nótese que $r(t,x)=\hat{f}(t,t):=\hat{R}(t)$. La expresión (\ref{MusielaPre1}) da una ecuación integral análoga para $\hat{R}(t)$, haciendo las sustituciones obvias.
+% \begin{equation}
+% \label{MusielaPre2}
+% \hat{R}(t)=\hat{R}(0)+\int_0^t \left(\hat{\alpha}(z,z)+\partial_2 \hat{f}(s,s)\right) ds+\int_0^t \hat{\sigma}(s,s) dW(s)
+% \end{equation}
+% De las definiciones hechas, se desprende, por tanto,
+% \begin{equation}
+% \label{MusielaAlt}
+% \begin{split}
+% r(t,x) & =r(0,x)+\int_0^t \left(\alpha(s,s+x)+\partial_x r(s,x)\right) ds\quad+\\
+%          & + \int_0^t \sigma(s,s+x) dW(s)
+% \end{split}
+% \end{equation}
+% Si se introduce $\sigma_m(t,x):=\sigma(t,t+x)$, obsérvese que 
+% \begin{equation}
+% \begin{split}
+% \alpha(s,s+x) & = \sigma(s,s+x)\int_s^{s+x} \sigma(t,z) dz=\\
+%                      & = \sigma_m(s,x)\int_0^{x} \sigma_m(t,z) dz := \alpha_m(s,x)-\partial_x r(s,x)
+% \end{split}
+% \end{equation}
+% Combinando estas últimas redefiniciones con la ecuación (\ref{MusielaAlt}) se deduce la diferencial (formal) dada en (\ref{Musiela}).
+% \end{demo}
+% \newpage
+% \section{El Enfoque Alternativo de Filipovic (opcional)}  
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \newpage
+% \begin{thebibliography}{}
+
+% \bibitem[Anderson y Sleath, 1999]{AS:1999}
+% {\sc Anderson, N., \& J. Sleath (1999).} New Estimates of the UK Real
+% and Nominal Yield Curves, \emph{Bank of England Quaterly Bulletin}.
+
+% \bibitem[Angelini y Herzel, 2002]{AH:2002}
+% {\sc Angelini, F., \& S. Herzel (2002).} Consistent Initial Curves
+% for Interest Rate Models, \emph{Journal of Derivatives} 9(4), 8--18.
+
+% \bibitem[Angelini y Herzel, 2005]{AH:2005}
+% {\sc Angelini, F., \& S. Herzel (2005).} Consistent Calibration of
+% HJM Models to Cap Implied Volatilities, \emph{Journal of Future Markets} (forthcoming).
+
+% \bibitem[Björk, 2003]{B:2003}
+% {\sc Björk, T. (2003).} On the Geometry of Interest Rate Models, en:
+% Carmona, R.A., Cinlar, E., Ekeland, I., Jouini, E., Scheinkman, J.A., Touzi, N.,
+% \emph{Paris-Princeton Lectures on Mathematical Finance 2003}, Lecture Notes in
+% Mathematics, 1847, Springer-Verlag.  
+
+% \bibitem[Björk, 2001]{B:2001}
+% {\sc Björk, T. (2001).} A Geometric View of Interest Rate Theory, en:
+% Jouini, E., Cvitanic, J. \&  M. Musiela, \emph{Option Pricing, Interest
+% Rates and Risk Management}, Cambridge University Press.  
+
+% \bibitem[Björk, 1998]{B:1998}
+% {\sc Björk, T. (1998).} \emph{Arbitrage Theory in Continuous Time},
+% Oxford University Press.   
+
+% \bibitem[Björk, 1997]{B:1997}
+% {\sc Björk, T. (1997).} Interest Rate Theory, en: Runggaldire, W.,
+% \emph{Financial Mathematics}, Lecture Notes in Mathematics, 1656,
+% Springer-Verlag. 
+
+% \bibitem[Björk y Christensen, 1999]{BC:1999}
+% {\sc Björk, T., \& B.J. Christensen (1999).} Interest Rate Dynamics
+% and Consistent Forward Rate Curves, \emph{Mathematical Finance} 9,
+% 323-348.  
+
+% \bibitem[Björk y Landen, 2002]{BL:2002}
+% {\sc Björk, T., \& C. Landen (2002).} On the construction of finite
+% dimensional realizations for nonlinear forward rate models,
+% \emph{Finance and Stochastics} 6(3), 303-331. 
+
+% \bibitem[Björk y Sevensson, 2001]{BS:2001}
+% {\sc Björk, T., \& L. Svensson (2001).} On the existence of finite
+% dimensional realizations for nonlinear forward rate models,
+% \emph{Mathematical Finance} 11(2), 205-243. 
+
+% \bibitem[Black y Karasinski, 1991]{BK:1991}
+%   {\sc Black, F., \& P. Karasinski (1991).} Bond and Option Pricing when
+% Short Rates are Lognormal, \emph{Financial Analysts Journal} 4, 52-59.
+%   127--155.  
+
+% \bibitem[Bühler et al., 1999]{BUWW:1999}
+% {\sc Bühler, M., Uhrig-Homburg M., Walter U. \& T. Weber (1999)} An
+% Empirical Comparison of Forward Rate and Spot Rate Models for Valuing
+% Interest Rate Options, \emph{The Journal of Finance} 54, 269--305.
+
+% \bibitem[Buraschi y Corielli, 2005]{BCo:2005}
+% {\sc Buraschi, A., \& F. Corielli (2005).} Risk Management
+% Implications of Time-Inconsistency: Model Updating and Recalibration
+% of No-Arbitrage Models. \emph{Journal of Banking \& Finance}
+% (forthcoming).
+
+% \bibitem[Chiarella y Kwon, 2001]{CK:2001}
+% {\sc Chiarella, C., \& O.K. Kwon (2001).} Formulation of Popular
+% Interest Rate Models under the HJM Framework, \emph{Asia-Pacific Financial
+% Markets} 8(1), 1--22.
+
+% \bibitem[Da Prato y Zabczyk, 1992]{PZ:1992}
+% {\sc Da Prato, G. \& J. Zabczyk  (1992).} \emph{Stochastic Equations in Infinite
+%   Dimensions.} Cambridge University Press.
+
+% \bibitem[De Rossi, 2004]{R:2004}
+% {\sc De Rossi, G., (2004).} Kalman Filtering of Consistent Forward
+% Rate Curves: a Tool to Estimate and Model Dynamically the Term
+% Structure, \emph{Journal of Empirical Finance} 11,277--308.  
+
+% \bibitem[Díaz y Tolentino, 2003]{DT:2003}
+% {\sc Díaz A. \& M. Tolentino, (2003).} La Constrastación del Modelo de
+% Black-Derman-Toy en el Mercado Español, Working Paper,
+% ICAE-Univ. Complutense de Madrid. 
+
+% \bibitem[Filipovic, 1999a]{Fil:1999a}
+% {\sc Filipovic D., (1999a).} A Note on the Nelson and Siegel
+% Family. \emph{Mathematical Finance} 9(4), 349--359.  
+
+% \bibitem[Filipovic, 1999b]{Fil:1999b}
+% {\sc Filipovic D., (1999b).} Invariant Manifolds for weak solutions of
+% stochastic equations. \emph{Probability Theory and Related Fields}  xxx(x), xxx.
+
+% \bibitem[Filipovic, 2001]{Fil:2001}
+% {\sc Filipovic, D., (2001).} \emph{Consistency Problems for
+% Heath-Jarrow-Morton Interest Rate Models}, Lecture Notes in
+% Mathematics, 1760, Springer-Verlag. 
+
+% \bibitem[Heath et al., 1992]{HJM:1992}
+% {\sc Heath, D., R. Jarrow \& A. Morton (1992).} Bond Pricing and the
+% Term Structure of Interest Rates: A New Methodology for Contingent
+% Claims Valuation, \emph{Econometrica} 60(1), 77--105.  
+
+% \bibitem[Ho y Lee, 1986]{HL:1986}
+% {\sc Ho, T.S.Y, \& S.B. Lee (1986).} Term Structure Movements and the
+% Pricing of Interest Rate Contingent Claims. \emph{Journal of Financial
+%   and Quantitative Analysis} 411011-1029.
+
+% \bibitem[Hull y White, 1990]{HW:1990}
+% {\sc Hull, J., \& White, A., (1990).} Pricing Interest Rate
+% Derivatives Securities. \emph{The Review of Financial Studies}
+% 3(4), 573--592.
+
+% \bibitem[Hull y White, 1993]{HW:1993}
+% {\sc Hull, J., \& White, A., (1993).} Single-factor interest rate
+% models and the valuation of interest rate derivative
+% securities. \emph{Journal of Financial and Quantitative Analysis}
+% 3(4), 573--592. 
+
+% \bibitem[Ikeda y Watanabe, 1981]{IW:1981}
+% {\sc Ikeda, N., \& S. Watanabe (1981).} \emph{Stochastic Differential
+% Equations and Diffusion Processes}, North-Holland.
+
+% \bibitem[Moraleda y Pelsser, 2000]{MP:2000}
+% {\sc Moraleda, J., \& A., Pelsser (2000).} Forward versus Spot
+% Interest-Rate Models of the Term Structure: An Empirical
+% Comparison. \emph{The Journal of Derivatives} 7(3)9--21.    
+
+% \bibitem[Musiela, 1993]{Mu:1993}
+% {\sc Musiela, M., (1993)} Stochastic PDEs and term structure models.
+% Working Paper, J. Intern. Finance,  IGR-AFFI, La Baule.
+
+% \bibitem[Navas, 1999]{Na:1999}
+% {\sc Navas, J.F., (1999).} Consistent versus Non Consistent Term
+% Structure Models: Some Evidence from the Spanish Market, \emph{The
+%   Journal of Fixed Income}, December, 42-60.
+
+% \bibitem[Nelson y Siegel, 1987]{NS:1987}
+% {\sc Nelson C.R. \& A.F. Siegel (1987).} Parsimonius Modeling of
+% Yield Curves. \emph{Journal of Business} 60(4), 473--489.    
+
+% \bibitem[Olver, 1993]{Olv:1993}
+% {\sc  Olver, P. J. (1993).} \emph{Applications of Lie Groups to Differential
+%   Equations.} Springer-Verlag. 
+
+% \bibitem[Vasicek y Fong, 1982]{VF:1982}
+% {\sc Vasicek, O.A. \& H.G. Fong (1982).} Term Structure Modeling
+% using Exponential Splines, \emph{The Journal of Finance} 37, 339--348.   
+
+
+
+% \end{thebibliography}

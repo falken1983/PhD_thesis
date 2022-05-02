@@ -1,0 +1,164 @@
+\newpage
+\chapter{Geometric Interest Rate Theory}
+\section{Setup}
+\setcounter{propos}{5}
+\begin{propos}[The Musiela HJM formulation.] Under the martingale
+  measure $\mathbb{Q}$ the $f$-dynamics are given by
+\begin{equation}
+\label{eqHJMM:2}
+\left\{
+\begin{array}{rcl}
+df(t,x)& = & \left( \frac{\partial f(t,x)}{\partial x}+
+  \widetilde\sigma(t,x)\displaystyle \int_0^x \widetilde\sigma(t,u)^T
+  \,du\right) dt + \widetilde\sigma(t,x)dW (t) \\  
+f(0,x) & = & f^o(0,x).
+\end{array}
+\right.
+\end{equation}
+where $\widetilde \sigma(t,x):=\sigma(t,t+x)$.
+\end{propos}
+\begin{demo}\newline
+\vskip 0.025cm
+\noindent
+{\bf Stage 1:}\\
+Recall the integral representation for the instaneous spot rate given
+by equation (\ref{eqXt})
+$$
+r(t)=F(0,t)+\int_0^t \alpha(s,t) ds+\int_0^t \sigma(s,t) dW(s),
+$$
+and (\ref{Fubini1})
+\begin{equation}
+\label{Fubini2}
+\begin{split}
+r(t) & = r(0)+\int_0^t \partial_z F(0,z) dz+\int_0^t \alpha(z,z)
+dz+\int_0^t \sigma(z,z) dW(z)+\\ 
+      &  + \int_0^t  \left( \int_0^u \partial_u \alpha(z,u)
+        dz+\int_0^u \partial_u \sigma(z,u) dW(z) \right) du 
+\end{split}
+\end{equation}
+
+On the other hand, we have the following integral representation for
+the instantaneous forward rate 
+$$
+F(t,T)=F(0,T)+\int_0^t \alpha(z,T) dz+\int_0^t \sigma(z,T) dW(z)
+$$
+Let us fix $T=t=u$. By taking partial differentials, we have the
+following expression:
+\begin{equation}
+\label{preMusiela}
+\partial_2 F(u,u)-\partial_u F(0,u)=\int_0^u \partial_u \alpha(z,u) dz+\int_0^u \partial_u \sigma(z,u) dW(z),
+\end{equation}
+where the operator $\partial_2$ means partial differentiation with respect
+to the second argument. By substituting into (\ref{Fubini2}), we have
+\begin{equation}
+\label{MusielaPre1im}
+r(t)=r(0)+\int_0^t \left(\alpha(s,s)+\partial_2 F(s,s)\right)
+ds+\int_0^t \sigma(s,s) dW(s), 
+\end{equation}
+where it should be emphasized that $s$ is a ``mute'' variable of the
+same type as $u$ in equation (\ref{preMusiela}).\newline \noindent 
+{\bf Stage 2:} Consider us given an arbitrary $x\geq 0$, the
+parametrization 
+$$
+f(t,x):= F(t,t+x)
+$$
+as well as the definitions
+$$
+\begin{array}{rcl}
+\hat{F}(t,T) & := &F(t,T+x)\\
+\hat{\alpha}(z,T) & := & \alpha(z,T+x)\\
+\hat{\sigma}(z,T) & := & \sigma(z,T+x)
+\end{array}
+$$
+It should also be noted that $f(t,x)=\hat{F}(t,t):=\hat{r}(t)$. Now, from
+equation (\ref{MusielaPre1im}), an analogous integral equation for the
+new redefined spot rate, $\hat{r}(t)$, may be easily inferred: 
+\begin{equation}
+\label{MusielaPrelim2}
+\hat{r}(t)=\hat{r}(0)+\int_0^t \left(\hat{\alpha}(s,s)+\partial_2
+  \hat{F}(s,s)\right) ds+\int_0^t \hat{\sigma}(s,s) dW(s).
+\end{equation}
+Returning to the old variables we have:
+\begin{equation}
+\label{MusielaAlt}
+\begin{split}
+f(t,x) & =f(0,x)+\int_0^t \left(\alpha(s,s+x)+\partial_x f(s,x)\right)
+ds\quad+\\ 
+         & + \int_0^t \sigma(s,s+x) dW(s).
+\end{split}
+\end{equation}
+Let us introduce right now the modified volatility process
+$\widetilde\sigma(t,x):=\sigma(t,t+x)$. Then
+\begin{equation}
+\begin{split}
+\alpha(s,s+x) & = \sigma(s,s+x)\int_s^{s+x} \sigma(t,z) dz=\\
+                     & = \widetilde\sigma(s,x)\int_0^{x}
+                     \widetilde\sigma(t,z) dz :=
+                     \widetilde\alpha(s,x)-\partial_x f(s,x),
+\end{split}
+\end{equation}
+which combined with (\ref{MusielaAlt}), brings us the formal
+differential given in (\ref{eqHJMM:2}). Similar arguments are followed
+by Bj\"ork in \cite{B:1997} or Musiela in \cite{Mu:1993}.
+\end{demo}
+\section{The Invariance Conditions}
+\setcounter{tma}{3}
+\begin{tma}[Consistency Conditions.] The forward curve manifold
+  $\mathcal{G}$ is $f$ invariant for the forward rate process $f(t,x)$
+  in $\mathcal{M}$ iff
+\begin{equation}
+\label{CDCapdx}
+G_x(z, \cdot)+\sigma(t,\cdot) \displaystyle \int_0^\cdot \sigma(t,u)^T
+\; du+\phi(t,\cdot) \in Im \left[G_z(z,\cdot) \right],
+\end{equation}
+\begin{equation}
+\label{CVCapdx}
+\sigma(t,\cdot) \in Im \left[G_z(z,\cdot) \right].
+\end{equation}
+$\forall (t,z) \in \mathbb{R}_+ \times \mathcal{Z}$. Here, $G_z$ and
+$G_x$ denote the Jacobian of $G$ w.r.t. to $z$ and $x$, provided some
+minimal smoothness of the mapping $G$. 
+\end{tma}
+\begin{demo}
+Let us start with the prove of sufficiency. Thus, we assume
+(\ref{CDCapdx})-(\ref{CVCapdx}). We may select $\gamma: \mathbb{R_+} \times
+\mathcal{Z}^d$ and  $\psi: \mathbb{R_+} \times \mathbb{R}^{d\times q}$
+satisfying 
+$$
+\begin{array}{rcl}
+G_x(z,\cdot)+\sigma(t,\cdot)\int_0^\cdot \sigma(t,u)^T\: du
++\phi(t,\cdot)&=&G_z(z, \cdot)\gamma(z,t),\\
+\sigma(t,\cdot)&=& G_z(z, \cdot)\psi(z,t).
+\end{array}
+$$
+$\forall\; (t,z) \in \mathbb{R}_+ \times \mathcal{Z}$. Let
+$y_s(\cdot)\in \mathcal{G}$, thus for some $z^o \in \mathcal{Z}$,
+$y_s(\cdot)=G(z^o, \cdot)$. Define $Z$ as the solution to (\ref{FDR})
+with initial condition $Z(s)=z^o$ and define the infinite-dimensional
+process $y_t(x)$ by the relation $y_t(x)=G(Z(t), x)$. Then
+\begin{equation}
+\begin{array}{rcl}
+dy_t(x) & = & G_z(Z(t),
+x)\gamma(Z(t),t)dt+G_z(Z(t), x)\psi(Z(t),t)\circ dW(t)\\
+& = &  \left( G_x(Z(t),x) + \sigma(t,x)\int_0^x
+  \sigma(t,u)^T\:du+\phi(t,x)\right)\:dt+\sigma(t,x)\circ dW(t)\\
+& = & \left( \frac{\partial}{\partial
+    x}y_t(x)+\sigma(t,x)\int_0^x\sigma(t,u)^T\:
+  du+\phi(t,x)\right)+\sigma(t,x)\circ dW(t).
+\end{array}
+\end{equation}
+Thus, $y$ solves the Fisk-Stratonovich SDE (\ref{GeomHJMStratSimple})
+with drift defined as in (\ref{DriftGeomHJMStratSimple}). 
+
+Now, let us prove necessity. Then, we have to assume
+$f$-invariance. If we take the differential   
+$$
+dy_t(x)=d(G(Z(t),x)=G_z(Z(t),x)\gamma(Z(t),t)\:
+dt+G_z(Z(t),x)\psi(Z(t),t)\circ\: dW(t).
+$$
+Comparing the latter differential with (\ref{GeomHJMMStrat}) and
+equating the drift and volatility coefficients yields
+(\ref{CDCapdx})-(\ref{CVCapdx}) for any $t\geq s$, but with $z=Z(t)$. Since
+time and initial point over the manifold may be chosen arbitrarily,
+(\ref{CDCapdx})-(\ref{CVCapdx}) are general results.
+\end{demo}

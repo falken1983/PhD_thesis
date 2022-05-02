@@ -1,0 +1,1221 @@
+\chapter{Pricing Options with a Consistent HJM Model}
+\section{Introduction}
+One of the main goals of financial mathematics is to determine the
+prices of derivatives. In this chapter we adapt the sophisticated
+machinery  introduced in literature in past years, in order to study
+which pricing methods are available for interest rate derivatives in
+the event that consistent families are used. 
+
+Therefore, we will study the behaviour of some efficient numerical
+implementations of the model introduced in Chapter 5, pricing the most
+liquid and traded derivatives such as vanilla caps as well as
+directly related deals such as bond options and binary caps. However,
+to calculate prices for derivatives when models such as considered in
+Chapter 6 are used, more expensive computational methods like Monte
+Carlo simulation have to be used.
+
+The rest of this chapter is arranged as follows. First, we show in
+Section 7.2 how deterministic methods may be set up in a Hull-White
+economy. How to implement finite difference methods for the Hull-White
+model is explained in Section 7.3. Section 7.4 presents and dicusses the
+computational results reported by the several lattice methods
+aforementioned. Finally, basic Monte Carlo procedures for valuation
+are outlined for the model analyzed in Chapter 6.
+
+\section{Partial Differential Equation of the HW Model}
+We recall the $\mathbb{Q}$-dynamics of the HW model as introduced in
+Sect. 5.1: \begin{equation}
+\label{HWNum}
+dr(t)=\left[ \Phi(t)-a r(t)\right] dt + \sigma dW(t).
+\end{equation}
+
+A method of transforming this stochastic evolution problem into a
+deterministic one is to use the well-known {\sl Feynman-Ka\v{c}} formula. 
+\begin{tma}[Feynman-Ka\v c] The partial differential equation
+$$
+V_t + \frac{1}{2} \sigma(x,t)^2 V_{xx}+ \mu(x,t)V_x - r(x,t) V = 0
+$$
+with boundary conditon $h(x, T)$ has the solution
+$$
+V(x,t)= \mathbb{E}^\mathbb{Q} \left[ e^{-\int_t^T r(X, s) ds} h(X, T)\right],
+$$
+where the expectation is taken with respect to the process $X$ defined
+by
+$$
+dX = \mu(X, t) dt+\sigma(X, t) dW.
+$$
+\end{tma}
+\begin{demo}
+A proof can be found in \cite{O:1998}. 
+\end{demo}
+
+Therefore, under an arbitrage free economy, the value of an interest
+rate derivative security $V$, solves the Partial Differential Equation
+(PDE, for short):
+\begin{equation}
+\left\{
+\begin{array}{rcl}
+V_t+\frac{1}{2} \sigma^2 V_{rr} +\left[ \Phi(t) - a r \right] V_r - rV &
+= &
+0 \\
+V(r, T)& = & h(r).
+\end{array}
+\right.
+\end{equation}
+For instance, for the discount bond value we have 
+$$
+h(r)=1,
+$$ 
+and for the European-style option the corresponding payoff is
+$$
+h(r) = [ \phi (P(T,S)- K)] ^+
+$$
+at option expiry time $T$, $T<S$, where binary unit $\phi = +1$ for
+the call and $\phi = -1$ for the put, as we discussed in Sect. 2.4.
+
+\subsection{Bypassing Forward Induction}
+In a recent work, Daglish \cite{D:2010} provided an extension of the
+Hull and White \cite{HW:1994} approach that allows the use of implicit
+methods by noting that the calculation of Arrow-Debreu prices for
+interest rate securities is analogous to discretize the Forward
+Fokker-Planck equation which describes the future evolution of the
+transition probability densities. This approach substitutes the
+traditional explicit scheme with the superior implicit Crank-Nicolson
+method for approximating the aforementioned equation. 
+
+In this section we show how the HW model we are considering
+can be fitted to the initial term structure analytically which is
+definitively different from both the original algorithm of Hull and
+White and the above mentioned improvement in which the use of the {\sl
+  forward induction} technique stands \cite{J:1991}. Later,
+numerical examples confirm that this approach improves computation
+times and accuracy for derivative pricing whatever the discretization
+method is used, explicit or implicit.
+
+Consider the following transformation of variables
+\begin{eqnarray}
+% \left\{
+\label{indepChange}
+\nonumber
+x & = & r - \Omega(t) \\
+\Omega(t) & := & e^{-a t} \left( r_0 + \int^t_0 e^{a u} \Phi(u) du \right).
+% \right.
+\end{eqnarray}
+Let us note that $\Omega(t)$ is chosen in such a way that $x(0)=0$.
+ The price of any derivative in terms of the new variable can be
+ written as $w(x,x)$. We can immediately infer the following relations
+ between $V$ and $w$ 
+\begin{eqnarray}
+\label{wDerivatives}
+\nonumber
+V(r,t) & \equiv & w(x,t) = w( r- \Omega(t), t) \\
+V_t & = & w_t- \left(-a\Omega(t) + \Phi(t) \right) w_x \\
+\nonumber
+V_r & = & w_x\\
+\nonumber
+V_{rr} & = & w_{xx}
+\end{eqnarray}
+where we have used that
+$$
+\frac{d}{dt} \Omega(t)+a \Omega(t)=\Phi(t)
+$$
+Substituing this identities into (\ref{GralPPDE1}) and using $ r =
+x+\Omega(t)$, the PDE reduces to 
+$$
+w_t+ \frac{1}{2} \sigma^2 w_{xx} - a x w_x + \left(x+\Omega(t) \right)w
+= 0,
+$$
+where the function $\Omega(t)$ may be easily obtained by direct integration
+of (\ref{indepChange}):
+\begin{equation}
+\label{Omega}
+\Omega(t) = F(0,t) + \frac{\sigma^2}{2 a^2} \left( 1-e^{- a t} \right)^2.
+\end{equation}
+From now we show that with an additional transformation of function we
+can make the PDE independent of this function $\Omega(t)$. If we
+define the function $u(x, t)$ as
+\begin{equation}
+\label{udef}
+u(x,t)=e^{\int_t^T \Omega(q) dq} \, w(x,t),
+\end{equation}
+we get the following PDE for $u$
+\begin{equation}
+\label{GralPPDEu}
+u_t+\frac{1}{2} \sigma^2 u_{xx}-a x u_x - x u = 0
+\end{equation}
+and we see that this PDE has no longer coefficients dependent on
+$t$. By solving (\ref{GralPPDEu}) numerically, approximate values
+$U(x,t)$ for the exact solution $u(x,t)$ can be calculated. Recall
+that the price $V(r,t)$ of any interest rate option is recovered from
+$u(x,t)$ via
+\begin{equation}
+\label{Vfromu}
+V(r,t)=e^{-\int_t^T \Omega(q) dq}\, u(r-\Omega(t), t),
+\end{equation}
+where using the analytic formula for $\Omega(t)$ given in
+(\ref{Omega}), the integral of $\Omega$ can be calculated as
+\begin{equation}
+\label{IntOmega}
+\begin{split}
+\int_t^T \Omega(q) dq & = -\left( \log P(0,T) - \log P(0,t) \right) + \\
+ + & \frac{\sigma^2}{2 a^3} \left( a(T-t) - 2 (e^{-at} - e^{-aT} ) +
+  \frac{1}{2} (e^{-2 a t} - e^{-2 a T} ) \right),
+\end{split}
+\end{equation}
+which allows to match the initial discount bond curve by means of a
+consistent family with the model and with no need of {\sl forward
+  induction}.
+\section{Finite-Difference Implementation}
+Let us consider a general form of the homogeneous one-dimensional parabolic
+equation given by:
+\begin{equation}
+\label{GralPPDE1}
+V_t+a(x,t)V_{xx}+b(x,t)V_x+c(x,t) V=0
+\end{equation}
+subject to the final condition
+\begin{equation}
+\label{FBC}
+V(x,T)=g(x).
+\end{equation}
+We approximate the PDE (\ref{GralPPDE1}) in the bounded domain $[ 
+x_{min}, x_{max}] \times [t_{min}, t_{max}]$. Let us define the
+finite difference operator:
+$$
+\mathcal{L}_h V^m_n:=\frac{a^m_n}{h^2} (V^m_{n+1}-2V^m_n +
+V^m_{n-1})+\frac{b^m_n}{2h} (V^m_{n+1}-V^m_{n-1}) + c^m_n V^m_n,
+$$
+where $l=(t_{max}-t_{min})/M$ and $h= (x_{max}-x_{min})/N$.
+Our main goal is to construct an approximation, $\widehat{V}(x,t)$ of the
+true solution $V(x,t)$ by using a weighted finite-difference (FD,
+henceforth) scheme given by   
+\begin{equation}
+\label{gralweightedFD1}
+\frac{\widehat{V}^{m+1}_n-\widehat{V}^m_n}{l}+(1-\nu) \mathcal{L}_h \widehat{V}^{m+1}_n+\nu\mathcal{L}_h \widehat{V}^m_n=0.
+\end{equation}
+As it is well-known, we recall that if:
+\begin{enumerate}
+\item $\nu =0$ we get the explicit finite-difference scheme,
+\item $\nu =\frac{1}{2} $ we get the Crank-Nicolson implicit
+  finite-difference scheme,
+\item $\nu= 1$ we get the fully implicit finite-difference scheme.
+\end{enumerate}
+It may be shown that when $\nu = \frac{1}{2}$ the discretization error
+is $O(h^2, l^2)$ whereas this error is $O(h^2, l)$ otherwise, see for instance
+\cite[Chap. 8, pp. 139--156]{DHW:1995} or \cite[Chap. 2, pp. 39 and
+93]{S:1985}. The implicit methods are also absolutely stable while the
+explicit method has the avoidable disadvantage of certain stability
+conditions as we will see later.
+
+Applying $\mathcal{L}_h$ to the FD equation (\ref{gralweightedFD1}),
+we get 
+\begin{equation}
+\begin{split}
+0 & = \widehat{V}^{m+1}_n-\widehat{V}^m_n + \frac{(1-\nu) l
+  a^{m+1}_n}{h^2}(\widehat{V}^{m+1}_{n+1}-2\widehat{V}^{m+1}_n+\widehat{V}^{m+1}_{n-1})+\\  
+  & +\frac{\nu l a^m_n}{h^2}(\widehat{V}^m_{n+1}-2
+  \widehat{V}^m_n+\widehat{V}^{m}_{n-1})+ 
+  \frac{(1-\nu) l
+    b^{m+1}_n}{2h}(\widehat{V}^{m+1}_{n+1}-\widehat{V}^{m+1}_{n-1}) +
+  \\ 
+& +\frac{\nu l b^{m+1}_n}{2h}(\widehat{V}^m_{n+1}-\widehat{V}^m_{n-1}) + (1-\nu) l
+c^{m+1}_n \widehat{V}^{m+1}_n + \nu l c^m_n \widehat{V}^m_n. 
+\end{split}
+\end{equation}
+Simplifying, we obtain a general form of the weighted scheme
+discretization 
+\begin{equation}
+\label{simpleFD1}
+\begin{split}
+& \left(-\frac{\nu l a^m_n}{h^2}+\frac{\nu l b^m_n}{2h} \right)
+\widehat{V}^m_{n-1}+  
+\left( 1+\frac{2\nu l a^m_n}{h^2} - \nu l c^m_n \right) \widehat{V}^m_n +\left(-\frac{\nu l
+    a^m_n}{h^2}-\frac{\nu l b^m_n}{2h} \right) \widehat{V}^m_{n+1} = \\
+= & \left( \frac{(1-\nu) l a^{m+1}_n}{h^2} - \frac{(1-\nu) l b^{m+1}_n}{2
+    h} \right)\widehat{V}^{m+1}_{n-1}+ \left( 1- \frac{2(1- \nu)l
+    b^{m+1}_n}{h^2} +(1-\nu) l c^{m+1}_n \right) \widehat{V}^{m+1}_n +\\
++ & \left( \frac{(1-\nu) l a^{m+1}_n}{h^2} + \frac{(1-\nu) l b^{m+1}_n}{2h}
+\right) \widehat{V}^{m+1}_{n+1},
+\end{split}
+\end{equation}
+Let us introduce the coefficients:
+\begin{eqnarray}
+\label{gralFDcoef}
+\nonumber 
+A^m_n & = & \frac{l a^m_n}{h^2} - \frac{l b^m_n}{2h }\\
+B^m_n & = & -\frac{2 l a^m_n}{h^2} + l c^m_n, \\
+\nonumber 
+C^m_n & = & \frac{l a^m_n}{h^2} + \frac{l b^m_n}{2 h}.
+\end{eqnarray}
+Substituting these into (\ref{simpleFD1}) we finally arrive to the more
+compact:
+\begin{equation}
+\label{simpleFD2}
+\begin{split}
+& -\nu A^m_n \widehat{V}^m_{n-1}+ \left(1-\nu B^m_n \right)
+\widehat{V}^m_n - \nu C^m_n \widehat{V}^m_{n+1} = \\
+= & (1-\nu) A^{m+1}_n \widehat{V}^{m+1}_{n-1} + \left( 1+ (1-\nu)
+B^{m+1}_n \right) \widehat{V}^{m+1}_n + (1-\nu ) C^{m+1}_n \widehat{V}^{m+1}_{n+1},
+\end{split}
+\end{equation}
+$$
+m = 0, \dots,~M.
+$$
+
+\subsection{A Stable Explicit Scheme}
+% To develop a finite difference method, we need to clarify the grid
+% poAints. Let $N_t$ be int
+Suppose we construct a grid with steps $\Delta x = h$ symmetric along the
+$x$-axis where
+$$
+x_{min} = -x_{max}\; , \qquad \left \lfloor \frac{N}{2} \right \rfloor  =
+\left \lfloor \frac{x_{max} }{h} \right \rfloor
+$$
+and steps $\Delta t = l$ along the $t$-axis. A node $(m,n)$ on the
+grid is a point where: 
+\begin{eqnarray}
+x_n & = & n h, \quad n = -\lfloor N/2 \rfloor, -\lfloor N/2 \rfloor
++1, ..., 0, 1, ..., \lfloor N/2 \rfloor -1, \lfloor N/2 \rfloor\\ 
+t_m & = & m l, \quad m = 0, 1, ..., M.
+\end{eqnarray}
+
+We will next apply the following explicit scheme to the PDE
+(\ref{GralPPDEu}) 
+\begin{equation}
+\label{EFD}
+\begin{split}
+0 & = U^{m+1}_n-U^m_n + \frac{ l
+  a^{m+1}_n}{h^2}(U^{m+1}_{n+1}-2U^{m+1}_n+U^{m+1}_{n-1})+\\  
+  & + \frac{ l b^{m+1}_n}{2h}(U^{m+1}_{n+1}-U^{m+1}_{n-1}) + l c^m_n U^m_n. 
+\end{split}
+\end{equation}
+where we have used the notation $U^m_n$ for an approximation to $u^m_n
+= u(x_n , t_m)$. So we get after solving for $U^m_n$ 
+\begin{equation}
+\label{EFDsolved}
+U^m_n = \frac{1}{1+n h l} \left[ \left(\frac{l \sigma^2}{2 h^2} +
+    \frac{1}{2} a n l\right) U^{m+1}_{n-1} + \left( -
+    \frac{l\sigma^2}{h^2} + 1\right) U^{m+1}_n \left( \frac{l
+      \sigma^2}{2 h^2} - \frac{1}{2} a n l \right)U^{m+1}_{n+1} \right],
+\end{equation}
+where we have used the identities
+\begin{eqnarray}
+\label{idcoef}
+\nonumber
+a^{m+1}_n & := & \frac{1}{2} \sigma^2\\
+b^{m+1}_n & := & -n a h \\ 
+\nonumber
+c^m_n & := & -n h.
+\end{eqnarray}
+By setting $\frac{l \sigma^2}{h^2}=\frac{1}{3}$ the backward recursion 
+(\ref{EFDsolved}) reduces to
+\begin{equation}
+\label{EFDcondensed}
+U^m_n = \frac{1}{1+ nhl } \left( q_d U^{m+1}_{n-1} + q_m U^{m+1}_n +
+  q_u U^{m+1}_{n+1} \right)\, ,
+\end{equation} 
+with 
+\begin{equation}
+\left\{
+\begin{array}{rcl}
+\nonumber
+q_d & := & \frac{1}{6} + \frac{1}{2} a n l \\
+\nonumber
+q_m & := & \frac{2}{3} \\
+\nonumber
+q_u  & := & \frac{1}{6} - \frac{1}{2} a n l\; .
+\end{array}
+\right. 
+\end{equation}
+
+\begin{lema}[Stability Condition.] Let $u$ be the solution of the PDE (\ref{GralPPDEu}) and
+  let $U$ be the solution of (\ref{EFDcondensed}). If $q_i>0$, and
+  provided that $q_u + q_m + q_d = 1$, then 
+$$
+max \; | u^m_n - U^m_n 
+  | \leq A T ( l + h^2 )   
+$$
+for $x_{min} \leq x_n \leq x_{max}$, and $0 \leq t_m \leq T$.
+\end{lema}
+\begin{demo}
+It is a direct consequence of the results stated in \cite[Chap. 2,
+pp. 44--45]{A:1977} and \cite[Chap. 2, pp 45--47]{S:1985} for the
+canonical heat equation and its explicit discretization.
+\end{demo}
+
+For $-\frac{1}{3} \frac{1}{a l} < n < \frac{1}{3} \frac{1}{a l}$, the
+numbers $q_i (n)$ are all positive, satisfying stability condition. In
+order to prevent these quantities from going negative, we cannot use a
+finite difference grid that is arbitrarily large. At some level $\hat{n}
+< \frac{1}{3} {a l} $, we want to express $U^m_{\hat{n}}$ in terms of
+$U^{m+1}_{\hat{n}}$,  $U^{m+1}_{\hat{n}-1}$ and  $U^{m+1}_{\hat{n}-2}$. By doing
+so we avoid using $U^{m+1}_{\hat{n}+1}$ and the grid will remain bounded
+at $\hat{n}$. If use the following approximations of the {\sl spatial}
+partial derivatives 
+\begin{eqnarray}
+\nonumber
+u_{xx} & \approx & \frac{U^{m+1}_{\hat{n}}- 2 U^{m+1}_{\hat{n}-1} +
+  U^{m+1}_{\hat{n}-2}}{h ^2} \\
+u_x & \approx & \frac{3 U^{m+1}_{\hat{n}} - 4 U^{m+1}_{\hat{n}-1} +
+  U^{m+1}_{\hat{n}-2}}{2h}
+\end{eqnarray}
+we can express $U^m_{\hat{n}}$ as
+\begin{equation}
+\label{downEFD}
+U^m_{\hat{n}} = \frac{1}{1+ nhl } \left( \hat{q}_{dd} U^{m+1}_{\hat{n}-2}
+  + \hat{q}_d U^{m+1}_{\hat{n}-1} + \hat{q}_m U^{m+1}_{\hat{n}} \right)\; , 
+\end{equation} 
+with 
+\begin{equation}
+\left\{
+\begin{array}{rcl}
+\nonumber
+\hat{q}_{dd} & := & \frac{1}{6} - \frac{1}{2} a \hat{n} l \\
+\nonumber
+\hat{q}_d & := & - \frac{1}{3} + 2 a \hat{n} l \\
+\nonumber
+\hat{q}_m  & := & \frac{7}{6} - \frac{3}{2} a \hat{n} l\; .
+\end{array}
+\right. 
+\end{equation}
+These coefficients are all positive for $\frac{1}{6} \frac{1}{a l} <
+\hat{n} < \frac{1}{3} \frac{1}{a l}$. 
+
+\begin{figure}[h!] 
+\centering
+\caption{Downward Branching}
+\begin{picture}(100,100)(-50,-10)
+\unitlength=2mm
+\branchlabels mdd
+\root(0,10)          0.
+\tbranchdown2{$(m,\hat{n})$}        0:1,2,3.
+\leaf{}{$(m+1,\hat{n})$}1.
+\leaf{}{$(m+1,\hat{n}-1)$}2.
+\leaf{}{$(m+1,\hat{n}-2)$}3.
+\end{picture}
+\end{figure}
+
+We can analogously proceed for
+bounding the grid from below imposing a level $\check{n} >
+-\frac{1}{3} \frac{1}{ a l }$. At $\check{n}$ we get
+\begin{equation}
+\label{upFD}
+U^m_{\check{n}} = \frac{1}{1+ nhl } \left( \check{q}_{uu} U^{m+1}_{\check{n}+2}
+  + \check{q}_u U^{m+1}_{\check{n}+1} + \check{q}_m U^{m+1}_{\check{n}} \right)\; , 
+\end{equation} 
+with quantities:
+\begin{equation}
+\left\{
+\begin{array}{rcl}
+\nonumber
+\check{q}_{uu} & := & \frac{1}{6} + \frac{1}{2} a \check{n} l \\
+\nonumber
+\check{q}_u & := & - \frac{1}{3} - 2 a \check{n} l \\
+\nonumber
+\check{q}_m  & := & \frac{7}{6} + \frac{3}{2} a \check{n} l\; .
+\end{array}
+\right. 
+\end{equation}
+which ara all positive for $-\frac{1}{3} \frac{1}{a l} < \check{n} <
+-\frac{1}{6} \frac{1}{a l}$.
+
+\begin{figure}[h!] 
+\centering
+\caption{Upward Branching}
+\begin{picture}(100,100)(-50,30)
+\unitlength=2mm
+\branchlabels duu
+\root(0,10)          0.
+\tbranchup2{$(m,\hat{n})$}        0:1,2,3.
+\leaf{}{$(m+1,\hat{n}+2)$}1.
+\leaf{}{$(m+1,\hat{n}+1)$}2.
+\leaf{}{$(m+1,\hat{n})$}3.
+\end{picture}
+\end{figure}
+
+Let us note that from the definition (\ref{udef}) for exact solutions,
+we may infer the identical relation for the approximants
+\begin{equation}
+\label{UtoW}
+U^m_n \equiv U(x_n , t_m ) = e^{\int_{t_m}^T \Omega(q) dq}\, W^m_n
+\end{equation}
+which allows us to rewrite the differencing scheme as
+$$
+W^m_n = \displaystyle \frac{ e^{-\int^{(m+1)l}_{ml} \Omega(q) dq} }{1+ nhl } \left(
+  q_d W^{m+1}_{n-1} + q_m W^{m+1}_n + 
+  q_u W^{m+1}_{n+1} \right)\, .
+$$
+Note that for every $m$, the integral expression can be calculated
+analitically by adapting (\ref{IntOmega}) to the grid
+\begin{equation}
+\label{discIntOmega}
+\begin{split}
+\int_{m l}^{(m+1) l} \Omega(q) dq & = -\left( \log P_{m+1}(0) - \log P_{m}(0) \right) + \\
+ + & \frac{\sigma^2}{2 a^3} \left( a l - 2 ( 1 - e^{-al} )e^{-a m l} +
+  \frac{1}{2} (1 - e^{-2 a l} ) e^{-2 a m l} \right), \\
+ & m = 0, 1, \dots, M-1.
+\end{split}
+\end{equation}
+We also note that the quantities 
+$$
+\log P_0(0)= 0,\, \log P_1(0),\, \dots,\, \log P_M(0)
+$$
+may be computed by means of consistent calibration, deeply analyzed
+in previous chapters. With the results provided by the joint
+calibration for the parameters $\boldsymbol{\hat{p}}$ and
+$\hat{z}(\boldsymbol{\hat{p}})$  from a set of instrument observations 
+$[P^o_1 \,\dots\, P^o_{M'}]$ and 
+$[\, C^o_1 \,\dots\, C^o_{N'} \,]$, we recall that
+$$
+\log P_m(0)= -\int^{x_m}_0 G(z(\boldsymbol{\hat{p}}), \boldsymbol{\hat{p}}, q) dq =
+\sum^{n_p}_{j=1} M_{mj} ( \boldsymbol{\hat{p}}) \hat{z}_j.
+$$
+It is also important to point out that for every node point $(m,n)$
+the approximate price $\widehat{V}^m_n$ of any derivative is
+equivalent to $W^m_n$ by construction. 
+
+The finite difference method outlined below can be implemented as
+follows. For a derivative with maturity $T$, and a given number of
+steps $M$ we may calculate the step-sizes as $l = T/M$ and $ h =
+\sigma \sqrt{3 l} $. Then, we set $ \hat{N} = \lceil \frac{1}{6 a l}
+\rceil$ which is the first integer value on the right of the lowest
+bound of $\hat{n}$ for which central and downward branching produce
+positive coefficients in the backward recursions (\ref{EFDcondensed})
+and (\ref{downEFD}). Therefore, reasoning by symmetry, making $\hat{n}
+= -\check{n} = \hat{N}$ we can bound the grid without making this
+explicit scheme unstable.   
+\begin{figure}[h!] 
+\centering
+\caption{An example of stable explicit grid for $x$ with $ l= 10 a = 1$.} 
+\begin{picture}(100,150)(60,-10)
+\unitlength=2mm
+\branchlabels    \,\,\,
+\root(0,10)          0.
+\tbranch2{$(m, n)$}        0:1,2,3.
+  \tbranch2{$(m+1,n+1)$}      1:4,5,6.
+    \tbranchdown2{$(\hat{N},\hat{N})$}      4:4a,4b,4c.
+       \leaf{}{}           4a.
+       \leaf{}{}           4b.
+       \leaf{}{}           4c.
+    \tbranch2{}           5:5a,5b,5c.
+       \leaf{}{}           5a.
+       \leaf{}{}           5b.
+       \leaf{}{}           5c.
+    \tbranch2{}         6:6a,6b,6c.
+       \leaf{}{}           6a.
+       \leaf{}{}           6b.
+       \leaf{}{}           6c.
+  \tbranch2{}         2:7,8,9.
+    \tbranch2{}           7:7a,7b,7c.
+       \leaf{}{}           7a.
+       \leaf{}{}           7b.
+       \leaf{}{}           7c.
+    \tbranch2{}           8:8a,8b,8c.
+       \leaf{}{}           8a.
+       \leaf{}{}           8b.
+       \leaf{}{}           8c.
+    \tbranch2{}           9:9a,9b,9c.
+       \leaf{}{}           9a.
+       \leaf{}{}           9b.
+       \leaf{}{}           9c.
+  \tbranch2{}        3:10,11,12.
+    \tbranch2{}        10:10a,10b,10c.
+       \leaf{}{}           10a.
+       \leaf{}{}           10b.
+       \leaf{}{}           10c.
+    \tbranch2{}        11:11a,11b,11c.
+       \leaf{}{}           11a.
+       \leaf{}{}           11b.
+       \leaf{}{}           11c.
+    \tbranchup2{$(\hat{N},-\hat{N})$}        12:12a,12b,12c.
+       \leaf{}{}           12a.
+       \leaf{}{}           12b.
+       \leaf{}{}           12c.
+\end{picture}
+\begin{flushleft} For $m = 0,
+  \dots, \hat{N}$ we may set up a normal branching with coefficients
+  $q_u$, $q_m$, $q_d$. For $m = \hat{N}+1,\dots, \dots, M$ we build a
+  bounded scheme at $ n = \hat{N}$ and $ n = -\hat{N}$.
+\end{flushleft}
+\end{figure}
+
+We remark that
+$$
+W^M_n = h(x_n, Ml)
+$$
+for $ n = -\hat{N}, \dots, 0 , \dots, \hat{N}$ are the known payoff
+values which allow to start the backward recursion. Finally, we recall
+that due to the fact that the grid is bounded additional {\sl spatial}
+boundary conditions are no needed. 
+\subsection{A Crank-Nicolson   Scheme} From now, we apply the 
+Crank-Nicolson implicit scheme to the PDE 
+(\ref{GralPPDEu}). In this case, introducing the following ratios
+$$
+\varrho_1 = \frac{l}{h^2}, \; \varrho_2 = \frac{l}{h}
+$$
+and particularizing $\nu$ to $\frac{1}{2}$ the general weighted scheme
+(\ref{simpleFD2}) may be written as 
+\begin{equation}
+\label{CNsimpleFDu}
+% \begin{split}
+% &
+ -\alpha_n U^m_{n-1}+ \left(1-\beta_n \right)
+U^m_n - \gamma_n U^m_{n+1} = % \\
+% = & 
+\alpha_n U^{m+1}_{n-1} + \left( 1+ \beta_n \right)
+U^{m+1}_n + \gamma_n U^{m+1}_{n+1},
+% \end{split}
+\end{equation}
+where
+\begin{equation}
+\left\{
+\begin{array}{rcl}
+\label{CNFDcoef}
+\nonumber 
+\alpha_n & = \frac{1}{2} A^m_n =  & \frac{1}{4} \sigma^2\varrho_1 +
+\frac{1}{4} n a h \varrho_2 \, ,\\  
+\beta_n   & = \frac{1}{2} B^m_n =  & -\frac{1}{2} \sigma^2 \varrho_1 -
+\frac{1}{2} n h l \, ,\\
+\nonumber 
+\gamma_n & = \frac{1}{2} C^m_n = & \frac{1}{4} \sigma^2 \varrho_1 -
+\frac{1}{4} n a h \varrho_2\, .  
+\end{array}
+\right.
+\end{equation}
+In this case, we consider again a symmetric {\sl spatial} domain
+$[-x_{max},x_{max}]$ where the grid points $(m,n)$ are defined as
+\begin{equation}
+\begin{array}{rclrcl}
+x_n & = & -x_{max} + n h,  &n & = & 0, 1, \dots, N\\ 
+t_m & = & m l,  & m &= &0, 1, \dots, M.
+\end{array}
+\end{equation}
+being $h = 2 x_{max} / N$ and $l = T / M$. As suggested by Cairns
+\cite{C:2004} and Daglish \cite{D:2010} we fix $x_{max}$ to
+$5\frac{\sigma}{2 a}$ and impose as well homogeneous Dirichlet
+boundary conditions 
+\begin{equation}
+u(x_{max} , t_m) = u(x_{min} , t_m) = 0 \, \quad m=0,1, \dots, M.
+\end{equation}
+Therefore, we recall that
+$$
+U^m_0 = u^m_0 = 0,\; U^m_N = u^m_N = 0, \; U^M_n = h(x_n , Ml)
+$$
+for $m = 0,1, \dots , M$ and $n = 0, 1, \dots, N$ are known values. 
+
+In order to clarify how to compute the approximate values for the
+solution at the grid points, taking the above mentioned conditions
+into account, we may break down the difference equation
+(\ref{CNsimpleFDu}) as follows
+% in matrix form: 
+\begin{equation}
+\left\{
+\begin{array}{rcl}
+n = 0 & \to & U^m_0  =  0 \\
+n = 1 & \to & (1-\beta_1 ) U^m_1 - \gamma_1 U^m_2  =  (1+\beta_1 ) U^m_1+\gamma_1 U^m_2 \\
+n = 2, \dots, N-2 & &  \textrm{Eqn.}\; (\ref{CNsimpleFDu})  \\
+n = N-1 & \to & -\alpha_{N-1} U^m_{N-2} + (1-\beta_{N-1} ) U^m_{N-1}  = 
+\alpha_{N-1} U^m_{N-2} + (1+\beta_{N-1} ) U^m_{N-1} \\ 
+n = N & \to & U^m_N = 0
+\end{array}
+\right.
+\end{equation}
+Written in matrix form the above problem we have the linear system:
+\begin{equation}
+\label{CNmatrix}
+D_1 \boldsymbol{U}^m = D_2 \boldsymbol{U}^{m+1}
+\end{equation}
+where 
+\begin{equation}
+  \nonumber
+D_1 =\left[\begin{array}{cccccc}
+1-\beta_1 & -\gamma_1 &  &  &  & \\
+-\alpha_2 & 1- \beta_2 & -\gamma_2 & & & \\
+& -\alpha_3 & 1- \beta_3 & -\gamma_3 & & \\
+& & \ddots & \ddots & \ddots & \\
+& & & -\alpha_{N-2} & 1-\beta_{N-2} & -\gamma_{N-2} \\
+& & & & -\alpha_{N-1} & 1- \beta_{N-1} 
+\end{array}\right],
+\end{equation}
+
+\begin{equation}
+\nonumber
+D_2 =\left[\begin{array}{cccccc}
+1+\beta_1 & \gamma_1 &  &  &  & \\
+\alpha_2 & 1+ \beta_2 & \gamma_2 & & & \\
+& \alpha_3 & 1+ \beta_3 & \gamma_3 & & \\
+& & \ddots & \ddots & \ddots & \\
+& & & \alpha_{N-2} & 1+\beta_{N-2} & \gamma_{N-2} \\
+& & & & \alpha_{N-1} & 1+ \beta_{N-1} 
+\end{array}\right], 
+\end{equation}
+are nearly tridiagonal and
+\begin{equation}
+\nonumber
+\boldsymbol{U}^m = \left[ U^m_1 \, U^m_2 \, \dots \, U^m_{N-1} \right]^T.
+\end{equation}
+Thus, provided we exactly know the terminal condition 
+$$
+\boldsymbol{U}^M =
+\boldsymbol{u}^M = \boldsymbol{h}(Ml) = [\, h(x_1 , Ml)  \,
+ \dots \, h(x_{N-1}, Ml) \,]^T
+$$ 
+we are able to solve this difference equation obtaining the matrix
+$$
+\boldsymbol{U} = \left[ \boldsymbol{U}^0 \, \boldsymbol{U}^1 \, \dots
+  \, \boldsymbol{U}^M \right]  \, ,
+$$
+which represents the approximate solution to the matrix 
+$$
+\boldsymbol{u} = \left[ \boldsymbol{u}^0 \, \boldsymbol{u}^1 \, \dots
+  \, \boldsymbol{u}^M \right] \, .
+$$
+Finally, note that if we apply the relation (\ref{UtoW}) that links
+the approximants $\boldsymbol{U}^m$ and $\boldsymbol{W}^m$ next we may
+to construct the following two-level difference equation: 
+\begin{equation}
+\label{CNmatrixW}
+\begin{array}{rcll}
+ D_1 \boldsymbol{W}^m & = & D_2 \boldsymbol{Z}^{m+1} & m = 0, 1,
+ \dots, M-1\\
+ \boldsymbol{W}^M & = & \boldsymbol{w}^M \, , & 
+\end{array}
+\end{equation}
+where $ \boldsymbol{Z}^m = e^{-\int^{(m+1)l}_{ml} \Omega(q)
+  dq}\boldsymbol{W}^m $ is known at any time stage on the above 
+backward recursion formula and $\boldsymbol{w}^M = \boldsymbol{h}(Ml)$. 
+
+\section{Numerical Examples}
+The explicit finite difference (EFD henceforth) and the implicit
+Crank-Nicolson (CN for short) are different from the trinomial tree
+approach  of Hull and White \cite{HW:1994} (HWT hereafter), as we have
+analyzed in the previous sections. 
+
+Due to the fact that with the HWT algorithm {\sl forward induction} is
+needed, this method is slower than the EFD algorithm even if we use
+the Arrow-Debreu prices for partially avoiding backward recursion as
+we suggested in \cite[Chap. 2, pp. 23]{N:2003} for vanilla
+European-style bond options.  
+\begin{figure}[h!]
+\caption{Discrete data for initial discount bond estimation. All rates
+  are expressed with continuous compounding. \label{zeroes}}
+\begin{center}
+\begin{tabular}{r|ccccccc}
+\hline\hline
+{\sc Maturity, $x$} & 0.083 & 0.25 & 1 & 2 & 3 & 4\\
+{\sc Zero Rate, $R^o(x)$} & 3.46\% & 3.54\% & 4.02\% & 4.51\%
+& 4.79\% & 4.98\% \\ 
+\hline
+{\sc Maturity, $x$}& 5& 6& 7& 8& 9 & 10\\
+{\sc Zero Rate, $R^o(x)$}  &  5.13\% & 5.24\% & 5.35\% & 5.44\%
+& 5.51\% & 5.56\%\\ 
+\hline
+\end{tabular}
+\end{center}
+\end{figure}
+\subsection*{Bond Options}
+As first examples, we consider the pricing of a two-year and
+three-year vanilla put options, written on a five-year discount
+bond. We assume parameters $a = 0.1$ and $\sigma = 0.01$, which are of
+similar order of magnitude of the ones observed on the markets. In our
+analysis we also use the discount curve given in the table on Figure
+\ref{zeroes} which is estimated by means of the lowest dimensional
+consistent family with the model introduced in (\ref{MCF}) as the MIN
+family. For finite-difference EFD and CN methods, both option
+prices are computed on the same grid. The bond price at time $t = S
+=Ml$ is subject to the well-known condition $P^M_n = 1$. The option
+price at time $ t = T = M'l$, with $M' < M$,  is subject to the
+following condition  
+\begin{equation}
+\label{OptPayoff}
+W^{M'}_n = (K - P^{M'}_n)^+.
+\end{equation}
+We do not used closed-form formulas for the bond price. Therefore we,
+first of all, compute de bond price starting recursion form $t = S$ up
+to $ t =T $. Then we apply the final condition for the option
+price. The latter means to replace the bond values with option values
+computed by (\ref{OptPayoff}) on the same grid $(m,n)$. Then we
+compute option prices using the grid up to $t = 0$.
+
+For the trinomial tree approach HWT, we tried to price faster
+European-style options by using elementary Arrow-Debreu prices 
+$Q^{M'}_n$, evaluated at the options' maturity following
+\cite[Sect. 2.2.4, pp. 22--23]{N:2003}. By means of {\sl forward
+  induction} and restricting the backward recursion to just computing
+the bond grid values at time stages $ m = M' , \dots, M-1$ we
+partially avoid the need of a full {\sl forward-then-backward} methodology. 
+
+With regard to European-style options, the table on Figure
+\ref{Puts} and Figure \ref{EuropeanPuts} confirms that both EFD and CN
+algorithms are superior than HWT approach in terms of accuracy. We
+note that CN algorithm converge very 
+fast due that the Crank-Nicolson method is second order accuracy in
+time. Convergence to within two decimals of the price in basispoints
+is reached with $l\approx 0.01$. On the other hand, the EFD converges 
+slightly faster than the HWT algorithm, but the difference is not very
+large. 
+
+\begin{figure}[h!]
+\caption{Prices (in basispoints of the notional) for put options on 5yr
+  discount bond.\label{Puts}} 
+\begin{center}
+\begin{tabular}{|c|c|lll|lll|}
+\hline\hline
+\multicolumn{2}{|c|}{} & \multicolumn{3}{|c|}{European-style} &
+\multicolumn{3}{|c|}{American-style} \\
+\hline
+Mat. / Strike & $l$ & EFD & CN & HWT & EFD & CN & HWT  \\
+\hline 
+& 0.50 & 0.44 & 1.07& 1.34& 18.3& 78.6 & 18.4 \\
+& 0.40 & 1.07 & 1.69& 2.11& 27.5& 78.6 & 27.6 \\
+& 0.25 & 0.75 & 1.10& 1.19& 45.3& 86.0 & 45.5 \\
+& 0.20 & 0.94 & 1.08& 1.32& 53.7& 85.5 & 53.8 \\
+$T=2yr$ & 0.10 & 0.91 & 1.04& 1.08& 72.4& 86.7 & 72.5 \\
+$K=0.78$& 0.05 & 1.00 & 1.04& 1.09& 82.9& 89.8 & 83.0 \\
+& 0.04 & 1.00 & 1.04& 1.06& 85.0& 90.4 & 85.0 \\
+& 0.025 & 1.03 & 1.04& 1.07& 87.8& 91.2 & 87.8 \\
+& 0.02 & 1.03 & 1.04& 1.06& 88.6& 91.5 & 88.6 \\
+& 0.01 & 1.04 & 1.04& 1.05& 90.2& 92.0 & 90.2 \\
+\hline 
+& Exact & \multicolumn{3}{|c|}{1.04} & \multicolumn{3}{|c|}{} \\
+\hline
+& 0.50 &  4.14& 5.01& 5.82&647&779  &648 \\
+& 0.40 &  2.79& 2.89& 3.69&680&779  &680\\
+& 0.25 &  4.84& 4.79& 5.65&716&779  &717 \\
+& 0.20 &  4.12& 4.84& 4.73&729&779  &730  \\
+$T=3yr$& 0.10 &  4.73& 4.83& 5.04&755&779  &755  \\
+$K=0.85$& 0.05 &  4.67& 4.82& 4.82&767&779  &767  \\
+& 0.04 &  4.80& 4.82& 4.92&769&779  &769\\
+& 0.025&  4.83& 4.82& 4.90&773&779  &773 \\
+& 0.02 &  4.83& 4.82& 4.89&774&779  &774 \\
+& 0.01 &  4.82& 4.82& 4.85&776&779  &776\\
+\hline 
+& Exact & \multicolumn{3}{|c|}{4.82} & \multicolumn{3}{|c|}{} \\
+\hline
+\end{tabular}
+\end{center}
+
+Note: We recall that HWT refers to the Hull-White trinomial tree, and
+  EFD and CN to the stable explicit and the Crank-Nicolson
+  implicit algorithms, respectively. For the HWT and EFD method, we assume
+  $h=\sigma \sqrt{3 l}$ as in \cite{HW:1994}. For the Crank-Nicolson
+  method we set $h= \sigma \sqrt{2} l$ with boundaries at $\pm 5
+  \frac{\sigma}{2 a}$ following \cite{C:2004} and  \cite{D:2010}.  
+
+\end{figure}
+As concern to time consumption performance, we report in the table on
+Figure \ref{TimePuts} the calculation times needed for the three
+algorithms. We see that the EFD algorithm is by far faster than the HWT
+algorithm. The CN method is slower than both of them due to its more
+matricial nature and because we use a LU tridiagonal solver to solve the
+system. However, we remark that for achieving similar accuracies on
+European-style valuation, the Crank-Nicolson may be even the fastest
+method with less consumption of time for the involved calculations.
+\begin{figure}[h!]
+\centering
+\caption{Relative pricing errors of vanilla 2yr put on 5yr discount
+  bond.\label{EuropeanPuts}}
+\begin{tikzpicture}
+\begin{loglogaxis}[
+legend style={ at={ (0.03, 0.97) }, anchor=north west},
+xlabel=$l$, 
+ylabel={$\varepsilon_r$}
+]
+\addplot table [x={step}, y={eEFD}] {BondOption25HWCh7.dat};
+\addplot table [x={step}, y={eCN}] {BondOption25HWCh7.dat};
+\addplot table [x={step}, y={eHWT}] {BondOption25HWCh7.dat};
+\legend{EFD, CN, HWT}
+\end{loglogaxis}
+\end{tikzpicture}
+\end{figure}
+
+\begin{figure}[h!]
+\caption{Calculation times in milliseconds, running MATLAB on an Intel
+  Core 2 Duo P8600 @ 2.39GHz computer for a $2yr$ option on a $5yr$
+  discount bond, with $a=0.1$ and $\sigma=0.01$.\label{TimePuts}} 
+\begin{center}
+\begin{tabular}{|c|rrr|rrr|}
+\hline\hline
+& \multicolumn{3}{|c|}{European-style} &
+\multicolumn{3}{|c|}{American-style} \\ 
+\hline
+$l$ & EFD & CN & HWT & EFD & CN & HWT  \\
+\hline 
+ 0.50 & 0.6 & 2.1 & 1.2  &0.97&  2.2 & 1.7 \\
+ 0.40 & 0.5 & 1.9 & 1.5  &0.67&  2.5 & 1.8 \\
+ 0.25 & 0.6 & 2.5 & 2.8  &0.86&  2.9 & 2.7 \\
+ 0.20 & 0.7 & 3.1 & 2.4  &0.98&  3.7 & 3.2 \\
+ 0.10 & 1.2 & 12.5& 5.1  &1.82&  17.7& 6.6 \\
+ 0.05 & 2.6 & 79.7& 11.0 &4.22&  104 & 13.6 \\
+ 0.04 & 3.4 & 406 & 14.1 &4.82&  401 & 17.4 \\
+ 0.025& 5.8 & 1246& 28.4 &8.86&  1731& 31.5 \\
+ 0.02 & 10.8& 2558& 36.5 &10.8&  3367& 48.1 \\
+ 0.01 & 22.3& 9117& 106.2&40.2& 33366& 142 \\
+\hline
+\end{tabular}
+\end{center}
+\end{figure}
+
+While pricing a vanilla European bond option by finite differences is
+certainly instructive in order to give an insight of which numerical
+method may be more efficient, it is not very practical in the real
+market situations because we are equipped with well-known closed-form
+solutions for the HW model. Therefore, we may apply these schemes to
+American options, for which exact formulas are not available. To avoid
+arbitrage, the option value at each point in the grid $(m,n)$ cannot
+be less than the intrinsic value (the immediate payoff if the option
+is exercised). For instance, for a vanilla American-style put on a
+discount bond, this means
+$$
+w(x,t) \geq  ( K - P(T,S) )^+, \quad t< T.
+$$
+From a strictly practical point of view, taking this condition into
+account is not very difficult. After computing $W^m_n$, we should
+check for the possibility of early exercise, and set
+$$
+W^m_n = {\rm max}( W^m_n , K - P^m_n).
+$$
+Therefore, if we want to price American-style options, we need to
+construct the full grid containing the bond prices, $P^m_n$, and the
+separate grid with option prices, $W^m_n$. 
+
+Due to accuracy issues, we might prefer adopting a Crank-Nicolson
+scheme. We remark that in such a case for each time layer $m$ we have
+the scheme (\ref{CNmatrixW}) and we may equally compute the chance of
+early excercise after the calculation of the vector $\boldsymbol{W}^m$ 
+$$
+\boldsymbol{W}^m = {\rm max}( \boldsymbol{W}^m, K-\boldsymbol{P}^m),
+$$
+allowing the implementation of this method with a LU direct solver. 
+
+We report in the table on Figure \ref{Puts} the results for all three
+methods. The results for the CN method are the best in terms of the speed
+of convergence and compatible with the numerical approximations
+reported by commercial black boxes such as DerivaGem or FINCAD. As can
+be seen, the results for the EFD and HWT are slightly similar with
+less time consumption for the stable explicit method (Figure
+\ref{TimePuts}).
+
+\subsection*{Interest Rate Caps}
+Earlier in this work we have shown how the value of a vanilla cap can
+be expressed as a portfolio of puts on discount bonds. 
+
+As is explained in Sect. 3.2, the price of such a cap contract with
+strike K and resettlement dates $x_0, \dots, x_{n-1}$ may be
+determined wih the following representation for the stream of payoffs 
+\begin{equation}
+h_{\gamma_j}(x_{j-1})=(1+\tau K) \left(\kappa-P_j(x_{j-1})\right)^+
+\quad j=1, \dots, n
+\end{equation}
+where $\kappa = (1+\tau K)^{-1}$. Therefore, the numerical problem
+reduces to the valuation of the corresponding portfolio of these
+European-style bond options which we have discussed in detail above.
+
+A {\sl digital cap} is an instrument that has the same characteristics
+as a vanilla cap, except that the payoff is a fixed amount paid if the
+final floating rate is above the strike. Therefore, the payoff of any
+digital $j$-caplet which composes it can be represented as
+\begin{equation}
+\label{binPayoff}
+h_{\delta_j} (x_j) = \mathbbm{1}_{\{L_j(x_{j-1})-K>0 \}} \qquad j=1,\dots,n
+\end{equation}
+if we take as unitary the notional amount. For instance, typical
+Chicago Board of Trade binary options on the target US federal funds
+rate take as notional the amount of \$1000.   
+
+By following similar algebraic manipulations as we have used in
+Sect. 3.2 for the payoff of a vanilla we may numerically compute the
+price of a digital cap by considering that the sequence of
+payoffs at times $ x_0, \dots, x_{n-1}$,
+\begin{equation}
+h_{\delta_j} (x_{j-1}) = P_j(x_{j-1}) \mathbbm{1}_{ \{ P_j(x_{j-1}) -
+  \kappa <0 \} } \qquad j=1,\dots,n, 
+\end{equation}
+is equivalent to (\ref{binPayoff}). We remark that now, $\kappa$ is
+$(1+\tau K)^{-1}$ once again.
+
+As next examples, we analyze the pricing of a five-year and ten-year
+vanilla and digital caps, with semi-annual tenor. We assume the same
+parameters for the HW model, $a=0.1$ and $\sigma=0.01$, as we have
+used in the case of bond options. Moreover, we employ as well the MIN
+family to estimate the zero rate curve from the discrete data reported
+by table on Figure 7.4. In the Appendix C we derive closed-form
+formulas for the digital caps under the assumptions of Gaussian
+Heath-Jarrow-Morton models.
+\begin{figure}[h!]
+\caption{Prices of vanilla/digital European-style caps with
+  semi-annual tenor. \label{Caps}} 
+\begin{center}
+\begin{tabular}{|c|c|lll|lll|}
+\hline\hline
+\multicolumn{2}{|c|}{} & \multicolumn{3}{|c|}{Vanilla} &
+\multicolumn{3}{|c|}{Digital} \\
+\hline
+Mat. / Strike & $l$ & EFD (\%) & CN (\%) & HWT (\%) & EFD & CN & HWT  \\
+\hline 
+& 0.50  & 5.64& 5.50& 43.6& 7.59 &7.46& 7.49 \\
+& 0.25  & 5.55& 5.50& 10.7& 7.07 &7.61& 7.03 \\
+$T=10yr$& 0.1   & 5.52& 5.50& 5.56& 7.67 &7.41& 7.65 \\
+& 0.05  & 5.51& 5.50& 5.52& 7.39 &7.45& 7.39 \\
+$K=5.5\%$& 0.025 & 5.51& 5.50& 5.51& 7.42 &7.47& 7.41 \\
+& 0.02  & 5.50& 5.50& 5.51& 7.49 &7.47& 7.49 \\
+& 0.01  & 5.50& 5.50& 5.50& 7.48 &7.46& 7.48 \\
+\hline 
+& Exact & \multicolumn{3}{|c|}{5.50} & \multicolumn{3}{|c|}{7.46} \\
+\hline
+& 0.50 &3.11&3.16&41.1& 4.33&4.47&4.20 \\
+& 0.25 &3.14&3.16&8.34&4.67&4.50&4.62 \\
+$T=5yr$& 0.1  &3.16&3.16&3.20&4.63&4.51&4.63 \\
+& 0.05 &3.16&3.16&3.17&4.69&4.51&4.68 \\
+$K=5\%$& 0.025&3.16&3.16&3.17&4.52&4.53&4.52 \\
+& 0.02 &3.16&3.16&3.17&4.53&4.52&4.53 \\
+& 0.01 &3.16&3.16&3.16&4.51&4.52&4.51 \\
+\hline 
+& Exact & \multicolumn{3}{|c|}{3.16} & \multicolumn{3}{|c|}{4.52} \\
+\hline 
+\end{tabular}
+\end{center}
+\begin{flushleft}
+The numerical approximations for vanilla caps are expressed in percent
+of the notional amount whereas the approximants for digital caps are
+presented in unitary terms. Exact valuation for binary options is
+worked out in Appendix C.
+\end{flushleft}
+\end{figure}
+
+From table on the Figure \ref{Caps} and Figure \ref{EuropeanCaps} we
+see first that even with the stable explicit procedure described in
+this work, we already get vanilla cap prices accurate to within one
+basispoint taking time-steps close to the month ($l \approx 0.1$). Also
+we see that the vanilla numerical approximations converge much more
+quickly to the theoretical prices than the corresponding digital
+approximants, maybe a direct consequence of the severe non-smooth
+nature of the stream of payoffs which determine the value of these
+binary options. \begin{figure}[h!]
+\centering
+\caption{Relative valuation errors of 10yr vanilla/digital caps with semi-annual
+  tenor.\label{EuropeanCaps}} 
+\begin{minipage}[l]{7cm}
+\begin{tikzpicture}
+\begin{loglogaxis}[
+legend style={ at={ (0.03, 0.97) }, anchor=north west},
+ylabel={$\varepsilon_r$},
+width=7cm,
+height=7cm,
+ymin=0.5e-6,
+ylabel style={font=\large}
+]
+\addplot table [x={step}, y={eEFD}] {EURCap10HWCh7.dat};
+\addplot table [x={step}, y={eCN}] {EURCap10HWCh7.dat};
+\addplot table [x={step}, y={eHWT}] {EURCap10HWCh7.dat};
+\legend{ EFD, CN, HWT }
+\end{loglogaxis}
+\end{tikzpicture}
+\end{minipage}
+\begin{minipage}[r]{7cm}
+\begin{tikzpicture}
+\begin{loglogaxis}[
+width=7cm,
+height=7cm,
+ymin=0.5e-6,
+yticklabel pos=right
+]
+\addplot table [x={step}, y={eEFD}] {DigiCap10HWCh7.dat};
+\addplot table [x={step}, y={eCN}] {DigiCap10HWCh7.dat};
+\addplot table [x={step}, y={eHWT}] {DigiCap10HWCh7.dat};
+\end{loglogaxis}
+\end{tikzpicture}
+\end{minipage}
+\end{figure}
+
+We note that in both cases, digital or plain vanilla, the implicit
+Crank-Nicolson scheme converges faster than the other procedures
+considered.  
+
+\section{Monte Carlo Simulation for Consistent HJM Models}
+As we have discussed above with the finite difference methods, we are
+typically in front of a derivative pricing problem where we cannot
+evaluate analytically the fundamental arbitrage-free
+equation 
+\begin{eqnarray}
+\nonumber
+V(h,0) & = & \mathbb{E}^\mathbb{Q} \left[ D(0,T) h(T) \right] =\\
+& = & \mathbb{E}^\mathbb{Q} \left[ \exp \left( - \int_0^T
+    r(u)\: du \right) h(T) \right].
+\end{eqnarray}
+whether we combine or not it with the Feynman-Ka\v c formula in order
+to produce the corresponding valuation PDE. 
+
+The lattice methods described in the previous sections assumed that
+there was a short-rate realization for the HJM model under
+consideration. When the HJM model considered is not associated to a
+low dimensional markovian system being the implied short-rate process
+$r$, one of the state variables, lattice-based computing times
+increase very significantly and could even be impossible to
+implement. Then, Monte Carlo methods offer an effective and popular
+alternative to lattice methods. 
+
+\subsection{Basic Monte Carlo}
+If we recover the one-factor HJM model considered in Chapter 6
+\begin{equation}
+\label{HVHJM}
+dF(t,T)=\{ \dots \}\,dt+ \left( \alpha + \beta (T-t) \right) e^{-a (T-t)}\,dW(t),
+\end{equation}
+we notice, in fact, that the spot rate process $r$ is not Markovian
+since does not belong to the Ritchken and Sankarasubramanian class
+\cite{RS:1992}. 
+
+Even though the short-rate process is not Markovian, there may yet
+exist a higher-dimensional Markov process having the short rate as one
+of its components. At this point, we remark that the volatility
+function $\sigma(t,T)$ of the model (\ref{HVHJM}) can be expressed as
+a sum of separable into time and maturity dependent factors
+\begin{eqnarray}
+\nonumber
+\sigma(t,T) & = & e^{a t} \left( (\alpha + \beta T) e^{-a T} \right)  -
+t e^{a t} \left( \beta e^{-a T} \right)   = \\ 
+&= &\sum_{i=1}^2 \varsigma_i(t) \varrho_i(T) .
+\end{eqnarray}
+Therefore as is shown by \cite[Propos. 1, pp. 4]{Ch:1996} is this case
+we need $\frac{2}{2} (2+3)$ state variables to determine the forward
+rate via a suitable markovian system where two of the state variables
+are stochastic and describe the non-Markovian nature of the short rate
+process. Thus, assuming we know an analytically treatable relation
+between these stochastic variables and the spot rate process, we
+finally conclude that, at best, two dimensions and time lattice-based
+schemes are needed in order to approximate derivative
+prices. Consequently a brief analysis of simulation techniques have
+full sense for this kind of HJM model.
+
+From now, let us take as an example the model the one-factor humped
+volatility model we have analyzed in previous chapter. We remark that
+the following discussion may be easily extended for any HJM model. As
+we shown in (\ref{eq:HVMCexp}) we know how the forward curve produced by
+the model evolves. In particular, note that the expression 
+\begin{equation}
+\label{eq:SRevol}
+r(t) \equiv f_t(0) = f^o(t)+ g_1(t) + h_1(t)+\alpha  Z_1(t) + \left(
+  \beta -a \alpha \right)  Z_2(t),
+\end{equation}
+describes how the spot rate evolves in time. We will assume, without
+loss of generality, that, as before, we want to evaluate the price at
+time $0$ of a security $V$ with maturity in time $T$.
+
+Let us consider the following procedure:
+\begin{enumerate}
+\item Discretize the period $[0,T]$ into $M$ intervals of equal length
+  $l = T/M$ and define $t_m = m l$.
+\item For $S$ simulations denoted by $\omega$, simulate $M$
+  i.i.d. standard normal random variables $\xi (t_m) \sim
+  \mathcal{N}(0,1)$ for $m=1, \dots, M$. Note that the vector SDE
+  (\ref{eq:HVFactor}) is linear in the narrow sense \cite{KP:1999},
+  with explicit solution
+\begin{equation}
+\label{stochInt}
+Z_t=\Phi_t\int^t_0 \Phi^{-1}_sb\:dW_s,
+\end{equation}
+where 
+$$
+\Phi_t=e^{A t}=e^{-a t}\left[\begin{array}{rr}
+1+a t & -a^2 t \\
+t & 1-a t
+\end{array}\right].
+$$
+ Therefore, both $Z_{1,2}$-variables are centered Gaussian variables.
+\item Calculate the simulated path $\omega$ of $r(t,\cdot)$ as
+  follows; for $m=1, \dots, M$ let
+\begin{equation}
+\label{SRevolution}
+r(t_m, \omega) = f^o(t_m)+ g_1(t_m) + h_1(t_m)+\alpha  \sqrt{v_{1,m}}
+\xi (t_m, \omega) + \left( \beta -a \alpha \right)  \sqrt{v_{2,m}}
+\xi (t_m, \omega)  
+\end{equation}
+where deterministic quantities
+\begin{eqnarray}
+\nonumber
+v_{1,m} &= & \frac{5}{4a} \left( 1-\exp(-2at_m) \right)-\left( \frac{3}{2}t_m
++\frac{1}{2} at_m^2 \right) \exp(-2at_m),\; {\rm and;}\\
+\nonumber
+v_{2,m} & = & \frac{1}{4 a^3} \left(1-\exp(-2at_m) \right)- \left( \frac{1}{2a^2} t_m+
+  \frac{1}{2 a} t_m^2 \right) \exp(-2at_m),
+\end{eqnarray}
+are derived from {\sl It\^o isometry} property of the stochastic
+integral (\ref{stochInt}).
+\item Evaluate $V(T,\omega) \equiv V(T, r(t_m, \omega))$ for
+  simulation $\omega$. 
+\item Evaluate the random discounted value of the derivative payoff
+\begin{equation}
+\label{randomvar}
+X(\omega) = \exp \left( -\sum_{m=0}^{M-1} r(t_m, \omega) l \right)
+V(T, \omega).
+\end{equation}
+\item Conclude with the calculation of the mean value 
+$$
+\bar{X} = \frac{1}{S} \sum_{\omega \in \Omega} X(\omega).
+$$
+which is our Monte Carlo estimate of the price.
+\end{enumerate}
+We point out that, by construction, this simulation procedure
+naturally makes suitable the use of initial consistent families
+$f^o(\cdot)$ with the model. 
+As an instructional example, we consider the pricing of a one-year
+European-style option on a three-year discount bond.
+
+For evaluating the payoff 
+$$
+V (T, \omega) \equiv (K - P_T(x, \omega))^+
+$$
+we use the same strategy outlined in Sect. 6.3 under the Musiela
+parameterization. In this case, we have to pay our attention in just
+the two-year point, and we directly compute it by simulating forward
+curves $f_T(x,\omega)$ up to $T$-time --one-year forward in this
+example. Then we have to integrate them over time-to-maturity up to
+$x$-point in order to determine each simulated realization $P_1(2,
+\omega)$ of the discount bond composing the payoff.  
+
+We assume the model parameters $\alpha = 0.0075$, $\beta = 0.005$ and
+$a = 0.15$. We employ the HMC family as initial family $f^o(\cdot)$
+for the Monte Carlo runs
+(\ref{eq:HVMCexp})--(\ref{SRevolution}). Finally, we also remark that
+this consistent estimation is again carried out from the discrete data
+reported by table on Figure 7.4. 
+
+From table on Figure \ref{MCPut} we see that this procedure gives rise
+to two types of error: simulation error and discretization
+error. First, the numer of sample paths, $S$, is finite. In fact, this means
+that $\bar{X}$ is a random variable. Second, the discretization of the
+period $[0, T]$ result in one more error: the approximation of the
+Riemann integral with non-smooth integrand 
+$$
+\int_0^T r(u,\omega) \; du,
+$$
+by the sum in (\ref{randomvar}). We see that both errors can be
+reduced to a limited extent by increasing the number of simulations
+and reducing the step size $l$. We must be very careful here. We are
+showing a particular and basic {\sl implementation} of simulation
+approach, and could be certainly improved by reworking the simulation
+based on (\ref{eq:HVMCexp})--(\ref{SRevolution}) dynamics in a more
+efficient way or by enhancing the elementary discretization scheme we
+have used to approximate the integral expression which involves
+discounting. 
+\begin{figure}[h!]
+\caption{Prices (in percent of the notional) for a 1yr put option on
+  3yr discount bond.\label{MCPut}} 
+\begin{center}
+\begin{tabular}{|c|lll|lll|}
+\hline\hline
+& \multicolumn{3}{|c|}{MC Estimator} &
+\multicolumn{3}{|c|}{MC Standard Error} \\
+\hline
+$S\; /\; l$ & 0.1 & 0.05 & 0.01 & 0.1 & 0.05 & 0.01 \\
+\hline 
+  100 & 1.974&    2.252&    2.478&    0.18&    0.17&    0.17\\
+ 1000 & 2.332&    2.321&    2.315&    0.06&    0.06&    0.06\\
+10000 & 2.347&    2.333&    2.346&    0.018&   0.018&  0.018\\
+100000& 2.334&    2.337&    2.330&    0.006&   0.006&  0.006\\
+\hline
+Exact & \multicolumn{3}{|c|}{2.377} & \multicolumn{3}{|c|}{} \\
+\hline 
+\end{tabular}
+\end{center}
+\end{figure}
+\newpage\mbox{}\thispagestyle{empty}

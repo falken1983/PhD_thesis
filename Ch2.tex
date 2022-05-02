@@ -1,0 +1,488 @@
+%
+\chapter{Forward Rate Models}
+In the nineties, Heath, Jarrow and Morton (henceforth HJM)
+\cite{HJM:1992} proposed a new framework for modeling the entire
+forward curve directly.
+\section{The Heath-Jarrow-Morton Framework}   
+The stochastic setup is as shown at the end of the Sect. 1.1.3. We
+consider that there exists a unique equivalent martingale
+measure $\mathbb{Q}$, associated to the money-market
+account. Therefore, the $T$-bond market is complete and there are no 
+arbitrage strategies. Let $W$ be a $q$-dimensional $\mathbb{Q}$-Wiener
+process. 
+
+We assume that we are given an $\mathbb{R}$-valued and
+$\mathbb{R}^q$-valued stochastic process $\alpha=\alpha(\omega, t, T)$ 
+and $\sigma=[~\sigma_1(\omega,t,T)~\dots~\sigma_q(\omega,t,T)~]$,
+respectively, with $\alpha(\cdot,T)$ and $\sigma(\cdot,T)$
+$\mathcal{F}_T$-adapted processes. We also assume that for $0\leq
+t<T<\infty$, the forward rate $F(\cdot,T)$ has a stochastic
+differential which under $\mathbb{Q}$ is given by
+\begin{equation}
+\label{eqHJM:1}
+\left\{
+\begin{array}{rcl}
+dF(t,T)& = & \alpha(t,T) dt + \displaystyle \sum_{j=1}^q
+\sigma_j(t,T)dW_j (t) \\ 
+F(0,T) & = & F^o(0,T).
+\end{array}
+\right.
+\end{equation}
+
+Note that conceptually equation (\ref{eqHJM:1}) is one stochastic
+differential in the $t$-variable for every choice of $T$. Also note 
+that we use the observed forward rate curve $T \mapsto F^o(0,T)$ as
+the initial condition. This will automatically give us a perfect fit
+between observed and theoretical $T$-bond prices at $t=0$, thus
+relieving us of the task of inverting the term structure of discount
+bonds. 
+
+% \subsection{Absence of Arbitrage}
+Suppose now that we have specified $\alpha$, $\sigma$ and $\{
+F^o(0,T);~T\geq 0\}$. Then we have specified the entire forward rate
+structure and thus, by the relation  
+\begin{equation}
+\label{eqP}
+P(t,T)=e^{-Z(t,T)}
+\end{equation}
+where
+\begin{equation}
+\label{eqZ}
+Z(t,T)=\int_t^T F(t,s) ds
+\end{equation}
+we have in fact specified the entire term structure of discount bonds
+$$
+\{P(t,T);~T\geq 0,~0\leq t\leq T\}.
+$$ 
+We now show how bond price dynamics are induced by a given
+specification of the forward rate dynamics. By using It\^o Lemma in 
+(\ref{eqP}), we have  
+\begin{equation}
+\label{eqdP:1}
+dP(t,T)=-P(t,T) dZ(t,T)+\frac{1}{2} P(t,T) \left( dZ(t,T)\right)^2,
+\end{equation}
+and it remains to compute $dZ(t,T)$. We have
+$$
+dZ(t,T)=d \left( \int_t^T F(t,s) ds\right)
+$$
+and this is a situation that is not covered by the standard It\^o
+formula. Let us guess the answer.
+\begin{propos}
+Consider for $s \in [t_0, T]$ the It\^o process defined by 
+\begin{equation}
+dF(t,s) =  \alpha(t,s) dt + \sum_{j=1}^q \sigma_j(t,s)dW_j (t) 
+\end{equation}
+with $ t \in [t_0,s]$. Then, the dynamics for the stochastic process
+(\ref{eqZ}) is
+\begin{equation}
+\label{eqdZ}
+dZ(t,T)=\left[\left(\int_t^T \alpha(t,s) ds\right) - F(t,t) \right] dt
++ \sum_{j=1}^q \int_t^T \sigma_j(t,s) ds~dW_j (t).
+\end{equation}
+\end{propos} 
+\begin{demo} 
+See Appendix A.
+\end{demo}
+
+Therefore, by substituting in equation (\ref{eqdP:1}) 
+\begin{equation}
+\begin{array}{ccl}
+dP(t,T) & = &
+P(t,T) \left\{ \left[
+    r(t)-\int_t^T\alpha(t,s)+\frac{1}{2} \sum_{j=1}^q\left(\int_t^T
+      \sigma_j(t,s) ds \right)^2 \right] dt \right.\\
+& - & \left. \sum^q_{j=1}\left(\int_t^T \sigma_j (t,s) ds\right)dW_j(t)\right\}
+\end{array}
+\end{equation}
+which may be summarized as the the following:
+\begin{corol}
+The $\mathbb{Q}$-dynamics for the $T$-bond price, $P(t,T)$, follows
+the stochastic differential equation
+\begin{equation}
+\label{eqdP:2}
+dP(t,T)= P(t,T)
+\left[\left( r(t)+A(t,T)+\frac{1}{2}\|S(t,T)\|^2 \right) dt +
+  S(t,T) dW(t)\right], 
+\end{equation}
+where $\|\cdot\|$ denotes the Euclidean norm, and
+\begin{equation}
+\nonumber
+\begin{array}{rcl}
+A(t,T) & := & -\int_t^T\alpha(t,s)\:ds \\
+S_j(t,T) & := & -\int_t^T \sigma_j(t,s)\:ds,
+\end{array}
+\end{equation}
+and we have used the matrix notations
+$$
+\begin{array}{rcllll}
+S(t,T) & = & [~S_1(t,T) & S_2(t,T) & \dots & S_q(t,T)~]\\
+W(t) & = & [~W_1(t) & W_2(t) & \dots & W_q(t)~]^T.
+\end{array}
+$$
+\end{corol}
+\subsection{Absence of Arbitrage}
+\begin{tma}[HJM Drift Condition] Assume that the family of forward
+  rates is given by (\ref{eqHJM:1}) and that the induced bond market
+  is arbitrage free. Under the martingale measure $\mathbb{Q}$, the
+  process $\alpha$ and $\sigma$ must satisfy the following relation,
+  for every $t$ and every $T\geq t$. 
+\begin{equation}
+\label{eqDrifCond}
+\alpha(t,T)=\sigma(t,T) \int_t^T \sigma(t,s)^T\: ds.
+\end{equation}
+\end{tma}
+\begin{demo}
+Since we are modeling the market under the equivalent martingale
+measure, $\mathbb{Q}$, the discounted $T$-bond price
+$\widetilde{P}(t,T)$ have to be a local $\mathbb{Q}$-martingale
+satisfying the following differential:
+$$
+d\widetilde{P}(t,T)=\widetilde{P}(t,T) S(t,T) dW(t)
+$$
+We now look for the corresponding differential of the ordinary
+discount bond price, $P(t,T)=B(t)\widetilde{P}(t,T)$. From the It\^o
+Lemma we know that
+\begin{equation}
+\label{BondRiskNeutral}
+dP(t,T)= P(t,T) \left(r(t) dt + S(t,T) dW(t)\right),
+\end{equation}
+in other words, as $\mathbb{Q}$ is a martingale measure with the money
+account $B$ as numeraire, the local rate of return of every asset
+price under $\mathbb{Q}$ equals the short rate. We thus have
+$$
+A(t,T)+\frac{1}{2}\| S(t,T) \|^2=0.
+$$
+Taking the $T$-derivative of this equation gives us the relation
+(\ref{eqDrifCond})
+\end{demo}
+\section{From HJM to Short-Rate Models}
+What is the interplay between the short-rate dynamics and the present
+HJM framework? Let us consider the simplest one-dimensional HJM model:
+a constant $\sigma(t,T)\equiv \sigma>0$. Then, we have under the
+risk-neutral measure $\mathbb{Q}$
+$$
+dF(t,T)=\sigma^2(T-t)dt + \sigma dW(t),
+$$
+which implies by direct integration
+$$
+F(t,T)=F(0,T)+\frac{\sigma^2}{2}T^2 + \sigma W(T).
+$$
+Hence for the short rates we obtain
+$$
+r(t)=F(t,t)=F(0,t)+\frac{\sigma^2}{2}t^2+\sigma W(t),
+$$
+and taking the differentials
+$$
+dr(t)=(\partial_t F(0,t)+\sigma^2 t)dt +\sigma dW(t).
+$$
+The observant reader may identify it with the Ho and Lee model
+\cite{HL:1986}. The main inputs into the HJM framework are the forward
+rate volatility processes $\sigma_j(t,T)$, and as we have shown the Ho
+and Lee model is a special case of the general 1-factor HJM framework,
+corresponding to a particular choice of the volatility
+process. However, it has remained unclear whether other short-rate
+models could be derived within the HJM framework, and whether there
+exists a systematic approach for generating the short-rate models. In
+general, we have the following:\begin{propos}
+ Suppose that $F(0,T)$, $\alpha(t,T)$ and $\sigma(t,T)$ are
+ differentiable in $T$ with $\int_0^T |\partial_u
+ F(0,u)|\;du<\infty$.
+
+Then the short-rate process is an It\^o process of the form
+\begin{equation}
+\label{SRMHJM}
+dr(t)=\zeta(t) dt+\sigma(t,t) dW(t),
+\end{equation}
+where
+\begin{equation}
+\label{driftSRMHJM}
+\zeta(t)=\alpha(t,t)+\partial_t F(0,t)+\int_0^t \partial_t
+\alpha(s,t)\: ds+\int_0^t \partial_t \sigma(s,t)dW(s)
+\end{equation}
+\end{propos}
+\begin{demo}
+See Appendix A.
+\end{demo}
+\begin{rmk}
+For every forward rate model, the arbitrage free price of a derivative
+security, with $T$-payoff $h(T)$, will still be given by the general
+pricing formula
+$$
+V(h,t)=\mathbb{E}^\mathbb{Q}\left[e^{-\int_t^T r(u)\:du} h(T)
+  \big|\mathcal{F}_t\right], 
+$$
+where the short-rate as usual is given by $r(t)=F(t,t)$. 
+\end{rmk}
+\section{Forward Measures}
+Equation (\ref{eq:FundEqAssetPricing}) shows to calculate the
+arbitrage free price $V(t)$, of a derivative security. The value
+calculated must, of course, be independent of the choice of
+numeraire. Consider two numeraires $M$ and $N$ with martingale
+measures $\mathbb{Q}^M$ and $\mathbb{Q}^N$. Combining the result
+(\ref{eq:FundEqAssetPricing}) applied to both numeraires yields 
+$$
+M(t)\mathbb{E}^M\left[\frac{h(T)}{M(T)}
+  \Big|\mathcal{F}_t\right]=N(t)\mathbb{E}^N\left[\frac{h(T)}{N(T)}
+  \Big|\mathcal{F}_t\right] 
+$$
+This expression can be rewritten as
+\begin{equation}
+\label{eqChangeOfNumeraire:1}
+\mathbb{E}^M\left[g(T) \Big|\mathcal{F}_t\right]=\mathbb{E}^N\left[
+g(T)\frac{M(T)/M(t)}{N(T)/N(t)} \Big|\mathcal{F}_t\right]  
+\end{equation}
+where $g(T)=h(T)/M(T)$. Since, $h$, $M$ and $N$ are general, this
+result holds for all random payoffs $g$ and all numeraires $M$ and
+$N$.
+
+We have now derived a way to express the expectation $g(T)$ under the
+measure $\mathbb{Q}^M$ in terms of an expectation under the measure
+$\mathbb{Q}^N$.
+\begin{tma}[Change of Numeraire]
+Let $\mathbb{Q}^M$ be the equivalent martingale measure with respect
+to the numeraire $M(t)$. Let $\mathbb{Q}^N$ be the equivalent
+martingale measure with respect to the numeraire $N(t)$. The
+Radon-Nikodym derivative that changes the equivalent martingale
+measure $\mathbb{Q}^M$ into $\mathbb{Q}^N$ is given by
+$$
+\lambda(t)=\frac{d\mathbb{Q}^M}{d\mathbb{Q}^N}=\frac{M(T)/M(t)}{N(T)/N(t)}.
+$$
+\end{tma}
+The \emph{Change of Numeraire Theorem} is very powerful in the context of
+pricing interest rate derivatives. Instead of using the value of the
+money-market account $B(t)$ as a numeraire, the prices of $T$-bonds
+can also be used as a numeraire. A very convenient choice is to use
+the discount bond with maturity $T$ as a numeraire for derivatives
+which have a payoff $h(T)$ at time $T$. Assume, on the other hand,
+that the probability measure $\mathbb{Q}^T$ associated to the
+numeraire $P(t,T)$ actually exists. Hence, we can apply the
+\emph{Change of Numeraire Theorem} as follows. Under the measure
+$\mathbb{Q}^T$ the prices $V(h,t)/P(t,T)$ are martingales for
+$t<T$. Therefore, applying the definition of a martingale and taking
+into account that $P(T,T)=1$, we obtain
+\begin{equation}
+\label{eq:FundEqAssetPricingForward}
+V(h,t)=P(t,T)\mathbb{E}^T\left[h(T)\big|\mathcal{F}_t\right]
+\end{equation}
+The measure $\mathbb{Q}^T$ has another very interesting property,
+which virtually gave the name $T$-forward measure. Under the
+$T$-forward measure, the instantaneous forward rate, $F(t,T)$ is equal
+to the expected of the spot interest rate at time $T$. In formulas
+$$
+F(t,T)=\mathbb{E}^T \left[ r(T)\big| \mathcal{F}_t \right],
+$$
+e.g., see the straightforward arguments followed by Filipovi\`c in
+\cite[Sect. 7.1]{Fil:2009} or Bj\"ork in
+\cite[Sect. 19.4.2]{B:2004}. Note that in this case, the corresponding
+Radon-Nikodym derivative that changes the $T$-forward measure
+$\mathbb{Q}^T$ into the risk-neutral measure (or money-market measure)
+$\mathbb{Q}$, is 
+\begin{equation}
+\label{eq:ForwardTOMoneyMarket}
+\frac{d\mathbb{Q}^T}{d\mathbb{Q}}=\frac{P(T,T)/P(t,T)}{B(T)/B(t)}=\frac{D(t,T)}{P(t,T)}=\frac{e^{-\int_t^T  r(s)\: ds}}{P(t,T)}.
+\end{equation}
+
+\section{The General HJM Gaussian Model}
+Consider a general HJM model under the risk-neutral measure
+$\mathbb{Q}$ specified by (\ref{eqHJM:1}). We also assume that 
+$$
+\sigma(t,T)= \left[\:\sigma_1(t,T)\:\dots\:\sigma_q(t,T)\:\right]
+$$
+are deterministic functions of $(t,T)$, and hence forward rates
+$F(t,T)$ are Gaussian distributed. We consider now a European call
+option, with expiration date $T$ and exercise price $K$, on an
+underlying bond with maturity $S$ (where of course $T<S$). The
+following general pricing formula may be derived:
+\begin{propos}[Bond Option Pricing for Gaussian Forward Rates] The
+  price, at $t=0$ of the bond option
+$$
+h(T)=(P(T,S)-K)^+
+$$
+is given by
+\begin{equation} 
+\label{eqGaussianFROptionsFormula:1}
+V(h,0)=P(0,S)N(d_+)-K P(0,T)N(d_-)
+\end{equation}
+where
+\begin{equation}
+\label{d+-}
+\begin{array}{rcl}
+d_{\pm} & := & \displaystyle \frac{\log\left(\frac{P(0,S)}{K
+      P(0,T)}\right)\pm\frac{1}{2}\vartheta^2(T,S)}{\vartheta(T,S)}\; , \\ 
+\vartheta^2(T,S) & := &\displaystyle \int_0^T \| \varsigma(u;T,S)
+\|^2\:du\; ;
+\end{array}
+\end{equation}
+and,
+\begin{equation}
+\label{GaussianForwardVol2}
+\varsigma(t;T,S) := S(t,S)-S(t,T)=-\int_T^S \sigma(t,s)\: ds.
+\end{equation}
+\end{propos}
+\begin{demo}
+Let us start with the fundamental arbitrage-free equation
+$$
+V(h,0)=\mathbb{E}\left[ D(0,T) (P(T,S)-K)^+\right],
+$$
+where we are taking the expectations with respect the equivalent
+martingale measure $\mathbb{Q}$ associated to the money-market
+numeraire $B(\cdot)$.
+We decompose it as follows
+\begin{equation}
+\label{Decomp}
+V=\mathbb{E}\left[ D(0,T) P(T,S)\mathbbm{1}_{\{P(T,S)\geq
+    K\}}\right]-K \mathbb{E}\left[ D(0,T)\mathbbm{1}_{\{P(T,S)\geq
+    K\}}\right] 
+\end{equation}
+In this case, the Radon-Nikodym derivative that changes $S$-forward
+measure $\mathbb{Q}^S$ into the money-market measure $\mathbb{Q}$ will be
+given by
+$$
+\lambda^S(T)=\frac{d\mathbb{Q}^S}{d\mathbb{Q}}=\frac{P(T,S)/P(0,S)}{B(T)/B(0)}=\frac{D(0,T)P(T,S)}{P(0,S)}.  
+$$
+In a similar way note that
+$$
+\lambda^T(T)=\frac{d\mathbb{Q}^T}{d\mathbb{Q}}=\frac{P(T,T)/P(0,T)}{B(T)/B(0)}=\frac{D(0,T)}{P(0,T)},
+$$
+is the conversion factor responsible for changing the $T$-forward
+measure $\mathbb{Q}^T$ into the risk-neutral world
+$\mathbb{Q}$. Substituting into decomposition (\ref{Decomp}), and 
+combining with the measurability at $t=0$ of $P(0,S)$ and $P(0,T)$ we
+have
+\begin{equation} 
+\nonumber
+V = \mathbb{E}\left[ P(0,S) \lambda^S(T) \mathbbm{1}_{\{P(T,S)\geq
+    K\}}\right]-K \mathbb{E}\left[ P(0,T) \lambda^T(T)
+  \mathbbm{1}_{\{P(T,S)\geq K\}}\right] 
+\end{equation}
+\begin{equation} 
+\nonumber
+V = P(0,S) \mathbb{Q}^S\left( P(T,S)\geq K\right)-K P(0,T)
+\mathbb{Q}^T\left( P(T,S)\geq K \right)
+\end{equation}
+Now we have the value $V$ for the call option in terms of the forward
+measures $\mathbb{Q}^S$ and $\mathbb{Q}^T$. Let us start with the
+probability computations referred to the $T$-forward measure. Note
+that the probability may be written as
+$$
+\mathbb{Q}^T(P(T,S)\geq K)=\mathbb{Q}^T\left(\frac{P(T,S)}{P(T,T)}\geq K\right)
+=\mathbb{Q}^T\left(\log\frac{P(T,S)}{P(T,T)}\geq \log K\right)$$
+Consider the ``discounted'' process
+$$
+X_{S,T}(t):=\frac{P(t,S)}{P(t,T)},
+$$
+with terminal value $X_{S,T}(T)=P(T,S)/P(T,T)$. By taking differentials
+under the risk-neutral measure $\mathbb{Q}$ we have
+\begin{equation}
+\nonumber
+\begin{array}{rcl}
+\displaystyle d\left( \frac{P(t,S)}{P(t,T)}\right) &=&\displaystyle \frac{1}{P(t,T)}dP(t,S)-\frac{P(t,S)}{(P(t,T))^2}dP(t,T)+dP(t,S)\cdot d\left(\frac{1}{P(t,T)}\right)=\\ 
+&=& \{ \dots \} dt + X\left\{ \left(S(t,S)-S(t,T)\right)dW(t)\right\}\\
+dX&=& \{ \dots \} dt+X\varsigma(t;T,S)dW(t).
+\end{array}
+\end{equation}
+For the second stage we have used equation (\ref{BondRiskNeutral})
+applied to the discount bonds $P(t,S)$ and $P(t,T)$. Recall that
+$\mathbb{Q}^T$ is a martingale measure and the multidimensional
+Girsanov's Theorem\footnote{See \cite{MR:2004} for a detailed
+  discussion of it.}   
+which locally induces the change into this $T$-forward measure, does
+not affect the difussion coefficient of the initially taken
+differential. Therefore we have 
+$$
+dX_{T,S}(t)=X_{T,S}(t)\varsigma(t;T,S)dW^T(t).
+$$
+Let us introduce the auxiliary process:
+$$
+Y_{T,S}(t)=\log X_{T,S}(t)
+$$
+By means of the multidimensional It\^o Lemma, it is not difficult to
+prove that the random variable $Y_{T,S}(T)$ distributes like
+$$
+Y_{T,S}(T) \sim\mathcal{N}\left( \log \frac{P(0,S)}{P(0,T)}-\frac{1}{2}\vartheta^2(T,S), \vartheta^2(T,S)\right),
+$$
+where $\vartheta^2(T,S)=\int_0^T \| \varsigma(u;T,S) \|^2 \:du$. Now
+the computation of the probability under the $T$-forward measure is
+straightforward:
+$$
+\mathbb{Q}^T(P(T,S)\geq K)=\mathbb{Q}^T(Y_{T,S}(T)\geq \log K)=N(d_-)
+$$
+For the pending probability $\mathbb{Q}^S$, first, note the following:
+$$
+\mathbb{Q}^S(P(T,S)\geq K)=\mathbb{Q}^S\left(\frac{P(T,T)}{P(T,S)}\leq
+  \frac{1}{K}\right) =\mathbb{Q}^S\left(\log\frac{P(T,T)}{P(T,S)}\leq
+  -\log K\right).$$
+It is enough to introduce the auxiliary processes,
+$$
+W_{T,S}(t):=\frac{P(t,T)}{P(t,S)},
+$$
+and,
+$$
+Z_{T,S}(t):=\log W_{T,S}(t),
+$$
+for concluding that $Z_{T,S}(T)$ distributes like
+$$
+Z_{T,S}(T) \sim\mathcal{N}\left( \log \frac{P(0,T)}{P(0,S)}-\frac{1}{2}\vartheta^2(T,S), \vartheta^2(T,S)\right),
+$$
+and then
+$$
+\mathbb{Q}^S(Z_{T,S}(T)\leq -\log K)=N(d_+).
+$$
+\end{demo}
+\begin{corol}
+The price at $t=0$ of the put option
+$$
+h(T)=(K-P(T,S))^+
+$$
+is given by
+\begin{equation}
+\label{GaussianForwardPut}
+\Pi(h,0)=K P(0,T) N(-d_-)-P(0,S) N(-d_+)
+\end{equation}
+where the quantities $d_{\pm}$ are completely determined by the identities (\ref{d+-}) to (\ref{GaussianForwardVol2}). 
+\end{corol}
+\begin{demo}
+First consider the difference between the call and the put option at time
+$t=0$. Under the risk-neutral martingale measure we know
+\begin{equation}
+\nonumber
+\begin{split}
+V-\Pi & =\mathbb{E} \left[ D(0,T) \left\{(P(T,S)-K)^+-(K-P(T,S))^+
+  \right\} \right]\\
+& =\mathbb{E}\left[ D(0,T)(P(T,S)-K) \right]
+\end{split}
+\end{equation}
+By equation (\ref{ArbitrageFree}) we have $$\mathbb{E}\left[ D(0,T)K
+\right]=K P(0,T).$$ However, we have the problem of the correlation
+between the discounting factor and the payoff factor for the first
+term $$\mathbb{E}\left[ D(0,T)P(T,S) \right].$$ We can circumvent this
+problem by using the \emph{Change of Numeraire Theorem} in an
+identical way to that shown in Proposition 3. Recall first that the
+likelihood
+$$
+\lambda^S(T)=\frac{d\mathbb{Q}^S}{d\mathbb{Q}}=\frac{P(T,S)/P(0,S)}{B(T)/B(0)}=\frac{D(0,T)P(T,S)}{P(0,S)},
+$$
+induces the change of the $S$-forward measure into the risk-neutral
+measure. Thus we have:
+$$
+\mathbb{E}\left[ D(0,T)P(T,S) \right]=\mathbb{E}\left[
+  \lambda^S(T)P(0,S) \right]=\mathbb{E}^S\left[
+  P(0,S) \right],
+$$
+and then the \emph{Put-Call Parity Relation}:
+\begin{equation}
+\label{PutCall}
+V-\Pi=P(0,S)-KP(0,T),
+\end{equation}
+is finally inferred.
+\end{demo}
+% \end{document}% \end{document}% \end{document}% \end{document}% \end{document}
+
+
+
+
+
+
+
+
+

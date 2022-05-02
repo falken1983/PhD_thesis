@@ -1,0 +1,130 @@
+\documentclass[a4paper,twoside,nonatbib]{ezthesis}
+%% # Opciones disponibles para el documento #
+%%
+%% Las opciones con un (*) son las opciones predeterminadas.
+%%
+%% Modo de compilar:
+%%   draft            - borrador con marcas de fecha y sin im'agenes
+%%   draftmarks       - borrador con marcas 	de fecha y con im'agenes
+%%   final (*)        - version final de la tesis
+%%   
+%% Tama'no de papel:
+%%   letterpaper (*)  - tama'no carta (Am'erica)+
+%%   a4paper          - tama'no A4    (Europa)
+%%
+%%   Formato de impresi'on:l
+%%   oneside          - hojas impresas por un solo lado
+%%   twoside (*)      - hijas impresas por ambos lados
+%%
+%% Tama'no de letra:l
+%%   10pt, 11pt, o 12pt (*)
+%%
+%% Espaciado entre renglones:
+%%   singlespace      - espacio sencillo
+%%   onehalfspace (*) - espacio de 1.5
+%%   doublespace      - a doble espacio
+%%
+%% Formato de las referencias bibliogr'aficas:
+%%   numbers          - numeradas, p.e. [1]
+%%   authoryear (*)   - por autor y a'no, p.e. (Newton, 1997)
+%%
+%%   Opciones adicionales:
+%%   spanish         - tesis escrita en espa'nol
+%%m
+%% Desactivar opciones especia+les:
+%%   nobibtoc   - no incluir la bibiolgraf'ia en el 'Indice general
+%%   nofancyhdr - no incluir "fancyhdr" para producir los encabezados
+%%   nocolors   - no incluir "xcolor" para producir ligas con colores
+%%   nographicx - no incluir "graphicx" para insertar gr'aficos
+%%   nonatbib   - no incluir "natbib" para administrar la bibliograf'ia
+
+\usepackage{amsfonts,amsmath,amssymb}
+\usepackage{eurosym, bbm, HWtrees}
+\usepackage{pdfsync,subfig,multirow,,tikz, pgfplots}
+\usepackage{lmodern}
+\pgfplotsset{width=9cm, height=9cm, compat=1.3}
+\newlength\longest
+
+\newtheorem{tma}{Theorem}
+\newenvironment{demo}{\textit{Proof.}}{\quad \hfill $\Box$}
+\newtheorem{propos}{Proposition}
+\newtheorem{lema}{Lemma}
+\newtheorem{corol}{Corollary}
+\newtheorem{defn}{Definition}
+\newtheorem{ej}{Example}
+\newtheorem{rmk}{Remark}
+\newtheorem{ass}{Assumption}
+
+\author{Llu\'\i s Navarro Girb\'es}
+\title{Efficient Methods for Calibrating and Pricing Interest Rate Options}
+\degree{Doctor}
+\supervisor{Antonio Falc\' o Montesinos}
+\institution{Universidad Cardenal Herrera}
+% \faculty{Escuela Superior de Ense\~nanzas T\' ecnicas}
+\department{Departamento de Ciencias F\'\i sicas, Matem\' aticas y de la Computaci\' on} 
+
+%% # M'argenes del documento #
+%% 
+%% Quitar el comentario en la siguiente linea para austar los m'argenes del
+%% documento. Leer la documentaci'on de "geometry" para m'as informaci'on.
+
+%\geometry{top=40mm,bottom=33mm,inner=40mm,outer=25mm}
+
+%% El siguiente comando agrega ligas activas en el documento para las
+%% referencias cruzadas y citas bibliogr'aficas. Tiene que ser *la 'ultima
+%% instrucci'on antes de \begin{document}.
+\hyperlinking % Comentar Para impresion papel
+\begin{document}
+% \pgfversion
+%% En esta secci'on se describe la estructura del documento de la tesis.
+%% Consulta los reglamentos de tu universidad para determinar el orden
+%% y la cantidad de secciones que debes de incluir.
+
+%% # Portada de la tesis #
+%% Mirar el archivo "titlepage.tex" para los detalles.
+\include{formaltitlepage}
+
+%% # Prefacios #
+%% Por cada prefacio (p.e. agradecimientos, resumen, etc.) crear
+%% un nuevo archivo e incluirlo aqu'i.
+%% Para m'as detalles y un ejemplo mirar el archivo "gracias.tex".
+\include{blankpage}
+\include{taleb}
+\include{gracias}
+
+%% # 'Indices y listas de contenido #
+%% Quitar los comenotarios en las lineas siguientes para obtener listas de
+%% figuras y cuadros/tablas.
+\tableofcontents
+\newpage\mbox{}\thispagestyle{empty}
+\listoffigures
+%\listoftables
+
+%% # Cap'itulos #
+%% Por cada cap'itulo hay que crear un nuevo archivo e incluirlo aqu'i.
+%% Mirar el archivo "intro.tex" para un ejemplo y recomendaciones para
+%% escribir.
+ 
+\include{intro} % Introducci'on
+\include{Ch1} % Intro-Def
+\include{Ch2} % SDE, Martingale Modeling
+\include{Ch3} % Interest Rate Caps
+\include{Ch4} % Geometric Theory
+\include{Ch5} % Hull-White-
+\include{Ch6} % Non Markov
+\include{Ch7} % Pricing (Num. Meth.)
+%%\include{conclu}
+
+\appendix
+%% Cap'itulos incluidos despues del comando \appendix aparecen como ap'endices
+%% de la tesis.
+\include{appendixA}
+\include{appendixB}
+\include{appendixC}
+%% Incluir la bibliograf'ia. Mirar el archivo "biblio.bib" para m'as detales
+%% y un ejemplo.
+% \bibliography{biblio}
+% A cambiar por formato \thebibliography (LaTeX)
+\include{biblio}
+\end{document}
+

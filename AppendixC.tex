@@ -1,0 +1,213 @@
+\chapter{Pricing Options with a Consistent HJM Model}
+\section*{Digital Caps}
+Consider a general HJM model under the risk-neutral measure
+$\mathbb{Q}$ specified by (\ref{eqHJM:1}). We also assume that 
+$$
+\sigma(t,T)= \left[\:\sigma_1(t,T)\:\dots\:\sigma_q(t,T)\:\right]
+$$
+are deterministic functions of $(t,T)$, and hence forward rates
+$F(t,T)$ are Gaussian distributed. Let us consider now a
+European-style binary option, with expiration date $T$ and exercise
+price $K$, on an underlying bond with maturity $S$ (where of course
+$T<S$). The following general pricing formula may be derived:
+\begin{propos} The price, at $t=0$ of the security
+$$
+h(T)=P(T,S) \mathbbm{1}_{ \{ P(T,S)-K \geq 0\} }
+$$
+is given by
+\begin{equation} 
+% \label{eqGaussianFROptionsFormula:1}
+V(h,0)=P(0,S)N(d_+)
+\end{equation}
+where
+\begin{equation}
+% \label{d+-}
+\begin{array}{rcl}
+d_+ & := & \displaystyle \frac{\log\left(\frac{P(0,S)}{K
+      P(0,T)}\right) + \frac{1}{2}\vartheta^2(T,S)}{\vartheta(T,S)}\; , \\ 
+\vartheta^2(T,S) & := &\displaystyle \int_0^T \| \varsigma(u;T,S)
+\|^2\:du\; ;
+\end{array}
+\end{equation}
+and,
+\begin{equation}
+% \label{GaussianForwardVol2}
+\varsigma(t;T,S) := S(t,S)-S(t,T)=-\int_T^S \sigma(t,s)\: ds.
+\end{equation}
+\end{propos}
+\begin{demo}
+Let us start with the fundamental arbitrage-free equation
+\begin{equation}
+% \label{Decomp}
+\label{DigitalBond}
+V=\mathbb{E}\left[ D(0,T) P(T,S)\mathbbm{1}_{\{P(T,S)\geq
+    K\}}\right] 
+\end{equation}
+where we are taking the expectations with respect the equivalent
+martingale measure $\mathbb{Q}$ associated to the money-market
+numeraire $B(\cdot)$.
+
+The Radon-Nikodym derivative that changes $S$-forward
+measure $\mathbb{Q}^S$ into the money-market measure $\mathbb{Q}$ will be
+given by
+$$
+\lambda^S(T)=\frac{d\mathbb{Q}^S}{d\mathbb{Q}}=\frac{P(T,S)/P(0,S)}{B(T)/B(0)}=\frac{D(0,T)P(T,S)}{P(0,S)}.
+$$
+Substituting into (\ref{DigitalBond}), and combining with the
+measurability at $t=0$ of $P(0,S)$ 
+\begin{eqnarray} 
+\nonumber
+V &=& \mathbb{E}\left[ P(0,S) \lambda^S(T) \mathbbm{1}_{\{P(T,S)\geq
+    K\}}\right] = \\
+\nonumber
+ &=& P(0,S) \mathbb{Q}^S\left( P(T,S)\geq K\right).
+\end{eqnarray}
+Now we have the value $V$ for the call option in terms of the forward
+measure $\mathbb{Q}^S$. % Let us start with the
+% probability computations referred to the $T$-forward measure. Note
+% that the probability may be written as
+% $$
+% \mathbb{Q}^T(P(T,S)\geq K)=\mathbb{Q}^T\left(\frac{P(T,S)}{P(T,T)}\geq K\right)
+% =\mathbb{Q}^T\left(\log\frac{P(T,S)}{P(T,T)}\geq \log K\right)$$
+% Consider the ``discounted'' process
+% $$
+% X_{S,T}(t):=\frac{P(t,S)}{P(t,T)},
+% $$
+% with terminal value $X_{S,T}(T)=P(T,S)/P(T,T)$. By taking differentials
+% under the risk-neutral measure $\mathbb{Q}$ we have
+% \begin{equation}
+% \nonumber
+% \begin{array}{rcl}
+% \displaystyle d\left( \frac{P(t,S)}{P(t,T)}\right) &=&\displaystyle \frac{1}{P(t,T)}dP(t,S)-\frac{P(t,S)}{(P(t,T))^2}dP(t,T)+dP(t,S)\cdot d\left(\frac{1}{P(t,T)}\right)=\\ 
+% &=& \{ \dots \} dt + X\left\{ \left(S(t,S)-S(t,T)\right)dW(t)\right\}\\
+% dX&=& \{ \dots \} dt+X\varsigma(t;T,S)dW(t).
+% \end{array}
+% \end{equation}
+% For the second stage we have used equation (\ref{BondRiskNeutral})
+% applied to the discount bonds $P(t,S)$ and $P(t,T)$. Recall that
+% $\mathbb{Q}^T$ is a martingale measure and the multidimensional
+% Girsanov's Theorem\footnote{See [Ref.] for a detailed discussion of it.}
+% which locally induces the change into this $T$-forward measure, does
+% not affect the difussion coefficient of the initially taken
+% differential. Therefore we have 
+% $$
+% dX_{T,S}(t)=X_{T,S}(t)\varsigma(t;T,S)dW^T(t).
+% $$
+% Let us introduce the auxiliary process:
+% $$
+% Y_{T,S}(t)=\log X_{T,S}(t)
+% $$
+% By means of the multidimensional It\^o Lemma, it is not difficult to
+% prove that the random variable $Y_{T,S}(T)$ distributes like
+% $$
+% Y_{T,S}(T) \sim\mathcal{N}\left( \log \frac{P(0,S)}{P(0,T)}-\frac{1}{2}\vartheta^2(T,S), \vartheta^2(T,S)\right),
+% $$
+% where $\vartheta^2(T,S)=\int_0^T \| \varsigma(u;T,S) \|^2 \:du$. Now
+% the computation of the probability under the $T$-forward measure is
+% straightforward:
+% $$
+% \mathbb{Q}^T(P(T,S)\geq K)=\mathbb{Q}^T(Y_{T,S}(T)\geq \log K)=N(d_-)
+% $$
+For computing the probability $\mathbb{Q}^S$, first, note the following:
+$$
+\mathbb{Q}^S(P(T,S)\geq K)=\mathbb{Q}^S\left(\frac{P(T,T)}{P(T,S)}\leq
+  \frac{1}{K}\right) =\mathbb{Q}^S\left(\log\frac{P(T,T)}{P(T,S)}\leq
+  -\log K\right).$$
+We remark that it is enough to introduce the auxiliary processes,
+$$
+W_{T,S}(t):=\frac{P(t,T)}{P(t,S)},
+$$
+and,
+$$
+Z_{T,S}(t):=\log W_{T,S}(t),
+$$
+to conclude that $Z_{T,S}(T)$ distributes like
+$$
+Z_{T,S}(T) \sim\mathcal{N}\left( \log \frac{P(0,T)}{P(0,S)}-\frac{1}{2}\vartheta^2(T,S), \vartheta^2(T,S)\right),
+$$
+and then
+$$
+\mathbb{Q}^S(Z_{T,S}(T)\leq -\log K)=N(d_+).
+$$
+\end{demo}
+\begin{lema}
+The price at $t=0$ of the security 
+$$
+h(T)=P(T,S) \mathbbm{1}_{ \{ P(T,S)-K < 0 \} }
+$$
+is given by
+\begin{equation}
+% \label{GaussianForwardPut}
+\Pi(h,0)=P(0,S) N(-d_+)
+\end{equation}
+where the quantities $d_+$ are completely determined by the
+identities (\ref{d+-}) to (\ref{GaussianForwardVol2}).  
+\end{lema}
+\begin{demo}
+First consider the identity option at time $t=0$
+\begin{equation}
+\nonumber
+\begin{split}
+V+\Pi & =\mathbb{E} \left[ D(0,T) P(T,S)\left( \mathbbm{1}_{ \{ P(T,S)-K\geq
+      0\} }+\mathbbm{1}_{ \{ P(T,S)-K<0 \} } \right) \right]\\ 
+& =\mathbb{E}\left[ D(0,T)P(T,S) \right],
+\end{split}
+\end{equation}
+under the risk-neutral martingale measure. 
+% By equation (\ref{ArbitrageFree}) we have $$\mathbb{E}\left[ D(0,T)K
+% \right]=K P(0,T).$$ However, we have the problem of the correlation
+% between the discounting factor and the payoff factor for the first
+% term $$\mathbb{E}\left[ D(0,T)P(T,S) \right].$$ We can circumvent this
+% problem
+By using the \emph{Change of Numeraire Theorem} in an identical way to
+that shown by Proposition 7 in this appendix, recall first that the
+likelihood 
+$$
+\lambda^S(T)=\frac{d\mathbb{Q}^S}{d\mathbb{Q}}=\frac{P(T,S)/P(0,S)}{B(T)/B(0)}=\frac{D(0,T)P(T,S)}{P(0,S)},
+$$
+induces the change of the $S$-forward measure into the risk-neutral
+measure. Therefore we have:
+$$
+\mathbb{E}\left[ D(0,T)P(T,S) \right]=\mathbb{E}\left[
+  \lambda^S(T)P(0,S) \right]=\mathbb{E}^S\left[
+  P(0,S) \right],
+$$
+and then the relation:
+\begin{equation}
+% \label{PutCall}
+V+\Pi=P(0,S)
+\end{equation}
+is inferred. Finally,
+\begin{equation}
+\label{DigPut}
+\Pi = P(0,S) - V = P(0,S) \left( 1 - N(d_+) \right) = P(0,S) N(-d_+)
+\end{equation}
+\end{demo}
+ \begin{corol}[Digital Caplet Pricing for Gaussian Forward
+  Rates.] The price at $t=0$ of the binary $j$-caplet, $\delta_j$, with
+  payoff:
+$$
+h_{\delta_j}(x_j)=\mathbbm{1}_{ \{ L_j(x_{j-1})-K \} } 
+$$
+is given by
+\begin{equation}
+\label{GaussianForwardBinCaplet}
+\delta_j(h_{\delta_j},0)=(1+\tau_j K) P_j(0) N(-d_+)
+\end{equation} 
+where
+\begin{eqnarray}
+\label{capletd+} d_{+} & := & \displaystyle \frac{\log\left(\frac{P_j(0)}{\kappa 
+      P_{j-1}(0)}\right)+\frac{1}{2}\vartheta^2(0,x_{j-1})}{\vartheta(0,x_{j-1})}\;  , \\  
+\label{vol1} \vartheta^2(0,x_{j-1}) & := &\displaystyle
+\int_0^{x_{j-1}} \| \varsigma(u;x_{j-1},x_j) \|^2\:du\; ;\\   
+\label{vol2} \varsigma(t;x_{j-1},x_j) &  := & -\displaystyle
+\int_{x_{j-1}}^{x_j} \sigma(t,s)\: ds.   
+\end{eqnarray}
+% \end{equation}
+\end{corol}
+% and $\kappa=(1+\tau_j K)^{-1}$.
+% % \begin{propos}[Digital Caplets under Gaussian Forward Rates.] The
+% %   price at $t=
+
+% \end{propos}
+% % \end{document}% \end{document}% \end{document}% \end{document}% \end{document}

@@ -1,0 +1,452 @@
+\newpage
+\chapter{Forward Rate Models}
+\section{The HJM Framework}
+\setcounter{propos}{0}
+\begin{propos}[Leibniz Rule for Stochastic Integrals]
+Consider for any fixed parameter $s \in [t_0, T]$, the It\^o process
+defined by
+\begin{equation}
+\label{eqdf}
+dg(t,s) =  \alpha(t,s) dt + \sum_{j=1}^q \beta_j(t,s)dW_j (t) 
+\end{equation}
+with $ t \in [t_0,s]$. Then, the dynamics for the stochastic process
+$H(t,T)=\int_t^T g(t,s) ds$ is
+\begin{equation}
+\label{eqdZ}
+dH(t,T)=\left[\left(\int_t^T \alpha(t,s) ds\right) - g(t,t) \right] dt
++ \sum_{j=1}^q \int_t^T \beta_j(t,s) ds~dW_j (t).
+\end{equation}
+\end{propos} 
+\begin{demo} 
+Assume that the $\mathbb{R}^q$-valued stochastic processes 
+$$
+\beta(t,T) = [\begin{array}{cccc}
+\beta_1(t,T) & \beta_2(t,T) & \dots & \beta_q(t,T)
+\end{array}] 
+$$
+
+$$
+W(t) = [\begin{array}{cccc}
+W_1(t) & W_2(t) & \dots & W_q(t) 
+\end{array}]^T
+$$
+are given.
+
+Then for any $t_1 \in [t_0,T]$, the differential (\ref{eqdf}) may be
+written in integral form:
+\begin{equation}
+\label{eqft0t1}
+g(t_1,s)=g(t_0,s)+\int_{t_0}^{t_1} \alpha(t,s) dt+\int_{t_0}^{t_1}
+\beta(t,s) dW(t)
+\end{equation}
+Thus,
+$$
+\begin{array}{ccl}
+H(t_1,T) & = & \int_{t_1}^T g(t_1,s) ds\\
+         & = & \int_{t_1}^T g(t_0,s) ds + \int_{t_1}^T
+         \left(\int_{t_0}^{t_1} \alpha(t,s) dt\right) ds +
+         \int_{t_1}^T \left(\int_{t_0}^{t_1} \beta(t,s) dW(t)\right)
+         ds\\ 
+      *  & = &\int_{t_1}^T g(t_0,s) ds +
+         \int_{t_0}^{t_1}\left(\int_{t_1}^T \alpha(t,s) ds\right) dt + 
+          \int_{t_0}^{t_1}\left(\int_{t_1}^T \beta(t,s)
+         ds\right)dW(t) \\  
+         & = &\int_{t_0}^T g(t_0,s) ds- \int_{t_0}^{t_1} g(t_0,s) ds +
+         \int_{t_0}^{t_1}\left(\int_t^T \alpha(t,s) ds\right) dt -
+         \int_{t_0}^{t_1}\left(\int_t^{t_1} \alpha(t,s) ds\right) dt + \\
+         &   & +  \int_{t_0}^{t_1}\left(\int_t^T \beta(t,s) ds\right)dW(t)-
+         \int_{t_0}^{t_1}\left(\int_t^{t_1} \beta(t,s) ds\right)dW(t)
+         \\  
+      **  & = & H(t_0,T) + \int_{t_0}^{t_1}\left(\int_t^T \alpha(t,s) ds\right) dt + \int_{t_0}^{t_1}\left(\int_t^T \beta(t,s) ds\right)dW(t)  - \\ 
+         &   & - \int_{t_0}^{t_1} g(t_0,s) ds -
+         \int_{t_0}^{t_1}\left(\int_{t_0}^s  \alpha(t,s) dt\right) ds
+         - \int_{t_0}^{t_1}\left(\int_{t_0}^s \beta(t,s) dW(t)\right)
+         ds\\
+         & = & H(t_0,T) + \int_{t_0}^{t_1}\left(\int_t^T \alpha(t,s) ds\right) dt + \int_{t_0}^{t_1}\left(\int_t^T \beta(t,s) ds\right)dW(t)  - \\ 
+         &   & - \int_{t_0}^{t_1} \left(g(t_0,s) + \int_{t_0}^s
+         \alpha(t,s) dt + \int_{t_0}^s \beta(t,s) dW(t)\right) ds\\ 
+   ***   & = & H(t_0,T) + \int_{t_0}^{t_1}\left(\int_t^T \alpha(t,s)
+         ds\right) dt + \int_{t_0}^{t_1}\left(\int_t^T \beta(t,s)
+         ds\right)dW(t)  -  \int_{t_0}^{t_1} g(s,s) ds\\
+         & = & H(t_0,T) + \int_{t_0}^{t_1}\left[\int_t^T \alpha(t,s)
+         ds-g(t,t)\right] dt+ \int_{t_0}^{t_1}\left(\int_t^T \beta(t,s)
+         ds\right)dW(t)
+\end{array}
+$$
+the differential for the process $H(t,T)$ may be deduced. We have used
+the Fubini Theorem in its classical version and the extended version
+for Stochastic Integrals --see Ikeda and Watanabe \cite{IW:1981} and
+Heath et al. \cite{HJM:1992}. For the identity (***), the equation
+(\ref{eqft0t1}) has been used.\end{demo} \section{From HJM to Short-Rate Models} \setcounter{propos}{1}
+\begin{propos}
+Suppose that $F(0,T)$, $\alpha(t,T)$ and $\sigma(t,T)$ are
+differentiable in $T$ with $\int_0^T |\partial_u
+F(0,u)|\;du<\infty$. Then the short-rate process is an It\^o process
+of the form 
+\begin{equation}
+\label{eqdXt}
+dr(t)=\zeta(t) dt+\sigma(t,t) dW(t),
+\end{equation}
+where
+$$
+\zeta(t)=\alpha(t,t)+\partial_t F(0,t)+\int_0^t \partial_t
+\alpha(s,t)\: ds+\int_0^t \partial_t \sigma(s,t)dW(s) 
+$$
+\end{propos}
+ \begin{demo}
+ Fix a time $s$ with $0 \leq s\leq t < \infty$, we can rewrite
+ $\alpha(s,t)$ and $\sigma(s,t)$ vector as follows,
+ \begin{equation}
+ \label{Barrow:1}
+ \begin{split}
+ \alpha(s,t) & = \alpha(s,s)+\int_s^t
+ \frac{\partial\alpha}{\partial z} (s,z)  dz\\ 
+ \sigma(s,t)  & = \sigma(s,s)+\int_s^t
+ \frac{\partial\sigma}{\partial z} (s,z)  dz
+ \end{split}
+ \end{equation}
+ With $s=0$, we can express $F(0,t)$ as
+ \begin{equation}
+ \label{Barrow:2}
+ F(0,t) = r(0)+\int_0^t \frac{\partial F}{\partial z} (0,z) dz.
+ \end{equation}
+Recall now that
+\begin{equation}
+\label{eqXt}
+r(t)=F(t,t)=F(0,t)+\int_0^t \alpha(s,t)\: ds+\int_0^t \sigma(s,t) dW(s).
+\end{equation}
+Thus, by substituting equations (\ref{Barrow:1}) and (\ref{Barrow:2})
+into (\ref{eqXt}), we have 
+ \begin{equation}
+\label{Fubini1}
+ \begin{split}
+% \begin{array}{rcl}
+ r(t) & = r(0)+\int_0^t \frac{\partial F}{\partial z}(0,z) dz 
+      + \int_0^t \alpha (z,z) dz +\int_0^t\left(\int_s^t
+      \frac{\partial\alpha}{\partial z}(s,z) dz\right) ds\: +\\
+ & +\:\int_0^t\left(\int_s^t \frac{\partial\sigma}{\partial z}(s,z)
+      dz\right) dW(s) + \int_0^t \sigma(z,z) dW(z)
+% \end{array}
+ \end{split}
+ \end{equation}
+Applying the Fubini Theorem in its classical and extended version for
+Stochastic Integrals, gives
+\begin{equation}
+\label{Fubini}
+\begin{split}
+ r(t) & = r(0)+\int_0^t \frac{\partial F}{\partial z}(0,z) 
+      dz+\int_0^t \alpha (z,z) dz +
+      \int_0^t\left(\int_0^z \frac{\partial\alpha}{\partial z}(s,z) 
+      ds\right) dz\: +\\ 
+ & +\:\int_0^t\left(\int_0^z \frac{\partial\sigma}{\partial z}(s,z)
+      dW(s)\right) dz + \int_0^t \sigma(z,z) dW(z),
+\end{split}
+\end{equation}
+and reordering: 
+\begin{equation}
+% \label{Fubini1}
+\begin{split}
+ r(t) & = r(0)+\int_0^t \left[\left(\frac{\partial F}{\partial z}(0,z)
+      + \alpha (z,z)+ \int_0^z \frac{\partial\alpha}{\partial z}(s,z) ds\: +
+      \right. \right.\\ 
+      & + \left. \left. \int_0^z \frac{\partial\sigma}{\partial z}(s,z)
+      dW(s)\right) dz + \sigma(z,z) dW(z)\right] =\\
+      & = r(0)+\int_0^t \left(\zeta(z)dz + \sigma(z,z) dW(z)\right),
+\end{split}
+\end{equation}
+the differential (\ref{eqdXt}) can be finally deduced.
+\end{demo}
+
+% \begin{tma}[Proceso del Tipo Instantneo en el Entorno HJM]
+% La dinmica del proceso estocstico (\ref{eqRt:1}) viene dada por
+% \begin{equation}
+% \label{eqdRt:2}
+%  \begin{split}
+% dR(t)& = \left[\partial_t f(0,t)+\int_{0}^{t} \partial_t\alpha(s,t)
+%   ds+\sum_{j=1}^q \int_{0}^{t} \partial_t\sigma_j(s,t) dW_j(s) \right]
+%   dt\: +\\
+%   & + \sum_{j=1}^q \sigma_j(t,t) dW_j(t)
+% \end{split}
+% \end{equation}
+% \end{tma}
+% \begin{demo}
+% Utilizando el teorema anterior y las siguientes identificaciones:
+% \begin{eqnarray*}
+% \begin{split}
+% % \alpha(s,t) & =\alpha(s,t)\\
+% \sigma_j(s,t)& =\sigma_j(s,t)\\
+% Y(0,t)& =f(0,t)
+% \end{split} 
+% \end{eqnarray*}
+% se tiene,
+% \begin{equation}
+% \label{eqdRt:3}
+% \begin{split}
+%    dR(t)& =\left[\partial_t f(0,t)+\alpha(t,t)+\int_{0}^{t}
+%   \partial_t\alpha(s,t) ds+\sum_{j=1}^q \int_{0}^{t}
+%   \partial_t\sigma_j(s,t) dW_j(s) \right] dt\:+\\ 
+% & + \sum_{j=1}^q \sigma_j(t,t) dW_j(t)
+% \end{split}
+% \end{equation}
+% La AOA concluye el resultado (Corolario 1.2).
+% \end{demo}
+% \begin{corol}
+% Las ecuaciones diferenciales estocsticas que satisfacen 
+% \begin{eqnarray}
+% \label{eqXi:Ap}
+% X_i(t)& = & \int_0^t \sigma^2_i(s,t) ds\\
+% \label{eqYi:Ap}
+% Y_i(t)& = & \int_0^t a_i(s,t) ds + \int_0^t \sigma_i (s,t) dW_i(s)
+% \end{eqnarray}
+% con $\sigma_i(s,t)=\varsigma_i(s) e^{-\int_s^t \kappa(z) dz}$, son
+% \begin{eqnarray} 
+% dX_i(t)& = & \left[\varsigma_i^2(t)-2\kappa_i(t)X_i(t)\right] dt\\
+% dY_i(t)& = & \left[X_i(t)-\kappa_i(t) Y_i(t)\right] dt+\varsigma_i(t) dW_i(t) 
+% \end{eqnarray}
+% \end{corol}
+% \begin{demo}
+% \begin{itemize}
+% \item Utilizando el Teorema A.2 con las particularizaciones
+% \begin{eqnarray*}
+% \begin{split}
+% \alpha(s,t) & =\sigma_i^2(s,t)\\
+% \sigma_j(s,t)& =0\\
+% Y(0,t)&=0
+% \end{split}
+% \end{eqnarray*}
+% se llega a 
+% $$
+% dX_i(t) = \left[\sigma_i^2(t,t)+\int_0^t \partial_t \sigma^2_i(s,t)
+%   ds\right] dt 
+% $$
+% La ecuacin (\ref{ETVgral:1}), la propiedad (\ref{ETVgralProp}) y la
+% definicin (\ref{eqXi}) permiten concluir. 
+% \item Utilizando el Teorema A.2 con las particularizaciones
+% \begin{eqnarray*}
+% \begin{split}
+% \alpha(s,t) & =a_i(s,t)\\
+% \sigma_j(s,t)& =\delta_{ij}\sigma_i(s,t)\\
+% Y(0,t)&=0
+% \end{split}
+% \end{eqnarray*}
+% se llega a
+% \begin{equation}
+% \label{eqdYi_HW:1}
+% \begin{split}
+% dY_i(t) & = \left[a_i(t,t)+\int_{0}^{t}
+%   \frac{\partial a_i}{\partial t} (s,t)
+%   ds+ \int_{0}^{t} \frac{\partial \sigma_i}{\partial
+%   t}(s,t) dW_i(s) \right] dt\\
+% & +\sigma_i(t,t) dW_i(t)
+% \end{split}
+% \end{equation}
+% Por otra parte, la AOA implica que $a_i(t,t)=0$, mientras que 
+% $$
+% \partial_t a_i(s,t)=-\kappa_i(t) a_i(s,t)+\sigma_i^2(s,t)
+% $$
+% La propiedad (\ref{ETVgralProp}) y las definiciones (\ref{eqXi:Ap}) y
+% (\ref{eqYi:Ap}) concluyen.  
+% \end{itemize}
+% \end{demo}
+% \begin{lema}[Generalizacin Multifactorial del Modelo BK] 
+% El coeficiente de deriva de la difusin (\ref{eqdlogfBK}) es
+% \begin{equation}
+% \label{eqdlogfBK:deriva}
+% \tilde{\alpha}(t,T)=\sum_{i=1}^q \lambda_i(t,T)\int_t^T \lambda_i(t,s)
+% f(t,s) ds -\frac{1}{2} \sum_{j=1}^q \lambda_j^2 (t,T)
+% \end{equation}
+% \end{lema}
+% \begin{demo} 
+% Retomemos la difusin (\ref{eqdlogfBK})
+% $$
+% d\ln f(t,T) =  \tilde{\alpha}(t,T) dt +  \sum_{j=1}^q \lambda_j(t,T)
+% dW_j (t)  
+% $$
+% Considersele como proceso de It funcin de la difusin para el tipo {\sl forward} instantneo dada en (\ref{eqdfBK}):
+% $$
+% g(f(t,T))=\ln f(t,T)
+% $$
+% El lema de It multidimensional proporciona la forma diferencial para $g$:
+% $$
+% dg(t,T)=d\ln f(t,T)=\left(\frac{1}{f(t,T)} \alpha(t,T) - \frac{1}{2} \sum_{i=1}^q \lambda^2(t,T) \right) dt + \sum_{i=1}^q \lambda_i (t,T) dW_i(t)
+% $$
+% Identificando el coeficiente de deriva de esta ltima expresin con el de la difusin (\ref{eqdlogfBK}), se tiene:
+
+% \begin{equation}
+% \label{derivalnBK}
+% \tilde{\alpha}(t,T)=\frac{1}{f(t,T)} \alpha(t,T) - \frac{1}{2} \sum_{i=1}^q \lambda^2(t,T) 
+% \end{equation}
+
+% Por otra parte, la combinacin de la AOA  con la estructura de volatilidades particular escogida para la generalizacin multifactorial del modelo de Black-Karasinski, proporciona la siguiente expresin para el proceso adaptado $\alpha(t,T)$:
+% $$
+% \alpha(t,T)=\sum_{i=1}^q \lambda_i(t,T) f(t,T)\int_t^T \lambda_i(t,s) f(t,s) ds
+% $$
+% Sustituyendo este ltimo resultado en (\ref{derivalnBK}), se recupera finalmente (\ref{eqdlogfBK:deriva}).
+% \end{demo} 
+% \begin{propos}[Modelo CIR Extendido]
+% La ecuacin escalar de Ricatti con coeficientes constantes:
+% %\begin{equation}
+% $$
+% \left. 
+% \begin{array}{rcl}
+% \frac{dB}{dt}(t,T)-a B(t,T)+\frac{1}{2}v^2 B^2(t,T) & = & 1\\
+% B(T,T) & = & 0
+% \end{array}\right\}
+% $$
+% %\end{equation}
+
+% tiene como solucin
+
+% \begin{equation}
+% B(t,T)=-\frac{2(e^{\gamma(T-t)}-1)}{(a+\gamma)(e^{\gamma(T-t)}-1)+2\gamma}
+% \end{equation}
+
+% \end{propos}
+% \begin{demo}
+% Dado que la ecuacin es homognea temporalmente, propongamos soluciones de la forma $B(t,T)=B(T-t)$. 
+
+% Introduzcamos, el cambio de variable $x=T-t$.
+
+% La EDO inicial adopta la forma 
+% $$
+% \left. 
+% \begin{array}{rcl}
+% -1-a~B(x)+\frac{1}{2}v^2 B(x)^2  & = & B'(x)\\
+% B(0) & = & 0
+% \end{array}\right\}
+% $$ 
+% siendo $B'(x)=\frac{d}{dx}B(x)$. 
+% Introduzcamos, a continuacin, la transformacin de Hopf-Cole 
+% $$
+% z(x)=\exp \left(-\frac{v^2}{2}\int_0^x B(\xi) d\xi\right)
+% $$
+% Esta transformacin suele ser utilizada como mtodo para resolver cierto tipo de ecuaciones diferenciales no lineales en el contexto de sistemas integrables. De hecho, el ejemplo paradigmtico en el que sta funciona, es precisamente la ecuacin de Ricatti con coeficientes constantes, que es un tipo particular de EDO no lineal.
+
+% Calculemos las derivadas sucesivas de la funcin $z(x)$:
+% $$
+% \begin{array}{rcl}
+% z'(x) &= & -\frac{v^2}{2} z(x) B(x)\\
+% z''(x) & = & -\frac{v^2}{2} z(x) \left( B'(x)-\frac{v^2}{2} B(x)^2\right)
+% \end{array}
+% $$
+
+% Notemos que de ellas se derivan fcilmente las identidades
+% \begin{equation}
+% \label{HCIdentidades}
+% \begin{array}{rcl}
+% B(x) & = & -\frac{2}{v^2} \frac{z'(x)}{z(x)}\\
+% B'(x)-\frac{v^2}{2} B(x)^2  & = & -\frac{2}{v^2} \frac{z''(x)}{z(x)}
+% \end{array}
+% \end{equation}
+% y, en consecuencia, la ecuacin diferencial lineal de segundo orden asociada a la original:
+% $$
+% \left. 
+% \begin{array}{rcl}
+% z''(x)+a z'(x)-\frac{v^2}{2}z(x) & = & 0\\
+% z(0) & = & 1\\
+% z'(0) & = & 0
+% \end{array}\right\}
+% $$ 
+% La solucin de este problema de condiciones iniciales es:
+% \begin{equation}
+% \label{HCSolution}
+% z(x)=\frac{1}{2\gamma}e^{-\frac{1}{2}a x}\left[(\gamma+a)e^{\frac{1}{2}\gamma x}+(\gamma-a)e^{-\frac{1}{2}\gamma x}\right]
+% \end{equation}
+% donde se ha introducido la constante $\gamma^2=a^2+2v^2$.
+% Si se calcula la funcin derivada $z'(x)$:
+% \begin{equation}
+% \label{HCDiffSolution}
+% z'(x)=\frac{1}{4\gamma}(\gamma^2-a^2) e^{-\frac{1}{2}a x}\left(e^{\frac{1}{2}\gamma x}-e^{-\frac{1}{2}\gamma x}\right)
+% \end{equation}
+% con lo que, si se construye el cociente de las expresiones (\ref{HCDiffSolution}) y (\ref{HCSolution}) se obtiene,
+% $$
+% \frac{z'(x)}{z(x)}=\frac{\gamma^2-a^2}{2}\frac{e^{\frac{1}{2}\gamma x}-e^{-\frac{1}{2}\gamma x}}{(\gamma+a)e^{\frac{1}{2}\gamma x}+(\gamma-a)e^{-\frac{1}{2}\gamma x}}=\frac{\gamma^2-a^2}{2}\frac{e^{\gamma x}-1}{(\gamma+a)e^{\gamma x}+\underbrace{(\gamma-a)}_{2\gamma-(\gamma+a)}}
+% $$
+% Teniendo en cuenta que $v^2=\frac{\gamma^2-a^2}{2}$, se llega a la expresin conveniente:
+% \begin{equation}
+% \frac{z'(x)}{z(x)}=v^2 \frac{e^{\gamma x}-1}{(\gamma+a)(e^{\gamma x}-1)+2\gamma}
+% \end{equation}
+% Por otro lado, la primera de las identidades deducidas en (\ref{HCIdentidades}), implica
+% $$
+% B(x)=-\frac{2(e^{\gamma x}-1)}{(\gamma+a)(e^{\gamma x}-1)+2\gamma}
+% $$
+% y recordando la definicin $x=T-t$, la prueba concluye.
+% \end{demo}
+% \begin{propos}[La Parametrizacin de Musiela]
+% Bajo la medida martingala Q, la dinmica {\sl forward} viene determinada por 
+% \begin{equation}
+% \label{Musiela}
+% \begin{array}{rcl}
+% dr(t,x) &= & \left\{ \frac{\partial}{\partial x}r(t,x)+\sum_{j=1}^q\sigma_m^{(j)}(t,x)\int_0^x \sigma_m^{(j)} (t,u) du\right\} dt +\sum_{j=1}^q \sigma_m^{(j)} (t,x) dW_j(t)\\
+% r(0,x)&=&\overline{r}(0,x)
+% \end{array}
+% \end{equation}
+% donde se ha introducido la definicin $\sigma_m(t,x):=\sigma(t,t+x)$.
+% \end{propos}
+% \begin{demo}\newline
+% \vskip 0.025cm
+% \noindent
+% {\bf Paso 1:}\\
+% El entorno HJM y la definicin $R(t):=f(t,t)$, proporcionan la siguiente representacin integral\footnote{Considrese notacin matricial para la generalizacin al caso de $q$-factores.} del proceso del tipo instantneo:
+% $$
+% R(t)=f(0,t)+\int_0^t \alpha(s,t) ds+\int_0^t \sigma(s,t) dW(s)
+% $$
+% Aplicando el resultado (\ref{Fubini}) de la demostracin del Teorema A.2, el cual se fundamenta en el teorema de Fubini en sus versiones estocstica y determinista, a travs de las identificaciones oportunas se tiene:
+% \begin{equation}
+% \label{Fubini2}
+% \begin{split}
+% R(t) & = R(0)+\int_0^t \partial_z f(0,z) dz+\int_0^t \alpha(z,z) dz+\int_0^t \sigma(z,z) dW(z)+\\
+%       &  + \int_0^t  \left( \int_0^u \partial_u \alpha(z,u) dz+\int_0^u \partial_u \sigma(z,u) dz \right) du
+% \end{split}
+% \end{equation}
+
+% Recurdese, por otro lado, que
+% $$
+% f(t,T)=f(0,T)+\int_0^t \alpha(z,T) ds+\int_0^t \sigma(z,T) dW(s)
+% $$
+% Fjese $T=t=u$. En consecuencia, tomando derivadas parciales sobre segundos argumentos en la anterior expresin, se deduce:
+% $$
+% \partial_2 f(u,u)-\partial_u f(0,u)=\int_0^u \partial_u \alpha(z,u) dz+\int_0^u \partial_u \sigma(z,u) dW(z)
+% $$
+% donde el operador $\partial_2$ indica la derivada parcial sobre el segundo argumento.
+% Sustituyendo en (\ref{Fubini2}), se obtiene
+% \begin{equation}
+% \label{MusielaPre1}
+% R(t)=R(0)+\int_0^t \left(\alpha(z,z)+\partial_2 f(s,s)\right) ds+\int_0^t \sigma(s,s) dW(s)
+% \end{equation}
+% {\bf Paso 2:} Tmese un $x\geq 0$ arbitrario y considrese la reparametrizacin
+% $$
+% r(t,x):= f(t,t+x)
+% $$
+% as como las definiciones:
+% $$
+% \begin{array}{rcl}
+% \hat{f}(t,T) & := & f(t,T+x)\\
+% \hat{\alpha}(z,T) & := & \alpha(z,T+x)\\
+% \hat{\sigma}(z,T) & := & \sigma(z,T+x)
+% \end{array}
+% $$
+% Ntese que $r(t,x)=\hat{f}(t,t):=\hat{R}(t)$. La expresin (\ref{MusielaPre1}) da una ecuacin integral anloga para $\hat{R}(t)$, haciendo las sustituciones obvias.
+% \begin{equation}
+% \label{MusielaPre2}
+% \hat{R}(t)=\hat{R}(0)+\int_0^t \left(\hat{\alpha}(z,z)+\partial_2 \hat{f}(s,s)\right) ds+\int_0^t \hat{\sigma}(s,s) dW(s)
+% \end{equation}
+% De las definiciones hechas, se desprende, por tanto,
+% \begin{equation}
+% \label{MusielaAlt}
+% \begin{split}
+% r(t,x) & =r(0,x)+\int_0^t \left(\alpha(s,s+x)+\partial_x r(s,x)\right) ds\quad+\\
+%          & + \int_0^t \sigma(s,s+x) dW(s)
+% \end{split}
+% \end{equation}
+% Si se introduce $\sigma_m(t,x):=\sigma(t,t+x)$, obsrvese que 
+% \begin{equation}
+% \begin{split}
+% \alpha(s,s+x) & = \sigma(s,s+x)\int_s^{s+x} \sigma(t,z) dz=\\
+%                      & = \sigma_m(s,x)\int_0^{x} \sigma_m(t,z) dz := \alpha_m(s,x)-\partial_x r(s,x)
+% \end{split}
+% \end{equation}
+% Combinando estas ltimas redefiniciones con la ecuacin (\ref{MusielaAlt}) se deduce la diferencial (formal) dada en (\ref{Musiela}).
+% \end{demo}
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage\mbox{}\thispagestyle{empty}

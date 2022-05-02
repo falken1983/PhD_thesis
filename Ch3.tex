@@ -1,0 +1,319 @@
+\chapter{Interest Rate Caps}
+Interest rate caps are widely traded OTC interest rate derivatives. An
+interest rate cap is a financial insurance which protects you from
+having to pay more than a predetermined rate,   
+therefore, a cap is insurance against rising interest rates.
+\section{The Market Practice for Plain Vanilla Caps}
+In this section we discuss vanilla interest rate caps and the market
+practice for quoting these instruments. For concreteness suppose the
+underlying rate is the simply-compounded forward LIBOR rate
+$L(t;\cdot,\cdot)$ introduced in Sect. 1.1. Let suppose that we are
+standing at time $t=0$. We consider a fixed set of increasing
+maturities $x_0,~x_1,\dots, x_n$ and we define $\tau_j$,
+by $$\tau_j=x_j-x_{j-1},\quad j=1,...,N.$$ The number $\tau_j$ is
+known as the {\bf tenor}. \begin{defn} We let $P_j(t)$ denote the
+  discount bond price $P(t,x_j)$ and let $L_j(t)$ summarize the
+  notation for a forward LIBOR rate of the type $L(t;x_{j-1},x_j)$,
+  i.e.  
+$$
+L_j(t)=\frac{1}{\tau_j}\left(\frac{P_{j-1}(t)}{P_j(t)}-1\right)\quad
+j=1,\dots,n. 
+$$
+\end{defn}
+Recall that a \emph{vanilla cap} with \emph{cap rate} $K$ and
+\emph{resettlement dates} $x_0,\dots,x_n$ is a contrat which each time
+$x_j$ gives the holder of the contract the amount \begin{equation} 
+\label{payoffCaplet}
+h_{\gamma_j}(x_j) = \tau_j (L_j(x_{j-1})-K)^+,
+\end{equation}
+where $j=1,\dots,n$.
+In fact, the cap is a strip of \emph{caplets}. Note that the forward
+LIBOR rate $L_j(x_{j-1})$ above is in fact the
+sim\-ply-\-com\-poun\-ded spot LIBOR interest rate. By definition: 
+$$
+L_j(x_{j-1}):=L(x_{j-1};x_{j-1},x_j)=L(x_{j-1},x_j),
+$$
+which is observed already at time $x_{j-1}$. The payoff
+$h_{\gamma_j}$ is determined at the reset date $x_{j-1}$ but not payed
+out until the settlement date $x_j$. We also note that the caplet
+$\gamma_j$ is a call option on the on the underlying spot rate.
+
+For a very long time, the market practice has been to value caps by
+using a formal extension of the Black model \cite{B:1976}. This
+extension is typically obtained by an approximation argument where the
+short rate at one point in the argument is assumed to be
+deterministic, while later on in the argument the LIBOR rate is
+assumed to be stochastic. This is of course logically inconsistent. 
+\begin{defn}[Black's Formula for Caplets.]
+The Black-76 formula for the $j$-caplet with payoff: 
+$$ 
+h_{\gamma_j}(x_j)=\tau_j (L_j(x_{j-1})-K)^+,
+$$
+at time $t=0$ is given by the expression
+\begin{equation}
+\label{CapletsBlack76}
+\gamma_j(h_{\gamma_j},0)= \tau_j P_j(0) \left\{L_j(0)N(d_1)-KN(d_2)
+\right\}, \quad j=1,\dots,n, 
+\end{equation}
+where
+% \begin{equation}
+\begin{eqnarray}
+\label{d1} d_1 & = & \displaystyle
+\frac{\log\left(\frac{L_j(0)}{K}\right)+\frac{1}{2}\sigma^2_jx_j}{\sigma_j\sqrt{x_j}}   
+,\\ 
+\label{d2} d_2 & = & d_1-\sigma_j \sqrt{x_j}.
+\end{eqnarray}
+% \end{equation}
+\end{defn}
+The constant $\sigma_j$ is known as the \emph{Black volatility} for
+the $j$-caplet, $\gamma_j$. In the market, cap prices are not quoted
+in monetary terms but instead in terms of \emph{implied Black
+  volatilities} and these volatilities can furthermore be quoted as
+\emph{flat volatilities} or as \emph{forward rate
+  volatilities} but, in this work, we confine ourselves to \emph{flat
+  volatilities}. Suppose we are standing at time $t=0$ and consider
+the fixed set of dates $x_0,~x_1, \dots, x_n$ where $x_0 \geq 0$, and
+a fixed cap rate $K$. We assume that, for each $j=1,\dots, n$, there
+is a traded cap with resettlement dates $x_0, x_1,\dots, x_j$, and we
+denote the corresponding observed market price by $C^o_j$. From this
+data we can easily compute the market prices for the corresponding
+caplets by means of the recursion formula 
+\begin{equation}
+\label{CapletBootstrapping}
+\gamma_j^o=C_j^o-C_{j-1}^o, \quad j=1,\dots,n
+\end{equation}
+with the convention $C_0^o=0$. Moreover, note that given market data
+for caplets we can easily compute the corresponding market data for
+caps by solving the previous recursion formula
+(\ref{CapletBootstrapping}): 
+\begin{equation}
+\label{CapAsCapletStrip}
+C_j=\displaystyle \sum_{j=1}^n \gamma_j, \quad j=1,\dots,n
+\end{equation}
+ Given market price data as above, the implied Black flat volatilities
+ are defined as follows. 
+\begin{defn}
+The implied flat volatilities $\bar\sigma_1,\dots,\bar\sigma_n$ are
+defined as the solutions of the equations: 
+\begin{equation}
+\label{FlatVols}
+C^o_j = \sum_{k=1}^j \gamma^o_k(\bar\sigma_j), \quad j=1,\dots,n,
+\end{equation}
+\end{defn}
+In other words, the flat volatility $\bar \sigma_j$ is the volatility
+implied by the Black formula if you use the same volatility for each
+caplet, in the cap with maturity $x_j$.
+\subsection{IRS and At-The-Money Plain Vanilla Caps}
+An interest rate swap (henceforth IRS) is a scheme where you exchange
+a payment stream at a fixed rate of interest for a payment stream at a
+floating rate (e.g. LIBOR). A payer IRS settled in arrears is
+specified by: 
+\begin{itemize}
+\item a number of future dates $x_0 <x_1 <\dots < x_n$  where
+  $x_j-x_{j-1}\equiv\tau_j$ are the settlement periods and $x_n$ is
+  called the maturity of the swap, 
+\item a fixed rate $K$; and,
+\item a nominal value $N$.
+\end{itemize}
+Moreover, plain vanilla IRS satisfy the equidistance condition for the
+settlement periods; i.e., $\tau \equiv \tau_j$. We recall that cash
+flows take place just at the settlement dates $x_1, x_2, \dots,
+x_n$. At this dates, the holder of such an IRS, pays a predetermined
+amount $$K\tau N$$ and receives in turn the floating payout
+$$L_j(x_{j-1})\tau N.$$ The net cash at $x_j$ is therefore 
+$$
+\left\{L_j(x_{j-1})-K\right\}\tau N.
+$$
+Without loss of generality we set the notional $N=1$ and $t=0$ with
+$x_0>0$. By means of the fundamental arbitrage free pricing formula,
+starting from the money-market martingale measure $\mathbb{Q}$ we can
+compute the value of this contract as:
+
+\begin{equation}
+\begin{split}
+\Pi_{sw}& =\sum_{j=1}^n\mathbb{E}\left[ D(0,x_j)
+  \left\{L_j(x_{j-1})-K\right\}\tau \right] \\
+& = \tau \left(\sum_{j=1}^n \mathbb{E}\left[D(0,x_j)L_j(x_{j-1})
+  \right]-K\sum_{j=1}^n P_j(0) \right)  
+\end{split}
+\end{equation}
+where we have used % that all the quantities $L_j(0)$ are
+% $\mathcal{F}_0$-measurable and 
+the well-known definition $$P_j(0)=
+\mathbb{E}\left[ D(0,x_j)\right].$$ Let us consider the first term
+% By Definition 6\footnote{See Chap. 1} the LIBOR forward rate $L_j(0)$
+% may also be expressed as:
+% $$
+% L_j(0):=L(0; x_{j-1},x_j)=\frac{1}{\tau}
+% \left(\frac{P(0,x_{j-1}}{x_j}-1\right)=\left(\frac{P_{j-1}(0)}{P_j(0)}-1\right)  $$ 
+$$
+\mathbb{E}\left[ D(0,x_j) L_j(x_{j-1}) \right].
+$$
+Fist of all, we may change the risk-neutral measure $\mathbb{Q}$ by
+means of the \emph{Change of Numeraire Theorem} into the more suitable
+$x_j$-forward measure $\mathbb{Q}^{x_j}$. Therefore, we have
+\begin{equation}
+\label{SwValuation}
+\Pi_{sw}=\tau \left(\sum_{j=1}^n P_j(0) \mathbb{E}^{x_j} \left[ L_j(x_{j-1})
+  \right] -K\sum_{j=1}^n P_j(0) \right)  
+\end{equation}
+The following result has a crutial role for concluding.
+\begin{lema}
+For every $j=1, \dots, n$, the LIBOR process $L_j(t)$ is a martingale
+under the corresponding forward measure $\mathbb{Q}^{x_j}$, on the
+interval $[0,x_{j-1}]$.
+\end{lema}
+\begin{demo}
+From Definition 6\footnote{See Sect. 1.1, p. 7} for the 
+sim\-ply-\-com\-poun\-ded LIBOR forward interest rate $L_j(t)$, we
+have: 
+$$
+\tau L_j(t):=\frac{P_{j-1}(t)}{P_j(t)}-1.
+$$
+We recall that the process $$P_{j-1}(t)/P_j(t)$$ is the price of the
+$x_{j-1}$-bond in terms of the strictly positive asset $P_j(t)$, which is, by
+definition, the numeraire for the forward measure
+$\mathbb{Q}^{x_j}$. The process $P_{j-1}(t)/P_j(t)$ is thus trivially
+a $\mathbb{Q}^{x_j}$-martingale on the interval $[0,x_{j-1}]$, where
+the normalized process is well defined. Therefore, $L_j(t)$ is also a
+$\mathbb{Q}^{x_j}$-martingale on the same interval. \end{demo}  
+
+By using the previous Lemma, we have 
+$$
+L_j(t)=\mathbb{E}^{x_j} \left[ L_j(s)\big| \mathcal{F}_t\right]\quad 0\leq
+t\leq s\leq x_{j-1};
+$$
+and, in particular,
+$$
+L_j(0)=\mathbb{E}^{x_j} \left[ L_j(x_{j-1})\right].
+$$
+By substituting into (\ref{SwValuation}):
+\begin{equation}
+\label{SwValuationInter}
+\begin{split}
+\Pi_{sw} &=\tau \left(\sum_{j=1}^n P_j(0) L_j(0)-K\sum_{j=1}^n P_j(0)
+\right)=\\ 
+&=\tau \left[\frac{1}{\tau}\sum_{j=1}^n P_j(0)
+  \left(\frac{P_{j-1}(0)}{P_j(0)}-1\right)-K\sum_{j=1}^n P_j(0)
+\right]= \\
+&=\left[\sum_{j=1}^n \left(P_{j-1}(0)-
+    P_j(0)\right)-K\tau\sum_{j=1}^n P_j(0) \right].
+\end{split}
+\end{equation}
+Finally, the total value $\Pi_{sw}$ at time $t=0$ is therefore
+\begin{equation}
+  \label{SwValuationFinal}
+\Pi_{sw}=P_0(0)-P_n(0)-K\tau\sum_{j=1}^n P_j(0).
+\end{equation}
+\begin{propos}[General Closed-Formula for Plain Vanilla IRS.]
+The total value $\Pi_{sw}(t)$ of a plain vanilla IRS settled in
+arrears at time time $t\leq x_0$ and notional $N$ is
+\begin{equation}
+\label{SwValutaionFinalGral}
+\Pi_{sw}(t)=N\left(P_0(t)-P_n(t)-K\tau\sum_{j=1}^n P_j(t)\right).
+\end{equation}
+\end{propos}
+
+In contrast to the \emph{interest rate caps} pricing, which depends on
+the particular choice of the volatility vector process $\sigma(t,T)$ 
+within the HJM framework, the IRS closed-formula is generic. However,
+note that the plain vanilla interest rate swaps remain dependent on
+the term structure of discount bonds $T \mapsto P(t,T)$.
+\begin{defn}[Forward Swap Rate.]
+The forward swap rate (also called par swap rate) is the rate
+$K_{sw}(t)$ at time $t\leq x_0$ which gives the ``fair value''
+$\Pi_{sw}(t)=0$:  
+$$
+K_{sw}(t)=\frac{P_0(t)-P_n(t)}{\tau \sum_{j=1}^n P_j(t)}.
+$$
+\end{defn}
+Let $t=0$ again for simplicity and suppose, as above, that $x_0>0$,
+then: 
+\begin{rmk}
+ A plain vanilla cap is said to be at-the-money (ATM henceforth) if 
+\begin{equation}
+\label{ATMStrikeCap}
+K=K_{sw}(0)= \frac{P_0(0)-P_n(0)}{\tau\displaystyle \sum_{j=1}^n P_j(0)}.
+\end{equation}
+\end{rmk}
+\section{Caps under The General HJM Gaussian Model}
+Let us now turn to the problem of rigorously pricing the
+caplet. Remember that the payoffs on settlement dates $x_1, \dots,
+x_n$ are: 
+$$
+h_{\gamma_j}(x_j) = \tau_j (L_j(x_{j-1})-K)^+.
+$$
+Note that such an stream of payoffs for the corresponding strip of caplets
+$\gamma_j$, is equivalent in terms of pricing to those
+$$
+h_{\gamma_j}(x_{j-1})=\tau_j \mathbb{E} \left[D(x_{j-1},x_j)
+  (L_j(x_{j-1})-K)^+\big| \mathcal{F}_{x_{j-1}}\right],
+$$
+which are received at fixing dates $x_0,\dots, x_{n-1}$. Because of
+$\mathcal{F}_{x_{j-1}}$-mesurability of $L_j(x_{j-1})$, they can also
+be expressed as
+\begin{equation}
+\begin{split}
+h_{\gamma_j}(x_{j-1})&=\tau_j (L_j(x_{j-1})-K)^+ \mathbb{E}
+\left[D(x_{j-1},x_j) 
+  \big| \mathcal{F}_{x_{j-1}}\right]\\ &= \tau_j P_j(x_{j-1})
+(L_j(x_{j-1})-K)^+. 
+\end{split}
+\end{equation}
+From Definition 5 for the sim\-ply-\-com\-poun\-ded LIBOR spot rate
+$L_j(x_{j-1})$, we know:
+$$
+L_j(x_{j-1}):=\frac{1}{\tau_j} \left( \frac{1}{P_j(x_{j-1})}-1\right),
+$$
+and after some trivial algebra \begin{equation}\begin{split}
+h_{\gamma_j}(x_{j-1})& =\tau_j P_j(x_{j-1}) \left(\frac{1}{\tau_j}
+  \left( \frac{1}{P_j(x_{j-1})}-1\right)-K\right)^+\\  
+&=  \left(P_j(x_{j-1}) \left(\frac{1}{P_j(x_{j-1})}-1\right)-K
+  \tau_jP_j(x_{j-1}) \right)^+ \\ 
+&= \left(1-(1+\tau_j K)P_j(x_{j-1})\right)^+
+\end{split}
+\end{equation} we may finally write the following
+representation for the stream of payoffs:
+\begin{equation}
+h_{\gamma_j}(x_{j-1})=(1+\tau_j K) \left(\kappa-P_j(x_{j-1})\right)^+
+\end{equation}
+where $\kappa=(1+\tau_j K)^{-1}$.
+
+Consequently we see that a $j$-caplet is equivalent to $(1+\tau_j K)$
+put options on an underlying $x_j$-bond, where the exercise date of
+the option is at $x_{j-1}$ and the exercise price is $\kappa$. An
+entire cap contract can thus be viewed as a portfolio of put options,
+and we may use the results on Corollary 2 of Sect. 2.4 to compute the
+theoretical price and, in particular, to price it under the General
+Gaussian HJM model.
+% \vspace*{-.7cm}
+\begin{propos}[Caplet Pricing for Gaussian Forward
+  Rates.] The price at $t=0$ of the $j$-caplet, $\gamma_j$, with
+  payoff:
+$$
+h_{\gamma_j}(x_j)=(L_j(x_{j-1})-K)^+
+$$
+is given by
+\begin{equation}
+\label{GaussianForwardCaplet}
+\gamma_j(h_{\gamma_j},0)=(1+\tau_j K)\left\{\kappa P_{j-1}(0)
+  N(-d_-)-P_j(0) N(-d_+)\right\}
+\end{equation} 
+where
+\begin{eqnarray}
+\label{capletd+-} d_{\pm} & := & \displaystyle \frac{\log\left(\frac{P_j(0)}{\kappa 
+      P_{j-1}(0)}\right)\pm\frac{1}{2}\vartheta^2(0,x_{j-1})}{\vartheta(0,x_{j-1})}\;  , \\  
+\label{volmain} \vartheta^2(0,x_{j-1}) & := &\displaystyle
+\int_0^{x_{j-1}} \| \varsigma(u;x_{j-1},x_j) \|^2\:du\; ;\\   
+\label{volaux} \varsigma(t;x_{j-1},x_j) &  := & -\displaystyle
+\int_{x_{j-1}}^{x_j} \sigma(t,s)\: ds.   
+\end{eqnarray}
+% \end{equation}
+and $\kappa=(1+\tau_j K)^{-1}$.
+\end{propos}
+
+
+% \end{equation}
+% and,
+% \begin{equation}
+% \label{GaussianForwardVol3}

@@ -1,0 +1,1147 @@
+\chapter{Multiojective Calibration: More Empirical Evidence}
+
+In Chapter 5 we have shown that the consistency hypothesis stated by
+Bj\"ork \cite{BG:1999,BC:1999}, implies that the discount bond curve 
+has to be determined at the same time as the parameters of the
+model. Angelini and Herzel \cite{AH:2002, AH:2005}, originally proposed
+the use of a optimization program related to the mentioned daily
+calibrations, which is compatible with this joint estimation. % Perhaps, 
+The milestone of this methodology is the use of an objective function
+based on an error measure for just the portfolio of caps. Then, the
+theoretical prices for the caps along the minimization of this measure
+can be calculated at the same time that the discount bond curve is
+fitted. This is an efficient method because consistent families of
+discount bond curves have good analytical properties under the
+Gaussian hypothesis, i.e. deterministic {\sl forward} volatility.
+
+In last chapter, we have also provided an extension of the above
+strategy which involves a multi-objective framework. As a direct
+consequence, the objective function above-mentioned, is subtituted by
+a {\sl scalarized} form of the intrinsic bi-objective problem. Now,
+the error measure for the discount bonds is evaluated in each
+iteration and could even dominate the joint optimization problem. To
+this scope, we construct this {\sl scalarized} form using a convex
+combination of both the cap and the bond error measures, by means of a
+set of restricted weights. As a matter of fact, this approach is
+richer in possible outcomes. 
+
+%In this paper, we illustrate taking as a case study the daily
+%calibrations of european caps, the relevance  in the choice of the
+%initial curve. To this scope,  we compare the behaviour of consistent
+%and inconsistent families in terms of model parameter stability and
+%fitting capabilities. 
+
+%As an obvious consequence, 
+%to the cap prices 
+% Explicacion Papel I
+%In this paper, we illustrate the relevance of the choice of the initial curve in daily
+%calibrations by comparing, in terms of model parameter stability and
+%fitting ability, the behaviour of consistent and inconsistent
+%families. Our analysis incises about the practical implications of
+%consistency by means of a consistent family of functions closed to
+%the usual non--consistent ones.  
+
+% In doing so, we understand of extraordinary relevance that the joint
+% calibration for the caps and bonds that encompasses consistency
+% hints as we % will proof later, can be considered as a well-posed
+% mathematical problem. As a matter of fact, in this paper, there is a
+% clear difference between % %the optimization program which we show,
+% a suitable choice for these needs, and the other one that have
+% appeared in the financial literature in the % past pursuing similar
+% conceptual goals. We remark that Angelini and Herzel
+% \cite{AH:2002,AH:2005}, uses an approach for this optimization with
+% % a different and less general objective function
+% % specifications. Honestly, we do not like this point of view
+% % concerning the objective program % % specifications, because in
+% % doing it this way, we lose the richness of possible outcomes that
+% % our original optimization program reports. This work also %shows
+% % how flexible this new approach is in terms of convergence
+% % properties.   
+
+% Contestacion-Resumen Papel II
+
+\section{Introduction}
+Given the theoretical tools we have developed in the previous
+chapters, we want to analyze further empirical results which support
+the use of consistent families and the multi-objective calibration
+techniques.
+
+To this end, we extend such analysis to a particular humped volatility
+HJM model, proposed by Ritchen and Chuang \cite{RC:1999} and Mercurio
+and Moraleda \cite{MM:2000}, independently. We have chosen this model 
+because it is quite popular and analytically treatable. In particular,
+it provides closed formulas for Europeans interest-rate options. Moreover, 
+it is a one-factor Gaussian model that seems to be more capable than the
+Hull-White model for reproducing large humps in the implied cap
+volatility curve. 
+
+We perform our study by calibrating this model, first by using
+simulated data and second by focusing on market a data set composed by US discount 
+bonds and at-the-money flat cap volatilities quotes in two different
+periods, as shown by the Figure \ref{data}.
+
+\begin{figure}[h!]
+\begin{center}
+
+\caption{Market TSIR and TSV data in the two different market scenarios.\label{data}}
+\begin{minipage}[c]{12cm}
+\begin{tikzpicture}
+\begin{axis}[width=12cm, xlabel={maturity (yr)}, ylabel={sample mean
+    $\bar\sigma$ (\%)}]
+\addplot+[error bars/.cd,y dir=both,y explicit] table 
+[x=T, y=flatvolS1, y error=2sigmasS1] {VolDataStatsCh6.dat};
+\addplot+[error bars/.cd,y dir=both,y explicit] table 
+[x=T, y=flatvolS2, y error=2sigmasS2] {VolDataStatsCh6.dat};
+\end{axis}
+\end{tikzpicture}
+\end{minipage}
+\begin{minipage}[c]{12cm}
+\begin{tikzpicture}
+\begin{axis}[width=12cm, 
+xlabel={maturity (yr)}, 
+ylabel={sample mean TSIR (\%)},
+legend style={at={(0.5,-0.2)}, anchor=north,legend columns=-1}
+] 
+\addplot+[error bars/.cd,y dir=both,y explicit] table 
+[x=x, y=rateS1, y error=99conflevelS1] {DataStatsCh6.dat};
+\addplot+[error bars/.cd,y dir=both,y explicit] table 
+[x=x, y=rateS2, y error=99conflevelS2] {DataStatsCh6.dat};
+\legend{Period 1, Period 2}
+\end{axis}
+\end{tikzpicture}
+\end{minipage}
+
+\end{center}
+\end{figure}
+
+With regard to the real market data, the first scenario depicts a
+market situation where the implied cap volatility curves have a large
+long-term humped shape and the term structure of interest rates is
+closer to be flat. On the other hand, the second scenario has
+periodically resurfaced in the market and may 
+be considered more typical. In this situation the peak of the 
+hump is at about the two year point. Moreover, the TSIR is not
+monotonic increasing nor flat, being initially-inverted with a local
+minimum at short-term maturities.
+
+This rest of this chapter is organized as follows\footnote{This
+  chapter is based on \cite{FNN:2011,FNN:2008}.}. In Section 6.2 we
+give a brief overview of the model we want to consider and later we
+discuss how to construct consistent families with such a
+model. Section 6.3 is devoted to empirical results, first comparing
+the consistent calibration with the non-consistent approach by means
+of simulated data, then presenting 
+the results of the fitting of the different methods with market data.
+In the last section we give some final conclusions and
+remarks. \section{Consistent Curves with The Model} Our work is devoted to the
+one-dimensional Gaussian HJM humped 
+volatility model of the form:
+\begin{equation}
+\label{HVHJMM}
+df_t(x)=\{ \dots \}\,dt+ \left( \alpha + \beta x \right) e^{-a x}\,dW_t.
+\end{equation}
+Thus, the forward rate volatility function $\sigma(x)$ is
+deterministic depending only on time to maturity.
+% \begin{equation}
+% \label{HVVol}
+% \widetilde{\sigma}(x)=(\alpha+\beta x ) e^{-a x}.
+% \end{equation}
+Note that $\sigma(x)$ is a QE function that admits the matrix
+representation (\ref{VolMatrixForm}). Therefore, $\sigma(x)$ may be
+rewritten as 
+\begin{eqnarray}
+\label{eq:HVTSVMatrix}
+\sigma(x)& = & ce^{A x} b, \text{ where } \\
+\nonumber 
+c& =& [\alpha~~\beta-a\alpha],\\
+\nonumber
+ A& =& \left[\begin{array}{cc}
+0  & -a^2 \\
+1  & -2a
+\end{array}\right],\\
+\nonumber
+ b & = & \left[\begin{array}{c}
+1\\
+0
+\end{array}\right].
+\end{eqnarray}
+For this model, the forward rate decomposition
+$f_t(x)=\delta_t(x)+q_t(x)$, as seen before in Sect. 5.3,
+eqs. (\ref{eq:Input})--(\ref{eq:ForwardDecomposition}), has
+the corresponding $q_t$-process dynamics: 
+\begin{eqnarray}
+\label{eq:HVFactor}
+dZ_t & = & A Z_t\:dt+b\:dW_t,\quad Z_0=0,\\
+q_t(x) & = & C(x)Z_t,
+\end{eqnarray}
+with $A,~b$ as in (\ref{eq:HVTSVMatrix}) and $C(x)=c e^{A x}$. % Thus,
+% (\ref{eq:Factor}) is a linear SDE in the narrow sense (see 
+% Kloeden and Platen \cite{KP:1999} for details) with explicit solution
+% \begin{equation}
+% Z_t=\Phi_t\int^t_0 \Phi^{-1}_sb\:dW_s,
+% \end{equation}
+% where 
+% $$
+% \Phi_t=e^{A t}=e^{-a t}\left[\begin{array}{rr}
+% 1+a t & -a^2 t \\
+% t & 1-a t
+% \end{array}\right].
+% $$
+Therefore, the analytical expression of the forward rate curve for the model is
+given by \begin{equation}
+\label{eq:HVHJMMOperational}
+f_t(x)=f^o(x+t)+\frac{1}{2}\left[S^2(t+x)-S^2(x)\right]+C(x)Z_t,
+\end{equation}
+being $S(x)=\int_0^x \sigma(u)\, du$. After some algebraic
+manipulations like using the explicit expansion for the stochastic term 
+$C(x) Z_t$  
+\begin{equation}
+\begin{split}
+c e^{A x}\left[\begin{array}{c}
+Z^1_t\\
+Z^2_t
+\end{array}\right] & = e^{-a x}\left[\alpha~\beta-a\alpha\right]
+\left[\begin{array}{rr}
+1+a x & -a^2 x \\
+x & 1-a x
+\end{array}\right]\left[\begin{array}{c}
+Z^1_t\\
+Z^2_t
+\end{array}\right] \\ \nonumber
+& \\
+& = e^{-a x} \left(\alpha  Z^1_t-a \alpha 
+   Z^2_t+\beta  Z^2_t\right)+x e^{-a x}
+   \left(\beta  Z^1_t-a \beta 
+   Z^2_t\right),
+\end{split}
+\end{equation}
+and expanding the deterministic term
+$\frac{1}{2}\left[S^2(t+x)-S^2(x)\right]$ which is of the form 
+$$
+g_1(t) e^{-2 a x}+g_2(t)x e^{-2 a x}+g_3(t) x^2 e^{-2 a x}+h_1(t) e^{-a x}+h_2(t) x e^{- 2 a x},
+$$  
+(\ref{eq:HVHJMMOperational}) may be written as
+\begin{equation}
+\label{eq:HVMCexp}
+\begin{split}
+f_t(x) & =f^o(x+t)+ g_1(t) e^{-2 a x}+g_2(t)x e^{-2 a x}+g_3(t) x^2 e^{-2 a x}+  \\ 
+&  \left(h_1(t)+\alpha  Z^1_t-a \alpha Z^2_t+\beta Z^2_t\right)e^{-a x}
++ \ \left(h_2(t)+\beta Z^1_t-a \beta Z^2_t\right) x e^{-a x}.
+\end{split}
+\end{equation}
+Note that this formula, as its corresponding counterpart in previous
+chapter (\ref{eq:MCexp}), is relevant for consistency, because it
+shows which curves the model produces for a given initial curve
+$f^o(x)$.
+\subsection{The Minimal Consistent family} 
+
+% To calibrate the model by means of real data, we actually need to determine the vector
+% parameter $\theta=(\alpha,~\beta,~a)$. In order to estimate the forward rate volatility, 
+% the statistical analysis of past data can be a possible approach, but the
+% practitioners usually prefer implied volatility, laying within
+% some derivative market prices, based techniques. 
+% This way involves a minimization problem where 
+% the loss function can be taken as
+% $$
+% l(\theta)=\sum^n_{i=1}(\zeta^*_i-\zeta(\theta,T_i))^2,
+% $$
+% where $\zeta(\theta,T_i)$ are the $i$--th theoretical derivative price maturing at time $t=T_i$, and
+% $\zeta^*_i \equiv \zeta^*(T_i)$ is the $i$--th market price one.  As it is well known, see Proposition 24.15 and pages 364--366 in Bj\"ork \cite{B:2004},  the  price, at $t=0$, of the cap is given by
+
+% % we need to know how this standard derivative contract is made. Suppose the
+% %current time is $t=0$. Starting with $t=T$, we proceed backwards in steps of
+% %length $\tau$ in time, constructing the the following set of times $x_i=(i+1)\tau$, with $i=0(1)n$ . Then we construct a portfolio of $n$ {\sl caplets}, struck at $K$, with
+% %maturities $\{x_0,~x_1,~\dots,x_{n-1}\}$. These are called the fixing
+% %dates or caplet maturity dates. The dates $\{x_1,~x_2,~\dots,~x_n\}$ are called the
+% %payment dates. The cap is then just equal to this strip of {\sl caplets} and its
+% %price is equal to the price of its constituent {\sl caplets}. If $\xi_j$
+% %denotes the price at time $t=0$ of a {\sl caplet} with maturity date $x_j$
+% %(and payment date $x_{j+1}=x_j+\tau$), then the model price of the cap is
+% %given by
+% %\begin{equation}
+% %\label{eq:theoCap}
+% %\zeta(T)=\sum_{j=0}^{n-1}\xi_j.
+% %\end{equation}
+% %Specifically, the payoff of each individual {\sl caplet} is 
+% %$$
+% %h_\xi(x_{j+1})=\tau(y_L(x_j,x_j+\tau)-K)^+.
+% %$$
+% %It is received at time $x_j+\tau$ and $y_L(x_j,x_j+\tau)$ is the spot
+% %US--LIBOR rate prevalent over the accrual period $[x_j,x_j+\tau]$ (expressed as a
+% %simple compound rate) and with fixing time $x_j$. It follows that, at time
+% %$x_j$, the payoff of such a caplet is 
+% %$$
+% %h_\xi(x_j)=D(x_j,x_j+\tau)\tau(y_L(x_j,x_j+\tau)-K)^+.
+% %$$
+% %On the other hand, the price of a zero-coupon bond at time $x_j$ and maturing at
+% %time 
+% %bond may be expressed as 
+% %$$
+% %D(x_j,x_j+\tau)=(1+\tau y_L(x_j,x_j+\tau))^{-1}.
+% %$$
+% 	%Thus, it follows that
+% %\begin{equation}
+% %\begin{split}
+% %\nonumber
+% %h_\xi(x_j) &
+% %=D(x_j,x_j+\tau)\tau\left(\frac{1}{\tau}\left[\frac{1}{D(x_j,x_j+\tau)}-1\right]-K\right)^+\\
+% %& \\ 
+% % & = \frac{1}{\kappa}(\kappa-D(x_j,x_j+\tau))^+.
+% %\end{split}
+% %\end{equation}
+% %
+% %A cap, therefore, may be seen as a basket of put options with maturity dates
+% %$\{x_0,~x_1,~\dots,~x_{n-1}\}$ on zero-coupon bonds maturing at times
+% %$\{x_1,~x_2,~\dots,~x_{n}\}$ with common strike level $\kappa=(1+\tau K)^{-1}$.    
+% %This is an important fact, because our HJM model as in many other interest rate
+% %models has an explicit formulae for bond option values, which means that in our case study 
+% %caps can be easily priced. 
+% %
+% %In particular, as shown in Bj\"ork and Gombani \cite{BG:1999}, the value $\kappa
+% %\cdot\xi_j$ at time $t=0$ of this a European put option with strike $\kappa$ and time to
+% %maturity $x_j,$ on a bond with maturity $x_{j+1}$ have the explicit formula
+% %$$
+% %% \begin{equation}
+% %\kappa\cdot\xi_j=\kappa D(0,x_j)N(-d_+)-D(0,x_{j+1})N(-d_-),
+% %% \end{equation}
+% %$$ 
+% %where
+% %\begin{equation}
+% %\label{eq:ds}
+% %d_{\pm}=\frac{\ln\frac{D(0,x_j)}{\kappa D(0,x_{j+1})}\pm
+% %  \frac{1}{2}\vartheta^2(x_j)}{\vartheta(x_j)}. 
+% %\end{equation}
+
+% \begin{equation}
+% \label{eq:expTheoCap}
+% \zeta(T)=(1+\tau K) \left(\sum_{j=0}^{n-1}\kappa D(x_j)N(-d_+)-D(x_{j+1})N(-d_-)\right),	
+% \end{equation} 
+% where
+% \begin{equation}
+% \label{eq:ds}
+% d_{\pm}=\frac{\ln\frac{D(x_j)}{\kappa D(x_{j+1})}\pm
+%   \frac{1}{2}\vartheta^2(x_j)}{\vartheta(x_j)},
+% \end{equation}
+% the interval $[0,T]$ is subdivided with equidistant points, i.e.,
+% \begin{equation}
+% \label{eq:times}
+% x_j=(j+1)\tau\qquad j=0,~1,~\dots,~n;
+% \end{equation}
+% $D(\cdot)$ is the initial discount function; and $\kappa$ equals to $(1+\tau K)^{-1}$ with $K$ denoting the {\sl cap rate}.
+
+% The variable $\vartheta$ in (\ref{eq:ds}) is intimately related
+% with the concrete multifactor Gaussian HJM model realization via the particular
+% $[A,~B,~c]$ forward rate TSV selection:   
+% $$
+% \vartheta^2(x_j)=M(x_j) F(x_j) M'(x_j),
+% $$
+% where $M(x_j)$ is the matrix 
+% $$
+% M(x_j)=c A^{-1} \left(e^{A (x_j+\tau)}-e^{A x_j}\right),
+% $$ 
+% and $F(\cdot)$ satisfies
+% $$
+% F(\cdot)=\int_0^\cdot e^{-As} BB' e^{-A's} ds.
+% $$
+% Although the inversion of the matrix $A,$ the series expansion of $e^{A x},$ reveals that $M$ is not a
+% singular matrix even for small values of parameter $a$. This result is also true
+% for another Gaussian HJM models built from QE forward TSV families, because the
+% matrix elements of $A$ are, fortunately, polynomial functions of the model
+% parameters. However, due to numerical instability of the calibration process,
+% when $a\to 0$, an asymptotically equivalent expression for $\vartheta$ must be
+% used.
+
+% The equations (\ref{eq:expTheoCap}) and (\ref{eq:ds}), also express the effective
+% influence of {\sl ab initio} yield curve estimation on cap pricing.
+
+% \subsection*{Consistent Curves with Gaussian Models}
+
+% If we want to measure the actual impact that alternative choices to the
+% Nelson-Siegel yield curve interpolating approach produces on derivatives pricing and hedging, we need 
+% to determine consistent families for this particular model. The fundamental results
+% can be found in Bj\"ork and Christensen \cite{BC:1999} in more detail. 
+% We adapt some of them to our Gaussian case study without further technical discussion for the general case.
+% \begin{defn} Consider the space $\mathcal{H}$ is defined as the space of all $\mathcal{C}^\infty$-functions,
+% $$
+% r: \mathcal{R}_+ \to \mathcal{R}
+% $$
+% satisfying the norm condition:
+% $$
+% ||r||^2=\sum_{n=0}^\infty 2^{-n} \int_0^\infty \left(\frac{d^n r}{dx^n}(x)\right)^2 e^{-\gamma x}\: dx<\infty
+% $$
+% where $\gamma$ is a fixed positive real number. 
+% \end{defn}
+% As proved by Bj\"ork and Svensson \cite{BS:2001} in Proposition 4.2, this space $\mathcal{H}$ is a Hilbert space.
+% % \begin{tma}[Bj\"ork and Christensen] Consider as given the mapping
+% \begin{tma} Consider as given the mapping
+% $$
+% G: \mathcal{Z} \to \mathcal{H}
+% $$
+% where the parameter space $\mathcal{Z}$ is an open connected subset of $R^d$, $\mathcal{H}$ a Hilbert space and the {\sl forward curve manifold} $\mathcal{G}\subseteq H$ is defined as $\mathcal{G}=Im(G)$.  The family $\mathcal{G}$ is consistent with the one-factor model $\mathcal{M}$ with deterministic volatility function $\sigma(\cdot)$, if and only if 
+% \begin{eqnarray}
+% \partial_x G(z,x)+\sigma(x)\int_0^x \sigma(s) ds & \in & {\rm
+%   Im}\left[\partial_z G(z,x)\right],\\   
+% \sigma(x) & \in & {\rm Im}\left[\partial_z
+% G(z,x)\right],	
+% \end{eqnarray}
+% for all $z\in Z$.
+% \end{tma}
+
+% The statements 12 and 13 are called, respectively, \emph{the consistent drift} and
+% \emph{the consistent volatility} conditions. These are easy to apply in concrete cases as shown Bj\"ork and Christensen \cite{BC:1999} or De Rossi \cite{R:2004}, among others.
+% %TSV specification, $\sigma(x)=(\alpha+\beta x)e^{-a x}$, and make, for instance,
+% %the following {\sl ansatz}:  
+% %$$
+% %G^{(0)}(z,x)=(z_1+z_2 x)e^{-a x}.
+% %$$
+% %Thus, ${\rm Im}\left[\partial_z G(z,x)\right]$ is spanned by the vector system
+% %$S^{(0)}=\{e^{-a x},~x e^{-a x}\}$ and then, the {\sl CVC} is guaranteed. However, note that the vector 
+% %\begin{equation}
+% %\begin{split}
+% % \partial_x G^{(0)}(z,x)+\sigma(x)\int_0^x \sigma(s) ds & = A(z) e^{-a x}+B(z)
+% %xe^{-a x} + \\ \nonumber
+% % & \  C e^{-2ax}+D xe^{-2ax}+Ex^2e^{-2ax},
+% %\end{split}
+% %\end{equation}
+% %cannot be supplied by the system $S^{(0)}$. Consequently, $G(z,x)$ must
+% %be modified for skipping the {\sl CDC} violation. Direct inspection shows that by
+% %means of the {\sl ansatz}
+% %$$
+% %G^{(1)}(z,x)=G^{(0)}(z,x)+(z_3+z_4 x+z_5 x^2) e^{-2 ax},
+% %$$
+% %the {\sl CVC} is still preserved and now, in addition, the {\sl CDC} is also
+% %satisfied\footnote{In fact, this two-steps approach needed to find $G$ in our concrete
+% %case may be mimicked for generalizing the search of a minimal consistent family
+% %with any kind of Gaussian multifactor HJM model $\mathcal{M}$ with QE
+% %TSV.}. 
+% For the particular one-factor model we consider along this work, Proposition 7.2 and 7.3 in Bj\"ork and Christensen \cite{BC:1999} may be directly applied to get the useful result:
+\begin{propos} The family
+\begin{equation}
+\label{HMC}
+G_{HMC}(z,x)=(z_1+z_2 x)e^{-a x}+(z_3+z_4 x+z_5 x^2)e^{-2 a x},
+\end{equation}
+is the minimal dimension consistent family with the model
+characterized by deterministic volatility $\sigma(x)=(\alpha+\beta
+x)e^{-a x}$.
+\end{propos}
+\begin{demo}
+From (\ref{eq:HVMCexp}) we see that a family which is invariant under time translation is
+consistent with the model if and only if it contains the linear space
+$\{e^{-ax},xe^{-ax},e^{-2ax},xe^{-2ax},x^2e^{-2ax}\}$. 
+\end{demo}
+
+Similar results as discussed along the lines of Sect. 5.2.1 will turn
+up over and over again, so we list some concluding remarks which the
+reader may immediately derive.
+\begin{lema} The following hold for the humped volatility
+  Heath-Jarrow-Morton model characterized by $\sigma(x)=(\alpha +
+  \beta x) e^{-a x}$. 
+\begin{itemize}
+\item The NS 
+$$
+G_{NS}(z,x)=z_1+z_2e^{-z_4 x}+z_3 x e^{-z_4 x},
+$$
+is not consistent with this model.
+\item The family 
+$$
+G_{HMC}(z,x)=(z_1+z_2 x)e^{-a x}+(z_3+z_4 x+z_5 x^2)e^{-2 a x},
+$$
+it is the lowest dimension family consistent with the model (hereafter HMC).
+\item The family
+$$
+G_{ANS+}(z,x)=z_1+z_2e^{-a x}+z_3 xe^{-a x}+(z_4+z_5 x+z_6 x^2)e^{-2 a x},
+$$
+is the simplest adjustment based on restricted NS family that allows model
+consistency (hereafter ANS+).
+\end{itemize}
+\end{lema}
+
+% \section{Calibration to Market Data Approaches}
+
+% The calibration procedures can be described formally as follows. Let
+% $\theta$ be the  vector $(\alpha,\beta,a)$ of parameter values for the
+% model under consideration. Assume that we have time series observations of the implied
+% volatilities, $\sigma^B_i$, of $N$ caps, with different ATM {\sl strikes},
+% $K_i$, and maturities $T_i$ with $i=1,\dots,N,$ here $N=7.$ 
+% Suppose, that at time
+% $t=0$ we are also equipped with the discount function estimation, 
+% $D(x)$, and that the market
+% participants translate volatility quotes to cash quotes adopting 
+% {\sl Black} framework. In doing so, they adopt the 
+% convention that $K_i$ quantities must match forward swap rates of the interest
+% rate swaps (IRS) with same reset periods that the $i$-th cap (these IRS start
+% their cash flows at $t=x_0+\tau$ as the corresponding cap and have no cash value at
+% $t=0$): 
+% \begin{equation}
+% \label{eq:Kswap}
+% K_i=\frac{D(\tau)-D(T_i)}{\tau \sum_{j=1}^n D(x_j)},
+% \end{equation}
+% where $\tau$ is the length of the underlying caplets, and
+% $x_1=2\tau,\dots,x_n=T_i$. The derivation of the formula (\ref{eq:Kswap}) can be found, for example, in Bj\"ork \cite{B:2004} (Proposition 20.7 on page 313). 
+
+% Now, by inspection, it is clear that this market
+% convention makes that $K_i$ depends on the yield-curve estimation. It allows to us
+% to denote market prices of caps with
+% $\zeta^*(T_i,D(x),K_i(D(x)),\sigma^B_i)$. This last
+% expression emphasizes explicit and implicit dependence  (through ATM {\sl
+%   strikes})  on discount function estimation even for market prices. Let
+% $\zeta(T_i,D(x),K_i(D(x)),\theta)$ be the
+% corresponding theoretical price under our particular model.
+
+% \subsection*{The Two-Step Traditional Method}
+
+% First, we choose a non-consistent parametrized family of forward
+% rate curves $G(z,x)$. Let $D(z,x)$ be the zero-coupon bond prices reported by
+% $G(z,x)$. Let $D^*_k$ be the corresponding discount factor observations on
+% maturities $x_k$ with $k=1,\dots,M=11$. For each zero-coupon bond denoted with
+% subscript $k$, the logarithmic pricing error\footnote{Recall that, for small
+%   $\epsilon_k$, it is also the relative pricing error
+%   $\frac{D^*_k-D(z,x_k)}{D(z,x_k)}$.} is written as follows 
+% $$
+% \epsilon_k(z)=\log D_k^*-\log D(z,x_k).
+% $$
+% Then, we have chosen in this work the sum of squared pricing errors, $SSE$, as
+% objective function to minimize:
+% \begin{equation}
+% \label{eq:minD}
+% SSE_D=\underset{z}{\textrm{min}}~\|\log D^*-\log
+% D(z,x)\|^2=\underset{z}{\textrm{min}}\sum_{k=1}^M\epsilon^2_k(z).
+% \end{equation}
+% Now, via the least squares estimators $\hat{z},$ an entire discount factor estimation
+% allows to price the caps using market practice or a HJM model. Following a
+% similar scheme for the derivatives fitting to that used at the bond side we have 
+% $$
+% \varepsilon_i(\theta)=\log \zeta_i^*-\log \zeta(\theta,T_i).
+% $$
+% and
+% \begin{equation}
+% \label{eq:minC}
+% SSE_C=\underset{\theta}{\textrm{min}}~\|\log \zeta^*-\log
+% \zeta(\theta,T)\|^2=\underset{\theta}{\textrm{min}}\sum_{i=1}^N\varepsilon^2_i(\theta),
+% \end{equation}
+% where we have suppressed dependencies for simplicity.
+% Note that yield-curve estimation is external to the model in the sense that
+% there is no need to know first any of the model parameters $\theta$ for solving
+% non-linear program (\ref{eq:minD}). 
+
+% \subsection*{The Joint Calibration to Cap and Bond Prices}
+
+%     Let us now describe in detail the joint cap-bond calibration procedure which
+%     has sense in a consistent family framework. We note that in this situation the
+%     parameters of the model are determined together with the initial forward
+%     rate curve. This is different from the traditional fitting of HJM models, where
+%     the two steps are separate, as we discussed before. 
+
+% From expression (\ref{MCF}), we notice the dependency of the family 
+% from the parameter $a$. Let $G(z,x,a)$ be a family consistent with our model
+% (for instance, $G_m$ and $G_{ANS}$) and define least-squares estimators,
+% $\hat{z}(a)$
+% \begin{equation}
+% \label{minDcons}
+% \hat{z}(a)=\arg \underset{z}{\min} \sum_{k=1}^M(\log D^*_k-\log D(z,x_k,a))^2.
+% \end{equation}
+% From the expression 
+% $$
+% \log  D(z,x_k,a)=-\int_0^{x_k} G(z,s,a)\:ds=\sum_{j=1}^{n_p} M_{kj}(a) z_j,
+% $$
+% we note that, for consistent families and for a fixed $a,$ the problem
+% (\ref{minDcons}) is linear in $z$-parameters (for the $G_m$ family $n_p=5$, and
+% for the $G_{ANS}$ family $n_p=6$). Thus, $\hat{z}$ is an explicit and
+% continuous function of $a$. With yield-curve estimation implemented for every
+% fixed $a$, the entire discount function $D(\hat{z}(\theta),x,a)$ may be
+% determined and it could be thought that the estimates $\hat{\theta}$ have to be
+% found by solving the non-linear program
+% \begin{equation}
+% \label{eq:minCcons1}
+% \begin{split}
+% SSE_C = & \underset{\theta}{\min} ~\|\log
+% \zeta^*\left[D(\hat{z}(\theta))\right]-\log 
+% \zeta\left[D(\hat{z}(\theta),\theta,T)\right]\|^2 =\\
+% = & \underset{\theta}{\min}\sum_{i=1}^N\varepsilon^2_i(\theta).
+% \end{split}
+% \end{equation}
+% However, following the latter program we are not sure that the corresponding yield-curve
+% at the minimum $\hat{\theta}$, $D(\hat{z}(\hat{\theta}),x,\hat{\theta})$, was
+% the optimal value of the sequence of yield curve estimations implicit in this
+% program (\ref{eq:minCcons1}). In other words, there exist reasonable doubts about the convergence
+% of this algorithm because both error measures compete in general. Now, we consider the following
+% decomposition for the total loss function $SSE(\theta)$
+% \begin{eqnarray}
+% SSE_D(\theta)&=&\|\log  D^*-M(\theta)\hat{z}(\theta)\|^2,\\
+% SSE_C(\theta)&=&\|\log \zeta^*\left[D(\hat{z}(\theta))\right]-\log \zeta\left[D(\hat{z}(\theta)),\theta,T)\right]\|^2.
+% \end{eqnarray}
+%   Then, as an heuristic solution, we propose to modify the latter program to
+%   include pricing residuals for the discount through the convex combination 
+% \begin{equation}
+% \label{eq:minCons2}
+% SSE_\lambda  = \underset{\theta}{\min}\left((1-\lambda)\, SSE_D(\theta)+\lambda\, SSE_C(\theta)\right),
+% \end{equation}
+% for some fixed $\lambda\in [0,1]$.
+
+% At this point, note that the program used by Angelini and Herzel \cite{AH:2002,AH:2005} in their works, uses a different goal attainment
+% \begin{equation}
+% \label{eq:minConsAH}
+% SSE=\underset{\theta}{\min}\: SSE_C(\theta)
+% \end{equation}
+% where $SSE_C(\theta)$, and $\hat{z}(a)$  are defined trough the
+% identities (\ref{eq:minCcons1}) and (\ref{minDcons}). As a
+% consequence, the program used by these authors is a degenerate case of
+% (\ref{eq:minCons2}) with $\lambda$ fixed equal to 1. 
+
+% % {\bf 
+% We test the robustness of this fitting algorithm for the MC family by using 1000
+% extractions from three independent uniform distributions as initial guess for
+% the parameters, $\theta^{(0)}$. As representative input data, $(D^*,\zeta^*)$,
+% we use the sample mean along the first 75 trading dates of the second (excited)
+% period under study. 
+% Figure \ref{CalibTest}, shows the sample mean of the 1000 paths generated by
+% the algorithm for $SSE_C(\theta^{(k)})$ and first contribution,
+% $SSE_D(\theta^{(k)})$, departing from simulated $\theta^{(0)}$. After the initial
+% movements on the wrong direction, first contribution corrects its behaviour for
+% searching its own minimum. Moreover, the second contribution exhibits a correct
+% minimization pattern. Note the slightly better results on both sides with smaller
+% $\lambda$. Similar results can be obtained with the ANS family and other
+% market scenarios. 
+
+\section{Empirical Results}
+We compare four different estimations of the initial discount bond
+curve based on NS, HMC, ANS+ and cubic spline interpolation (hereafter
+SP).
+
+% Our first objective is to test the stability of the implicit estimation of the model
+% parameters $\theta$. We consider mean, standard deviation and
+% coefficient of variation of parameter estimates time series. 
+% In this context the main goal is to analyze the impact that an 
+% alternative interpolation
+% scheme has on the fitting capabilities of the model. To this end, we use as a
+% measure, the mean of the daily sum of squared errors of derivatives log prices,
+% hereafter $MSE_C$. The same measure is used for the 
+% zero-coupon bond prices (we denote it with
+% $MSE_D$) and it is included in the analysis with the market data.
+
+The US data set consists of 126 daily observations divided in two periods: 
+first period covers from 3/7/2000 to 29/09/2000 (64 trading dates) and the second one
+starts in 4/1/2001 and finish on 30/3/2001 (62 trading dates). 
+
+% The Euro denominated set used for the analysis consists of 100 daily
+% observations from 15/2/2001  
+% to 4/7/2001. We point out that this Euro zone database is the same
+% used in Angelini and Herzel \cite{AH:2002,AH:2005}.  
+% As these authors, we divide the sample into two subperiods, Period 1 and Period 2.  
+% Period 1 runs from the beginning to 19/4/2001 (46 observations) and
+% it is characterized by a humped implied  
+% volatility term structure. Period 2 goes from 20/4/2001 to the end
+% (54 observations) and presents a decreasing implied volatility.  
+
+With regard to the market the data set is composed of US discount bond of fourteen
+maturities (1,~3,~6 and 9 months and from 1 to 10 years) and of implied
+volatilities of at-the-money interest rate  caps with maturities
+1,~2,~3,~4,~5,~7~and 10 years. This two windows of data comes from the same
+database explained before in Chapter 5 being kindly provided by
+Thomson Reuters Datastream. On the other hand, the simulated data was
+obtained from 360 extractions of bond and cap prices with identical
+maturities as its real-market equivalents as produced by the model
+under study.
+
+\subsection*{Simulations}
+We simulate the forward rate curves of the humped volatility model at
+time $t$ when initiliazed from alternative starting curves $f^o(x)$
+using (\ref{eq:HVMCexp}).
+
+% the forward curves until the time $t$ attainable by this model. % We
+% % accomplished it by working out the expression (\ref{eq:HVMCexp}), and
+% % writing the explicit formula for the stochastic as well as the
+% % deterministic coefficients which are actually variable in time
+% % evolution: the aforementioned $g_i(t)$, $Z^i_t$ and the extra ones
+% % coming from initial curve translation, $f^o(x+t)$.
+Next, we compute the fourteen prices of the set of discount bonds by
+integrating the forward curve $f_t(x)$ in  
+$$
+P(t,x)= e^{-\int_0^x f_t(u)\,du},
+$$
+and the seven prices of the ATM caps by using equations
+(\ref{eq:expTheoCap}), (\ref{ATMStrikeCap}), (\ref{capletd+-}), and 
+by working out the integral (\ref{volmain}) to obtain the model implied
+volatility function:
+\begin{equation}
+\vartheta^2(0,x_{j-1}) = \int_0^{x_{j-1}} \left[ \int_{x_{j-1}}^{x_j}
+  ( \alpha+\beta(T-t) ) e^{-a(T-t)}\,dT \right]^2\,dt.
+\end{equation}
+
+ 
+% eq pam pam pam
+% Explicacion: Funcion Vola Cheyette Model
+% prices of the seven caps with formula (\ref{eq:expTheoCap}).   
+
+The fixed model parameters, $\boldsymbol {p_0}=[ 0.002\:0.007\:0.35]^T$, have been
+taken. This particular choice has similar order of magnitude as the
+empirical estimations for this model reported by Angelini and Herzel
+\cite{AH:2005}. As alternative starting curves, we choose HMC, ANS+
+and NS fitted to the zero coupon bond prices shown in Figure
+\ref{ZeroCoupon}.  
+% 1. 
+
+\begin{figure}[h!]
+\caption{Discrete data for initial yield-curve estimation.\label{ZeroCoupon}} 
+\begin{center}
+\begin{tabular}{r|ccccccc}
+\hline\hline
+{\sc Maturity, $x$} & 0.083 & 0.25 & 1 & 2 & 3 & 4\\
+{\sc Discount Bond, $P^o(x)$} & 0.9962 & 0.9886 & 0.9538 & 0.9069 & 0.8602 & 0.8142\\
+\hline
+{\sc Maturity, $x$}& 5& 6& 7& 8& 9 & 10\\
+{\sc Discount Bond, $P^o(x)$}  &  0.7693 & 0.7260 & 0.6843 & 0.6445 &
+0.6066 & 0.5706 \\
+\hline
+\end{tabular}
+\end{center}
+\end{figure}
+
+Starting from the initial fitted curves, which may be denoted with
+$f^o_{HMC}(x)$, $f^o_{ANS+}(x)$ and $f^o_{NS}(x)$, and according to
+(\ref{eq:HVHJMMOperational}), the corresponding three different model
+evolutions are calibrated to HMC, ANS+ and NS, restricting the palette
+of the possible Pareto-front approximants produced by the {\sl scalarized} program
+(\ref{finalMOO}), to $\omega_1=1$. In order to make calibration
+results more comparable, Monte Carlo simulations are built in from
+the identical random sequence $(Z^1_t,~Z^2_t)$ in all three cases. 
+
+Following the expression (\ref{eq:HVMCexp}), it is easy to observe
+that there are two consistent families, $G_{HMC}$ and $G_{ANS+}$, for
+the first simulation E1, just one, $G_{ANS+}$, for the second
+simulation E2, and no one for the last simulation E3. 
+
+Figure \ref{SimResults} shows main consequences of the theory when the
+model  is the {\sl truth} model. Notice that perfect calibration just
+occurs, although model parameters 
+are fixed {\sl a priori},  when the used family to perform
+calibrations is consistent with all the future forward curves
+generated from initial curve $f^o(x)$. This fact explains, for
+instance, the bad performance for the NS family even on E3
+experiment. Indeed, as may be seen in Figure \ref{sim2}, an incorrect
+discount bond choice selection produces parameter instability and
+imprecision.
+
+\begin{figure}[h!]
+\caption{Summary statistics for calibration results with simulated data.
+\label{SimResults}} 
+\begin{center}
+\begin{tabular}{|c|c|lll|}
+\hline\hline
+& & HMC & ANS+ & NS \\
+\hline 
+ & $\varepsilon_r(\alpha)$ & 0 & 0 & 0.23 \\
+  & $\varepsilon_r(\beta)$ & 0 & 0 & 0.13 \\
+ & $\varepsilon_r(a)$ & 0 & 0 & 8.7$~10^{-2}$ \\
+E1:& $C_v(\alpha)$ & 0 & 0 & 0.18 \\
+$f_0(x)=f^o_{HMC}(x)$ & $C_v(\beta)$ & 0 & 0 & 0.14 \\
+& $C_v(a)$ & 0 & 0 & 9.7$~10^{-2}$\\ 
+ &  $\sigma_{LS}$ & 0 & 0 & 1.9$~10^{-3}$ \\
+\hline
+ & $\varepsilon_r(\alpha)$ & 0.25 &  0 & 0.28 \\
+  & $\varepsilon_r(\beta)$ & 0.16 & 0 & 0.16 \\
+ & $\varepsilon_r(a)$ & 0.12 & 0 & 9.5$~10^{-2}$ \\
+E2: & $C_v(\alpha)$ & 3.8$~10^{-2}$ & 0 & 0.117 \\
+$f_0(x)=f^o_{ANS+}(x)$ & $C_v(\beta)$ & 3.9$~10^{-2}$ & 0 & 9.1$~10^{-2}$ \\
+ & $C_v(a)$ & 3.2$~10^{-2}$ & 0 & 4.8$~10^{-2}$ \\
+ &  $\sigma_{LS}$ &  2.6$~10^{-4}$ & 0 & 6.7$~10^{-4}$ \\
+\hline
+ & $\varepsilon_r(\alpha)$ & 0.313 & 2.7$~10^{-4}$ & 0.18 \\
+ & $\varepsilon_r(\beta)$ & 0.20 & 2.10$~10^{-4}$ & 0.10 \\
+ & $\varepsilon_r(a)$ &  0.16 & 1.6$~10^{-5}$ &  6.7$~10^{-2}$ \\
+E3: & $C_v(\alpha)$ & 2.3$~10^{-2}$ & 1.4$~10^{-4}$ & 0.17 \\
+$f_0(x)=f^o_{NS}(x)$ & $C_v(\beta)$ & 2.6$~10^{-2}$ & 1.0$~10^{-4}$ & 0.111 \\
+ & $C_v(a)$ & 2.2$~10^{-2}$ & 8.3$~10^{-5}$ & 6.3$~10^{-2}$ \\
+ &  $\sigma_{LS}$ & 3.8$~10^{-4}$ & 3.9$~10^{-9}$ & 3.5$~10^{-4}$ \\
+\hline
+\end{tabular}
+\end{center}
+Sample statistics of the calibration on simulated data. Relative errors of the
+parameters estimates are expressed in absolute value. We set to $0$ table
+entries with value $<10^3\cdot${\tt eps} (variable {\tt eps~}$\sim10^{-16}$
+measures {\sc Matlab} internal accuracy).  
+\end{figure}
+ 
+\begin{figure}[p]
+\caption{Daily estimates of parameters $a$ and $\alpha$ for data
+  simulated from the model with $\alpha=0.002$ and $a=0.35$ and
+  starting forward curve $f_0(x)=f^o_{ANS+}(x)$.\label{sim2}} 
+
+\begin{center}
+
+\begin{minipage}[r]{13cm}
+\begin{tikzpicture}
+\begin{axis}[
+ylabel={$a$ parameter},
+no markers,
+width=12cm,
+height=9cm,
+xmin=0,
+xmax=360,
+xtick={0,100,200,300},
+ymin=0.25,
+ymax=0.4,
+ytick={0.25,.3,.35,.4},
+ylabel style={font=\large},
+legend style={at={(0.5,-0.2)}, anchor=north,legend columns=-1},
+]
+\addplot [very thick,black] table [x={t}, y={HMC}] {MonteCarlo_a.txt};
+\addplot [black] table [x={t}, y={ANS+}] {MonteCarlo_a.txt}; 
+\addplot [densely dashed,red] table [x={t}, y={NS}] {MonteCarlo_a.txt};  
+\legend{HMC, ANS+, NS}
+\end{axis}
+\end{tikzpicture}
+\end{minipage}
+\begin{minipage}[r]{13cm}
+\begin{tikzpicture}
+\begin{axis}[
+ylabel={$\alpha$ parameter},
+no markers,
+width=12cm,
+height=9cm,
+xmin=0,
+xmax=360,
+xtick={0,100,200,300},
+ymin=0.0015,
+ymax=0.0035,
+ytick={0.0015,.002,.0025,.003, 0.0035},
+% yticklabel pos=right,
+ylabel style={font=\large}
+]
+\addplot [very thick,black] table [x={t}, y={HMC}] {MonteCarlo_alpha.txt};
+\addplot [black] table [x={t}, y={ANS+}] {MonteCarlo_alpha.txt}; 
+\addplot [densely dashed,red] table [x={t}, y={NS}] {MonteCarlo_alpha.txt};  
+
+\end{axis}
+\end{tikzpicture}
+\end{minipage}
+\end{center}
+\begin{flushleft}
+The straight line corresponds to daily calibration results belonging
+ANS+ family, the irregular black line to the MC family and the dashed
+red one to the NS family. 
+\end{flushleft}
+\end{figure}
+
+\subsection*{Real Data}
+The main purpose of this section is to compare the performance of the
+two different calibration approaches introduce in Chapter 5 along the two
+different periods of real trading dates described before. Therefore, from
+now on we will only consider the calibration results obtained with the
+market data. For simplicity, the consistent calibrations are carried
+out by means of just the lowest dimension family, the HMC family.
+
+Concerning the real data, calibration with consistent families are
+carried out by setting the weights palette $(\omega_1,~ \omega_2)$, as
+defined in (\ref{weightSpectrum}), Sect. 5.5. With regard to the
+consistent calibration, the {\sl scalarized} MOO program (\ref{finalMOO}) has
+also been used. The table on Figure \ref{RealResults} exhibits 
+the sample mean of the daily error fitting measures, namely $RPE_C$
+and $RPE_B$, and the mean and the coefficient of variation of
+parameter estimates.  
+
+\begin{figure}[h!]
+\caption{Summary statistics for calibration results with US data on both periods.
+\label{RealResults}} 
+\begin{center}
+\begin{tabular}{|c|c|lll|}
+\hline\hline
+& & HMC & NS & SP \\
+\hline 
+ & $\alpha$ &  0.0093  & 0.0098 & 0.01\\
+  & $\beta$ &  0.0007  & 0.0013  & 0.0008\\
+ & $a$ & 0.0024 & 0.0961 & 0.064\\
+{\sc Period 1}& $C_v(\alpha)$ & 0.11 & 0.05 & 0.05\\
+ & $C_v(\beta)$ & 0.33 & 0.71 & 1.30\\
+& $C_v(a)$ & 0.52 & 0.54 & 0.92\\
+ &  $RPE_C (\%)$ & 2.2 & 2.7 & 2.75\\ 
+ &  $RPE_B (\%)$ & 0.019 & 0.047 & \\
+\hline
+ & $\alpha$ & 0.0087 & 0.0091 & 0.0085\\
+  & $\beta$ & 0.0041  & 0.0039 & 0.0052\\
+ & $a$ & 0.1469 & 0.176 & 0.2129\\
+{\sc Period 2} & $C_v(\alpha)$ & 0.15 & 0.1 & 0.11 \\
+& $C_v(\beta)$ & 0.72 & 0.38 & 0.35\\
+ & $C_v(a)$ & 0.96 & 0.3 & 0.27\\
+ &  $RPE_C$ & 1.49 & 1.56 & 1.36\\
+ &  $RPE_B$ & 0.031 & 0.043 &\\
+\hline 
+\end{tabular}
+\end{center}
+\end{figure}
+
+% It can be observed that a consistent calibration approach
+% based upon the $G_{ANS}$ produces generally more stable parameters on both
+% periods than the consistent one using minimal family and the traditional
+% involving Nelson-Siegel family. 
+On the other hand, Figure \ref{RealResultsGraficos} shows in-sample
+fitting time series. The HMC family under study report good in-sample 
+fitting results as compared with non-consistent approaches. However,
+when we look in detail at the Period 2, the families NS and HMC and
+even the cubic spline based interpolants perform slightly similar with
+regard to caps calibration. In fact, the non-consistent approach based
+with cubic spline interpolation, marginally outperforms all the
+rest. In Figure \ref{tsWeightsCh6}, we plot the daily distribution of 
+the weight $\omega_1$ which performs the best calibration for caps in
+both samples of data. As for the Period 1, we observe that the cap
+contribution of the scalarized objective is more dominant, because of
+the reason that when articulating {\sl a posteriori} preferences as
+we made in previous chapter, the weights closer to the WPO
+($\omega_1=1$) have the capability to reproduce better daily fits of
+derivatives. As for the Period 2, the individual objectives,
+$[l_1\:l_2]^T$  appear to be more cooperative relaxing the performance
+of the fit results of the implied cap volatility curve. This
+fact, may explain the very similar results provided for all three 
+methods in the second window.  
+\pgfplotstableread{HistogramsCh6.dat}{\histoweights}  
+\begin{figure}[h!]
+\centering
+\caption{Not normalized daily empirical distribution of weights with the best $RPE_C$
+  for both sample periods as produced by the multi-objective
+  calibration. \label{tsWeightsCh6}} 
+\begin{tikzpicture}
+  \begin{axis}[
+    ybar,
+    ylabel={$\#$},
+    height=9cm,
+    width=12cm,
+    enlarge y limits=false,
+    axis lines*=left,
+    ymin=0,
+    ymax=15,
+    legend style={at={(0.5,-0.2)},
+      anchor=north,legend columns=-1},
+    xtick=data,
+    ytick={5,10,15,20}
+%   nodes near coords% ,
+%   every node near coord/.append style= {
+%   anchor=mid west,
+%   rotate=70
+%    }
+  ]
+    \addplot table [x={w_1}, y={countS1}] {\histoweights};
+    \addplot table [x={w_1}, y={countS2}] {\histoweights};
+    \legend{Period 1, Period 2}
+\end{axis}
+\end{tikzpicture}
+\end{figure}
+% Focusing on the the Euro market, we restrict ourselves to the
+% comparison of three different estimations of the initial yield curve
+% based on the minimal dimension family which is consistent with the
+% model analysed in the paper. The table in Figure \ref{EuroRealResults}
+% compares the results reported by Angelini and Herzel
+% \cite{AH:2002,AH:2005} (left column) with two of the possible extra
+% outcomes that our extension may produce (central and right
+% column). Recall that the objective function of their works is a
+% particular case of the extension presented along the paper, whenever
+% the fixed parameter, $\lambda$, is fixed to the value 1. 
+
+% As can be seen, we stress that the results for derivatives
+% calibration, outperform those provided by the above authors in their
+% works. As for the estimation of the discount function, in-sample mean
+% statistics are marginally worse only in the second period and
+% preserving the same order of magnitude. Thus, in both periods and for
+% the same Euro database, we can conclude that our proposed extension
+% improves clearly non consistent methodologies that are traditionally
+% carried out by the practitioners\footnote{At this point, we must to
+%   note the reader that our results for the Nelson and Siegel family
+%   are omitted for shortness, but they are very close to the reported
+%   in \cite{AH:2005} and available under request}. 
+%Euro-market results reported in Angelini and Herzel \cite{AH:2005} for the same
+%model, shows a slightly better performance for the minimal consistent family
+%when compared against Nelson-Siegel family, even on cap prices. % In fact, we
+%% reproduce better in-sample fit results with exactly the same Datastream Euro
+%% database, using approach sketched in (\ref{eq:minCons2}) with
+%
+%% $\lambda\neq 1$. % This could be explained by the differences on contractual
+%% features for the US caps combined with a global worst yield-curve
+%% determination  % for the US-market.
+%Euro caps are structured with 6m underlying caplets (US at-the-money caps are
+%composed by 3m caplets), and then, a Euro-market cap portfolio is less sensible
+%to the short-term fitting produced by an arbitrary family and, thus, to a
+%particular short-term asymptotic behaviour that yield-curve market data often
+%requires.      
+\section{Conclusions}
+In this chapter, we analyze two new consistent families of curves (the
+HMC and ANS+ families) for comparing to another non-consistent approaches like
+cubic spline interpolation as well as the well-known Nelson and Siegel family. In
+so doing, we have tried to support and extend to another treatable
+Gaussian model the empirical findings of Chapter 6.
+
+When using simulated data it is very clear that the consistent
+families for the E1 ans E2 experiments performs much better than the
+non-consistent ones. Moreover, Nelson-Siegel family does not work even
+if it is chosen as the starting yield-curve (recall E3
+experiment). These empirical facts constitute a nice demonstration of
+the theory introduced in Chapter 4, in the sense that even on absence
+of {\sl model risk} only when consistent families are used, perfect
+calibration may occur.
+
+Translation of these consequences to real data is less clear, due to
+{\sl model risk} and quality of data but we can infer the following
+concluding remarks. In this case, the introduction of a sufficiently
+rich {\sl consistent families} like HMC, which is well motivated
+theoretically by Bj\"ork et al., improves in-sample fitting
+capabilities on caps on bonds complementing what Angelini and Herzel
+\cite{AH:2002,AH:2005} empirically found with a different set of data. 
+
+According to the results reported for the humped volatilty model in
+this chapter and the Hull-White model in Chapter 5, multi-objective
+calibration would lead generally to better results in caps calibration
+as compared to non-extended consistent calibration (originally
+introduced in \cite{AH:2002,AH:2005}) and the 
+more traditional non-consistent methodologies.
+
+Finally, future empirical research on the matter should include
+multi-factor models for capturing more appropriately the TSIR and TSV
+observed in the market. % Another theoretical point regards the
+% analytical study of the 
+% % \newpage
+
+% \section*{Acknowledgements}
+
+% This work has been partially supported by grants SEJ2006-05051 and
+% ECO2009-13616 from the Ministry of Science and Innovation of Spain,
+% the grant PROMETEO/2008/106 from the Education Council of Generalitat
+% Valenciana and  the grant PUCH-07/08 from the CEU Cardenal Herrera
+% University. 
+
+
+
+% \begin{figure}[h!]
+% \caption{Discrete data for initial yield-curve estimation.\label{ZeroCoupon}} 
+% \begin{center}
+% \begin{tabular}{r|ccccccc}
+% \hline\hline
+% {\sf Maturity, $x$}& 0.25 & 1 & 2 & 3 & 4\\
+% {\sf Discount Bond, $P^o(x)$}  & 0.9886 & 0.9538 & 0.9069 & 0.8602 & 0.8142\\
+% \hline
+% {\sf Maturity, $x$}& 5& 6& 7& 8& 9 & 10\\
+% {\sf Discount Bond, $P^o(x)$}  &  0.7693 & 0.7260 & 0.6843 & 0.6445 &
+% 0.6066 & 0.5706 \\
+% \hline
+% \end{tabular}
+% \end{center}
+% \end{figure}
+
+
+
+
+% % % 
+\begin{figure}[p]
+\centering
+\caption{In-sample fitting time series for the first period (left) and the
+  second period (right) with real market data.\label{RealResultsGraficos}} 
+\begin{minipage}[l]{7cm}
+% \includegraphics[width=7cm]{EPS/FitBonos1.eps}
+\begin{tikzpicture}
+\begin{axis}[
+ylabel={$RPE_C(\%)$},
+no markers,
+width=7cm,
+height=7cm,
+xmin=0,
+xmax=65,
+ymin=0.5,
+ymax=3.,
+ylabel style={font=\large}
+]
+\addplot [very thick,black] table [x={t}, y={capMC}] {tseriesCh6Sample1.dat};
+\addplot [densely dashed,red] table [x={t}, y={capNS}] {tseriesCh6Sample1.dat}; 
+\addplot [densely dotted,red] table [x={t}, y={capSP}] {tseriesCh6Sample1.dat}; 
+\end{axis}
+\end{tikzpicture}
+\end{minipage}
+\begin{minipage}[r]{7cm}
+% \includegraphics[width=7cm]{EPS/FitBonos2.eps}
+\begin{tikzpicture}
+\begin{axis}[
+%ylabel={$RPE_C(\%)$},
+no markers,
+width=7cm,
+height=7cm,
+xmin=0,
+xmax=65,
+ymin=0.5,
+ymax=3.,
+yticklabel pos=right
+]
+\addplot [very thick,black] table [x={t}, y={capMC}] {tseriesCh6Sample2.dat};
+\addplot [densely dashed,red] table [x={t}, y={capNS}] {tseriesCh6Sample2.dat}; 
+\addplot [densely dotted,red] table [x={t}, y={capSP}] {tseriesCh6Sample2.dat}; 
+\end{axis}
+\end{tikzpicture}
+\end{minipage}
+\begin{minipage}[l]{7cm}
+% \includegraphics[width=7cm]{EPS/FitCaps1.eps}
+\begin{tikzpicture}
+\begin{axis}[
+ylabel={$RPE_B(\%)$},
+no markers,
+width=7cm,
+height=7cm,
+xmin=0,
+xmax=65,
+ymin=0.,
+ymax=0.3,
+ylabel style={font=\large}
+]
+\addplot [very thick,black] table [x={t}, y={bondMC}] {tseriesCh6Sample1.dat};
+\addplot [densely dashed,red] table [x={t}, y={bondNS}] {tseriesCh6Sample1.dat}; 
+\end{axis}
+\end{tikzpicture}
+\end{minipage}
+\begin{minipage}[r]{7cm}
+% \includegraphics[width=7cm]{EPS/FitCaps2.eps}
+\begin{tikzpicture}
+\begin{axis}[
+% ylabel={$RPE_B(\%)$},
+no markers,
+width=7cm,
+height=7cm,
+xmin=0,
+xmax=65,
+ymin=0, 
+ymax=0.3,
+yticklabel pos=right
+]
+\addplot [very thick,black] table [x={t}, y={bondMC}] {tseriesCh6Sample2.dat};
+\addplot [densely dashed,red] table [x={t}, y={bondNS}] {tseriesCh6Sample2.dat}; 
+\end{axis}
+\end{tikzpicture}
+\end{minipage}
+\begin{flushleft}
+The thick black line corresponds to the minimal consistent family, the
+dashed red line to the NS family and the dotted one to cubic spline interpolation.
+\end{flushleft}
+\end{figure}
+\newpage\mbox{}\thispagestyle{empty}
+
+
+% EURO
+% \begin{figure}[h!]
+% \caption{In-sample mean statistics for calibration results with Euro data on both periods.
+% \label{EuroRealResults}} 
+% \begin{center}
+% \begin{tabular}{|c|c|lll|}
+% \hline\hline
+% & & $\lambda=1$ & $\lambda=0.25$ & $\lambda=0.01$ \\
+% \hline 
+% {\sc Period 1}  &  $MSE_C$ & $2.3~10^{-4}$ & $2.18~10^{-4}$ & $2.19~10^{-4}$ \\ 
+%   &  $MSE_D$ & $8.8~10^{-7}$ & $8.8~10^{-7}$ & $8.4~10^{-7}$\\  
+% \hline
+%  {\sc Period 2} &  $MSE_C$ & $3.2~10^{-4}$ & $2.7~10^{-4}$ & $2.7~10^{-4}$\\
+%  &   $MSE_D$ & $6.1~10^{-7}$ & $7.0~10^{-7}$ & $6.8~10^{-7}$\\	
+% \hline 
+% \end{tabular}
+% \end{center}
+% \end{figure}
+% \end{document}
+
+% Notas:
+% Interest rate option pricing with volatility humps. Review of Derivatives Research 3, 237-­262.
+
+
+
+
+

@@ -1,0 +1,1160 @@
+\chapter{The Hull-White Model and multiobjective calibration}  
+This chapter is the first chapter with empirical and numerical
+applications\footnote{Some of the results presented in this chapter are also
+  reported in \cite{FNN:2009}.} of this work. We have shown the
+foundations of interest rate theory and we have derived the general
+conditions of consistency. However, only little attention has been
+devoted to the empirical applications of these concepts. In this
+chapter we address these applications. 
+\section{The Hull-White Model}
+% % % Consider a complete probability space $(\Omega,\mathcal{F},P)$. Let $W$ be a
+% % % one dimensional Wiener-Einstein stochastic process defined in this
+% % % space. Assume the existence of an integrable
+% % Let $W$ be a one dimensional Wiener stochastic process defined in  a
+% % complete probability space $(\Omega,\mathcal{F},P)$. 
+
+% Single factor Heath-Jarrow-Morton \cite{HJM:1992} framework is based on the
+% dynamics of the entire forward rate curve, $\{r_t(x),~x>0\}$. Thus,
+% under Musiel a's \cite{Mu:1993}
+% parameterization  it follows that the infinite dimensional diffusion
+% process given by
+% \begin{equation}
+% \label{eq:HJMM1}
+% \left\{
+% \begin{array}{rcl}
+% dr_t(x)& = & \beta(r_t,x) dt + \sigma(r_t,x)dW_t \\
+% r_0(x) & = & r^*(x),
+% \end{array}
+% \right.
+% \end{equation}
+% where $\{ r^*(x),~x\geq 0\},$ can be interpreted as the {\sl observed} forward rate
+% curve.
+% % % % Hasta Aqu Revisado
+% The standard drift condition derived in Heath, Jarrow and Morton \cite{HJM:1992}
+% can easily transferred to the Musiela parametrization (see, for instance,
+% Musiela \cite{Mu:1993}),
+% $$
+% \beta(r_t,x)=\frac{\partial}{\partial x} r_t(x)+\sigma(r_t,x)\int_0^x
+% \sigma(r_t,s) ds.
+% $$
+% Thus, a particular model is constructed by the choice of an explicit volatility
+% function $\sigma(r_t,x)$. 
+
+% Recall that our work is devoted tot
+
+Our test case is the following model, studied by Hull and White
+\cite{HW:1990} (henceforth HW):
+\begin{equation}
+\label{HW}
+dr(t)=\left[ \Phi(t)-a r(t)\right] dt + \sigma dW(t).
+\end{equation} The Hull-White model improve Ho-Lee model incorporating
+mean-reversion and providing closed formulas for liquid options like
+interes rate caps. This model is one of the simplest Gaussian HJM
+models which preserves the Markov property, allowing very efficient
+numerical methods for the pricing of any kind of options. On the
+negative side, it does not capture large humps of the term structure
+of volatilities (TSV hereafter). The model instantaneous-forward
+volatility curve $T \to \sigma_f(t,T)$, as we will prove later, is
+monotonically decreasing and this fact often allows only small humps
+in the caplet curve. However, as pointed out by Brigo and Mercurio
+\cite[pp. 91--92]{BM:2006}, in case of decreasing TSIR curves, large 
+humps can be produce even by this model. 
+
+Summarizing, it exhibits a relative good performance when it is chosen
+as a parsimonious solution for bussiness cycles with monotonically
+decreasing TSV, as it is shown by \cite{AH:2005}.   % The classical HJM forward rate formulation for the HW model is
+% \begin{equation}
+% \label{HWHJM}
+% dF(t,T)=\alpha(t,T)\: dt+\: \sigma(t,T) dW(t),
+% \end{equation}
+% with $\sigma(t,T)=\sigma e^{-a(T-t)}$. We will establish with
+% precision the equivalence between this forward formulation and the
+% original one (\ref{HW}) in the following lines. 
+\subsection{Markovianity of the HW model}
+The short-rate differential process (\ref{SRMHJM}) in Proposition 2 is
+not a Markov process in general. Notice in fact that time $t$ appears in the
+expression (\ref{driftSRMHJM}) for the drift both as extreme of
+integration and inside the integrand function. However, the HW model
+as a particular Gaussian HJM have a suitable specification of $\sigma$
+for which the short-rate $r$ is indeed a Markov process. This happens
+because we can write the model volatility function $\sigma(t,T)$ as a
+separable specification:
+\begin{equation} 
+\label{diffusionHWHJMseparable}
+\sigma(t,T)=\varsigma(t)\varrho(T)
+\end{equation} 
+with $\varsigma(t)$ and $\varrho(T)$ strictly positive and deterministic
+functions of time. Under such a separable specification, the
+short-rate process becomes
+\begin{equation}
+\label{intSRM}
+\begin{array}{rcl}
+r(t):=F(t,t)&=&F(0,t)+\int_0^t \left(\varsigma(u)\varrho(t)\int_u^t
+  \varsigma(u) \varrho(s)\: ds\right)\: du +\int_0^t \varsigma(s)
+\varrho(t)\: dW(s) \\ 
+&=& F(0,t)+\varrho(t)\int_0^t \left(\varsigma^2(u)\int_u^t \varrho(s)
+  \:ds \right)\:du +\varrho(t) \int_0^t \varsigma(s) \: dW(s) 
+\end{array}
+\end{equation}
+Notice that, if we introduce the deterministic function $A(\cdot)$  
+$$
+A(t):=F(0,t)+\varrho(t) \int_0^t \left( \varsigma^2(u) \int_u^t \varrho(s)
+ds\: \right) du,
+$$
+by taken differentials in (\ref{intSRM}) we can write
+\begin{equation}
+\label{diffSRM}
+\begin{array}{rcl}
+dr(t)&=& A'(t)+\varrho'(t) \int_0^t \varsigma(s) dW(s)
++\varsigma(t)\varrho(t)\: dW(t)\\ 
+&=& \left[ A'(t)+\varrho'(t) \displaystyle\frac{r(t)-A(t)}{\varrho(t)}\right]\:
+dt+\varsigma(t)\varrho(t)\: dW(t)\\
+&=& \left[ a(t)+b(t) r(t)\right]\:dt+c(t)\: dW(t)
+\end{array}
+\end{equation}
+where \begin{equation}
+\begin{array}{rcl}
+a(t) &:=& A'(t)-\displaystyle\frac{\varrho'(t)}{\varrho(t)}A(t),\\ 
+b(t) &:=& \displaystyle\frac{\varrho'(t)}{\varrho(t)}\; \textrm{; and,}\\
+c(t) &:=& \varsigma(t)\varrho(t)=\sigma(t,t).
+\end{array}
+\end{equation}
+We can finally derive the HJM forward-rate dynamics that is equivalent
+to the original short-rate dynamics (\ref{HW}). To this end, let us
+set
+$$
+\sigma(t,T)=\sigma e^{-a (T-t)},
+$$
+where $a$ and $\sigma$ are real constants, so that
+\begin{equation}
+\label{defHWHJM}
+\begin{array}{rcl}
+\varsigma(t)&=&\sigma e^{a t},\\
+\varrho(T)&=&e^{-a T},\\
+A(t)&=&F(0,t)+\frac{\sigma^2}{2 a^2}(1-e^{-a t})^2;
+\end{array}
+\end{equation}
+and after some tedious but trivial algebra we have for the HW model:
+ \begin{equation}
+\begin{array}{rcl}
+  a(t) &:=& F_t(0,t) +a F(0,t)+\displaystyle\frac{\sigma^2}{2a}(1-e^{-2 a t}),\\ 
+b(t) &:=& -a\\
+c(t) &:=& \sigma.
+\end{array}
+\end{equation}
+The resulting short-rate dynamics is then given by
+\begin{equation}
+\label{HWfinal}
+dr(t)=\left[F_t(0,t)+aF(0,t)+\displaystyle\frac{\sigma^2}{2a}(1-e^{-2
+    a t}) -a r(t)\right]\: dt+\sigma\: dW(t),
+\end{equation}
+which is equivalent to (\ref{HW}) when combined with the identity
+$$
+\Phi(t):=F_t(0,t)+a F(0,t)+\displaystyle\frac{\sigma^2}{2a}(1-e^{-2 a t}).
+$$
+In conclusion, we then have that the HW model is a short-rate
+markovian model that admits a one-factor HJM formulation. Turning back
+to the Musiela parametrization, we have that the volatility
+specification for this model is \begin{equation}
+\label{volHWHJMM}
+\widetilde\sigma(t,x):=\sigma(t,t+x)=\sigma e^{-a x},
+\end{equation}
+which falls into the class of HJM models with deterministic
+volatility $$\widetilde\sigma(f_t,x)=\widetilde\sigma(x).$$ 
+\section{The Nelson and Siegel family and Invariance}
+In order to illustrate the theoretical ideas shown in the previous
+chapter, we now move from abstract theory to the investigation of a
+number of concrete forward curve families and the Hull-White
+model. More fundamental results can be found in Bj\"ork and
+Christensen \cite{BC:1999} in detail. The leading example is the
+popular forward curve family introduced by Nelson and Siegel
+\cite{NS:1987}, first introduced informally in previous chapter. We
+analyze the consistency of this family and several variations of it
+with the Hull-White model. We adapt some of the theoretical results to
+this Gaussian case study without no further technical discussion for
+the general case. From now, we again remove the symbol
+$\;\widetilde{}\;$ as in Chap. 4., i.e. we will consider the HJM model 
+under the Musiela parametrization. 
+
+Consider the space $\mathcal{H}_\gamma$ introduced in
+Sect. 4.3.2 \begin{corol} Consider as given the mapping 
+$$
+G: \mathcal{Z} \to \mathcal{H}_\gamma
+$$
+where the parameter space $\mathcal{Z}$ is an open connected subset of
+$R^d$, $\mathcal{H}_\gamma$ a Hilbert space and the {\sl forward curve
+  manifold} $\mathcal{G}\subseteq H_\gamma$ is defined as
+$\mathcal{G}={\rm Im}(G)$.  The family $\mathcal{G}$ is consistent with the 
+one-factor model $\mathcal{M}$ with deterministic volatility function
+$\sigma(\cdot)$, if and only if
+\begin{eqnarray}
+\label{gCDC}
+G_x(z,x)+\sigma(x)\int_0^x \sigma(s) ds & \in & Im\left[G_z(z,x)\right],\\    
+\label{gCVC}
+\sigma(x) & \in & Im\left[G_z(z,x)\right],	
+\end{eqnarray}
+for all $z\in Z$.
+\end{corol}
+\begin{demo}
+See Theorem 4 in Sect. 4.3.2 for the particular case of deterministic
+volatility $\sigma(f_t,x)=\sigma(x)$. 
+\end{demo}
+
+The statements (\ref{gCDC}) and (\ref{gCVC}) are the particular CDC
+and CVC for the deterministic volatility case. These are easy to apply
+in concrete cases as shown Bj\"ork and Christensen \cite{BC:1999} or
+De Rossi \cite{R:2004}, among others.  
+\subsection{The NS family}
+The NS forward curve manifold $\mathcal{G}$ is parametrized by $z\in
+\mathcal{Z}=\mathbb{R}^4$. Recall that the curve shape $G(z, x)$ is
+given by the expression
+\begin{equation}
+\label{NSspec}
+G(z,x)=z_1+z_2 e^{z_4 x}+z_3 x e^{-z_4 x}.
+\end{equation}
+For $z_4=0$ the {\sl Frechet} derivatives $G_z(z,x)$ and $G_x(z,x)$
+are easily obtained as
+\begin{equation}
+\label{rcl}
+\begin{array}{rcl}
+G_z(z,x) &=& [1\quad e^{-z_4 x}\quad xe^{-z_4 x}]^T,\\
+G_x(z,x) &=& (z_3-z_2 z_4 -z_3 z_4 x)e^{-z_4 x}.
+\end{array}
+\end{equation}
+Henceforth, we write $\mathcal{Z}_{NS}=\{ [z_1\; z_2\; z_3\; z_4]^T\;
+: z_4\neq 0\}$ for the NS parameter space and
+$\mathcal{G}_{NS}=G(\mathcal{Z}_{NS})$ for the associated
+manifold. For the HW model characterized by the volatility function
+(\ref{volHWHJMM}), the consistency conditions of Theorem 4 become
+\begin{equation}
+\left\{
+\begin{array}{rcl}
+G_x(z,x)+\frac{\sigma^2}{a}\left[ e^{-a x}-e^{-2 a x}\right] & \in &
+Im[ G_z(z,x) ], \\
+\sigma e^{-a x} & \in & Im[ G_z(z,x) ].
+\end{array}
+\right.
+\end{equation}
+To investigate whether $\mathcal{G}_{NS}$ is invariant under HW
+dynamics, we consider now simplest consistency condition, the CVC: let
+us consider for constants $\alpha_i$, such $\forall x\geq 0$ we have  
+\begin{equation}
+\label{NSCVC}
+\sigma e^{-a x}=\alpha_1 + \alpha_2 e^{-z_4 x}+\alpha_3 x e^{-z_4
+  x}-\alpha_4 (z_2+ z_3 x) x e^{-z_4 x}.
+\end{equation}
+One can easily see that is is possible iff $z_4=a$. So as a first
+hint, let us fix $z_4=a$ in the parametrization and introduce the
+restricted NS family: 
+$$
+G(z,x)= z_1+z_2 e^{-a x} + z_3 x e^{-a x}.
+$$
+Now the CVC is verified, while in the CDC we look for $\beta_i$ such
+that $\forall x\geq 0$ we have:
+\begin{equation}
+\label{restricNSCDC}
+(z_3-a z_2 -a z_3 x) e^{- a x}+\frac{\sigma^2}{a}\left(e^{-a x}-e^{-2
+    a x}\right)=\beta_1+\beta_2 e^{-a x}+ \beta_3 x e^{-a x}.
+\end{equation}
+This equation can never be verified, due to the extra exponential
+$e^{-2 a x}$, so we have proved the following.  
+\begin{propos}[Nelson-Siegel and Hull-White.] The Hull-White model is
+  inconsistent with the Nelson-Siegel family.
+\end{propos}
+Let us include this extra exponential in the parametrization, thus, we
+finally introduce the augmented NS family:  
+$$
+G_{ANS}(z,x)=z_1 + z_2 e^{-a x} + z_3 x e^{-a x}+ z_4 e^{-2 a x}.
+$$
+Now, both CDC and CVC are verified for this family. 
+\begin{propos}[Augmented Nelson-Siegel and Hull-White.] The augmented
+  Nelson-Siegel family is consistent with the Hull-White model.
+\end{propos} 
+\begin{demo}
+The Frechet derivatives are in this case 
+\begin{equation}
+\label{rcl}
+\begin{array}{rcl}
+\displaystyle\frac{\partial G_{ANS}}{\partial z} (z,x) &=& [1\quad e^{-a x}\quad xe^{-a
+  x}\quad e^{-2 a x}]^T,\\[.2cm]
+\displaystyle\frac{\partial G_{ANS}}{\partial x} (z,x) &=& \left[ z_3-a\left( z_2 + z_3
+    x\right)\right] e^{-a x}-2 a z_4 e^{-2 a x}.  
+\end{array}
+\end{equation}
+Now the set $Im[ \partial_zG_{ANS}]$ is ``large'' enough to trivially
+satisfy CVC and CDC due to the extra component $e^{-2 a x}$. The
+derivation of the balancing equations analogous to (\ref{NSCVC}) and 
+(\ref{restricNSCDC}) are left to the meticulous reader. 
+\end{demo}
+
+\section{The Minimal Consistent family and Realizations of Gaussian Models} 
+It should be also noted that $\sigma(x)$ is a one dimension {\sl
+  quasi-exponential} function (QE for short), because is of the form 
+\begin{equation}
+\label{QE}
+f(x)=\sum_i e^{\lambda_i x}+\sum_i e^{\alpha_i x}[p_i(x)\cos(\omega_i
+x)+q_i(x)\sin(\omega_i x)],
+\end{equation}
+with $\lambda_i,\alpha_i,\omega_i$ being real numbers and $p_i, q_i$ are real
+polynomials.  
+
+If $f(x)$ is a $q$-dimensional QE function, then it admits the
+following matrix representation  
+\begin{equation}
+\label{VolMatrixForm}
+f(x)=c e^{A x} B,
+\end{equation}
+where $A$ is a $(n \times n)$-matrix, $B$ is a $(n\times q)$-matrix
+and $c$ is a $n$--dimensional row vector, see Bj\"ork \cite[Lemma 2.1,
+p. 13]{B:2003}. 
+Thus, $\sigma(x)$ can be written as 
+\begin{eqnarray}
+\label{eq:TSVMatrix}
+\sigma(x)& = & ce^{A x} b, \text{ where } \\
+\nonumber 
+c& =& 1,\\
+\nonumber
+ A& =& -a,\\
+\nonumber
+ b & = & \sigma.
+\end{eqnarray}
+We can write the forward rate equation (\ref{HJMM:3}) following
+Bj\"ork \cite[Proposition 2.1, pp. 8--9]{B:2003}  
+\begin{eqnarray}
+\label{eq:Input}
+dq_t(x) & = & \mathbf{F}q_t(x)\:dt+\sigma(x)\:dW_t,\quad q_0(x)=0\\
+\label{eq:ForwardDecomposition}
+f_t(x) & = & q_t(x)+\delta_t(x),
+\end{eqnarray}
+here $\mathbf{F}$ is a linear operator that is defined by 
+$$
+\mathbf{F}=\frac{\partial}{\partial x},
+$$
+and $\delta_t(x)$ is the deterministic process given by
+$$
+\delta_t(x)=f^o(x+t)+\int_0^t \Sigma(x+t-s)\: ds,
+$$
+with $$
+\Sigma(x)=\sigma(x)\int_0^x \sigma(s)\: ds.
+$$ 
+Moreover, $q_t(x)$ has the concrete {\sl finite dimensional} realization 
+\begin{eqnarray}
+\label{eq:Factor}
+dZ_t & = & -a Z_t\:dt+\sigma\:dW_t,\quad Z_0=0,\\
+q_t(x) & = & e^{-a x}Z_t,
+\end{eqnarray}
+as a particular result from \cite[Definition 2.1, p. 7]{B:2001} with
+the fundamental concluding remark derived by Bj\"ork for QE
+deterministic volatilities in \cite[Proposition 2.3,
+p. 13]{B:2001}. The SDE (\ref{eq:Factor}) is linear in the narrow
+sense \cite{KP:1999}, with explicit solution
+\begin{equation}
+Z_t=\sigma e^{-a t}\int^t_0 e^{a s}\:dW_s,
+\end{equation}
+Now, with the definition of $S(x)=\int^x_0 \sigma(u) du$, it is easy to obtain that
+$$
+\int^t_0 \Sigma(t+x-s)\: ds=\frac{1}{2}\left[S^2(t+x)-S^2(x)\right],
+$$
+and, therefore, combining these explicit results with decomposition
+(\ref{eq:ForwardDecomposition}) we arrive to the forward rate dynamics
+\begin{equation}
+\label{eq:MC}
+f_t(x)=f^o(x+t)+\frac{1}{2}\left[S^2(t+x)-S^2(x)\right]+e^{-a x}Z_t.
+\end{equation}
+Equation \eqref{eq:MC} may be used for building initial forward rate
+curves $f^o(x)$ time-consistent with the model.  
+
+% %{\Large \bf Appendix}
+% %\appendix
+% \subsection{Consistent Curves with the Model}
+% If we want to measure the actual impact that alternative choices to the
+% Nelson-Siegel yield curve interpolating approach produces on derivatives pricing and hedging, we need 
+% to determine consistent families for this particular model. 
+% We adapt some of them to our Gaussian case study without further technical discussion for the general case.
+% \begin{defn} Consider the space $\mathcal{H}$ is defined as the space
+%   of all $\mathcal{C}^\infty$-functions, 
+% $$
+% r: \mathcal{R}_+ \to \mathcal{R}
+% $$
+% satisfying the norm condition:
+% $$
+% ||r||^2=\sum_{n=0}^\infty 2^{-n} \int_0^\infty \left(\frac{d^n r}{dx^n}(x)\right)^2 e^{-\gamma x}\: dx<\infty
+% $$
+% where $\gamma$ is a fixed positive real number. 
+% \end{defn}
+% \begin{tma}[Bj\"ork and Christensen] Consider as given the mapping
+% For the particular one-factor model we consider along this work,
+% Proposition 7.2 and 7.3 in Bj\"ork and Christensen \cite{BC:1999} may
+% be directly applied to get the useful result: 
+
+\subsection{The Minimal Consistent family}
+\begin{propos} The family
+\begin{equation}
+\label{MCF}
+G_{MIN}(z,x)=z_1 e^{-a x}+z_2 e^{-2 a x},
+\end{equation}
+is the minimal dimension consistent family with the model
+characterized by $$\sigma(x)=\sigma e^{-a x}.$$
+\end{propos}
+
+%Moreover, it should be also noted that {\sl augmented} families related from the
+%(\ref{MCF}) can be constructed by adding to $G_m$ an arbitrary function $\phi,$ that is,
+%the map
+%$$
+%G(z,x)=G_m(z,x)+\phi(z,x),
+%$$
+%is also consistent with this model.
+\begin{demo}
+As we mentionead earlier, there is a way to justify (\ref{MCF})
+focusing on forward rate evolution deduced at (\ref{eq:MC}) we
+describe it next. By the definition of $S(x)$, we have that
+$S'(x)=\sigma(x).$ Then it is easy to derive that deterministic term  
+$\frac{1}{2}\left[S^2(t+x)-S^2(x)\right]$ is of the form
+$$
+g(t)e^{-a x}+h(t) e^{-2 a x}.
+$$ 
+Thus, the forward rate evolution becomes
+\begin{equation}
+\label{eq:MCexp}
+f_t(x) =f^o(x+t)+\left( g(t)+Z_t \right) e^{-a x}+h(t)e^{-2 a x}.
+\end{equation}
+From (\ref{eq:MCexp}) we see that a family which is invariant under time translation is
+consistent with the model if and only if it contains the linear space
+$\{e^{-ax},e^{-2ax}\}$. 
+\end{demo} 
+
+It should be also noted that the map 
+$$
+G(z,x)=G_{MIN}(z,x)+\phi(z,x),
+$$
+where $\phi(\cdot)$, is an arbitrary function, is also consistent with this model.
+
+%Moreover, it should be also noted that {\sl augmented} families related from the
+%(\ref{MCF}) can be constructed by adding to $G_m$ an arbitrary function $\phi,$ that is,
+%the map
+%$$
+%G(z,x)=G_m(z,x)+\phi(z,x),
+%$$
+%is also consistent with this model.
+%Consequently, to make a
+%consistent version of a translation invariant family $\phi(z,x)$ it is enough to
+%add $G_m(z,x)$.
+Finally, we list some concluding remarks about the families analyzed.
+\begin{lema}
+The following hold for the Hull-White model 
+\begin{itemize}
+\item The Nelson-Siegel family (henceforth NS)
+$$
+G_{NS}(z,x)=z_1+z_2e^{-z_4 x}+z_3 x e^{-z_4 x},
+$$
+is not consistent with the model. % {\sl CVC} constraint requires $z_4=a$, and
+% then, the restricted NS family violates {\sl CDC} condition.
+\item The family 
+$$
+G_{MIN}(z,x)=z_1 e^{-a x}+z_2 e^{-2 a x},
+$$
+is the lowest dimension family consistent with the model (hereafter MIN).
+\item The family
+$$
+G_{ANS}(z,x)=z_1+z_2e^{-a x}+z_3 x e^{-a x}+z_4 e^{-2 a x},
+$$
+is the simplest adjustment based on restricted NS family that allows model
+consistency (hereafter ANS).
+\end{itemize}
+\end{lema}
+% \subsection{Interest Rate Option Pricing} 
+
+\section{Calibration to Market Data Approaches}
+To calibrate the model by means of real data, we actually need to
+determine the vector of parameters $\boldsymbol
+p=[\:\sigma\:a\:]^T$. In order to estimate the forward rate
+volatility,  the statistical analysis of past data can be a possible
+approach, but the practitioners usually prefer implied volatility,
+laying within some derivative market prices, based techniques. This
+way involves a minimization problem where  the loss function can be
+taken as  
+$$
+l_C(\boldsymbol p)=\sum^n_{i=1}(C^o_i- C_i(\boldsymbol p))^2,
+$$
+where $ C_i(\boldsymbol p)$ are the $i$--th theoretical derivative price and
+$C^o_i$ is the $i$--th market price one. As we proved on Sect. 3.2,
+the model price, at $t=0$, of the cap with equidistant 
+settlement periods is given by 
+\begin{equation}
+\label{eq:expTheoCap}
+C=\sum_{j=1}^n \gamma_j = (1+\tau K) \left(\sum_{j=1}^n \kappa
+  P_{j-1}(0)N(-d_-)-P_j(0)N(-d_+)\right),
+\end{equation} 
+where the $d_{\pm}$ are given by (\ref{capletd+-}). 
+Moreover, recall that $P_j(0)$ is the initial $x_j$-maturity discount
+bond price $P(0,x_j)$, $\kappa$ equals to $(1+\tau K)^{-1}$ with $K$
+denoting the {\sl cap rate}. The volatility function
+$\vartheta(0,\cdot)$ defined by the expressions (\ref{volmain}) to
+(\ref{volaux}) take the particular form for the HW model:
+$$ 
+\vartheta(0,x_j)=\frac{\sigma}{a}\left( 1-e^{-a \tau} \right)
+\sqrt{\frac{1-e^{-2 a x_j}}{2 a}}. 
+% Se puede meter demo en Appendix C (optional) %,$ here $N=7.$ 
+$$
+The equations (\ref{capletd+-}) and (\ref{eq:expTheoCap}), also
+express the effective influence of {\sl ab initio} discount bond curve
+estimation on cap pricing.%\footnote{See Appendix}  
+
+The calibration procedures can be described formally as follows. 
+
+Let $\boldsymbol p$ be the parameter vector 
+$$[\sigma\:a]^T$$ 
+for the model under consideration. Assume that we have time series
+observations of the flat volatilities $\bar\sigma_i$ of $N$
+at-the-money caps $C_i$ which mature at $T_i$-times where
+$i=1,\dots,N$. Suppose we are also equipped with the discount bond
+curve estimation, $P(0,x)$, at time $t=0$. As we introduce in
+Sect. 3.1, market participants translate volatility quotes to cash
+quotes adopting Black model \cite{B:1976}. Thus, according to the
+Definition 15 in Sect. 3.1., the market price, at $t=0$, of the cap
+with regular payment periods is given by
+\begin{equation}
+\label{eq:expMktCap}
+C^o=\sum_{j=1}^n \gamma^o_j = \tau \sum_{j=1}^n P_j(0)\left(L_j(0)
+  N(d_1)-K N(d_2)\right),
+\end{equation}  where $d_1$ and $d_2$ are given by the identities
+(\ref{d1}) to (\ref{d2}). 
+
+In addition, recall that according to Remark 2 in Sect. 3.1.1 the cap  
+ rates for the ATM plain vanilla caps must fulfill
+ (\ref{ATMStrikeCap}). % they make the well-known convention that
+                       % $K_i$ quantities must be equal to  
+% \begin{equation}
+% \label{eq:Kswap}
+% K_i=\frac{D(\tau)-D(T_i)}{\tau \sum_{j=1}^n D(x_j)},
+% \end{equation}
+% where $\tau=x_{j+1}-x_j$ is the length of the underlying caplets. 
+% The derivation of the formula (\ref{eq:Kswap}) can be found, 
+% for example, in Bj\"ork \cite{B:2004} (Proposition 20.7 on pages
+% 312--313).
+By direct inspection, it is clear that this market convention makes
+the rates $K$ depend on the discount bond curve estimation
+$P(0,x)$. Let us denote the market prices of caps by 
+$$C^o\left(T_i,P(0,x),K_i(P(0,x)),\bar\sigma_i\right).$$ Notice that this expression
+emphasizes explicit and implicit dependence  (through ATM {\sl
+  strikes}) on discount bond curve estimation even for market
+prices. Let $$C\left(T_i,P(0,x),K_i(P(0,x)),\boldsymbol p\right),$$ be the
+corresponding theoretical price under our particular model.
+
+\subsection{The Two-Step Traditional Method}
+Suppose that we are standing at time $t=0$, the fixed time of
+calibration under study. For simplicity from now, we remove the
+dependency on initial time $t=0$ from discount bond curve
+$P(0,x)\equiv P(x)$. First, we choose a non-consistent parametrized
+family of forward rate curves $G(z,x)$. 
+
+Let $P(z,x)$ be the zero-coupon bond prices produced by $G(z,x)$. 
+$$
+P(z)= \left[\:P_1(z)\:\dots\:P_M(z)\:\right]
+$$
+Let $P^o_k$ be the corresponding discount $x_k$-bond observations with
+$x_k$-times running from $k=1,\dots,M$
+$$
+P^o= \left[\:P^o_1\:\dots\:P^o_M\:\right].
+$$
+For each zero-coupon bond denoted with subscript $k$,
+the logarithmic pricing error\footnote{Recall that, for small
+  $\epsilon_k$, it is also the relative pricing error
+  $\frac{P^o_k-P_k(z)}{P^o_k}$.} is written as follows  
+$$
+\epsilon_k(z)=\log P_k^o-\log P_k(z).
+$$
+Then, we have chosen in this work the sum of squared logarithmic pricing errors,
+$l_P$, as the objective loss function to minimize:
+\begin{equation}
+\label{eq:minD}
+\underset{z}{\textrm{min}}\:l_P(z)=\underset{z}{\textrm{min}}~\|\log
+P^o-\log
+P(z)\|^2_2=\underset{z}{\textrm{min}}\sum_{k=1}^M\epsilon^2_k(z),  
+\end{equation}
+with 
+$$\log P_k(z)=-\int_0^{x_k} G(z,u)\: du.$$
+Now, via the least squares estimators $\hat{z},$ an entire discount
+bond curve estimation allows the pricing of caps using the market
+practice or the HW model. Following a similar scheme for the
+derivatives fitting as in the preceeding lines, we have  
+$$
+\eta_i(\boldsymbol p)=\log  C_i^o-\log  C_i(\boldsymbol p),
+$$ and
+\begin{equation}
+\label{eq:minC}
+\underset{\boldsymbol p}{\textrm{min}}\:
+l_C(\boldsymbol p)=\underset{\boldsymbol p}{\textrm{min}}~\|\log  C^o-\log
+C(\boldsymbol p)\|^2_2=\underset{\boldsymbol p}{\textrm{min}}\sum_{i=1}^N\eta^2_i(\boldsymbol p),  
+\end{equation}
+with the vector definitions:
+\begin{eqnarray}
+C^o&=& \left[\:C^o_1\:\dots\:C^o_N\:\right]\\
+C(\boldsymbol p) &=& \left[\:C_1(\boldsymbol p)\:\dots\:C_N(\boldsymbol p)\:\right].
+\end{eqnarray}
+Note that here we have dropped the dependencies
+$(P(x),\:K,\:T,\:\bar\sigma$)  for simplicity. Moreover, notice that
+the discount bond curve estimation is external to the model in the
+sense that there is no need to know first any of the model parameters
+$\boldsymbol p$ for solving non-linear program (\ref{eq:minD}).
+
+\subsection{The Joint Calibration to Cap and Bond Prices}
+
+    Let us now describe in detail the joint cap-bond calibration procedure which
+    has sense in a consistent family framework. We note that in this situation the
+    parameters of the model are determined together with the initial forward
+    rate curve. % Recall the simplified derivation for the consistent families used at Section 2.2. 
+
+This is different from the traditional fitting of the Hull-White model, where the two steps are separate, as we discussed before. From the expression (\ref{MCF}), % in the Appendix, we notice the dependency of the family  
+we notice the dependency of the family  from the parameter $a$. Let
+$G(z,x,a)$ be a family consistent with the HW model (for instance,
+$G_{MIN}$ and $G_{ANS}$) and define least-squares estimators, $\hat{z}(a)$
+\begin{equation}
+\label{minDcons}
+\hat{z}(a)=\arg \underset{z}{\min} \sum_{k=1}^M(\log P^o_k-\log P_k(z,a))^2. 
+\end{equation}
+From the expression 
+\begin{equation}
+\label{eq:defM}
+\log  P_k(z,a)=-\int_0^{x_k} G(z,a,u)\:du=\sum_{j=1}^{n_p} M_{kj}(a) z_j,
+\end{equation}
+we note that, for consistent families and for a fixed $a$ the problem
+(\ref{minDcons}) is linear in $z$-parameters (for the $G_{MIN}$ family
+$n_p=2$, and for the $G_{ANS}$ family $n_p=4$). Thus, $\hat{z}$ is an
+explicit and continuous function of $a$. 
+
+Strictly speaking, joint calibration must be formalized as a
+multiobjetive optimization problem (MOO) of the form:   
+\begin{equation}
+\underset{\boldsymbol p}{\min}\;\boldsymbol{l}(\boldsymbol p)
+\end{equation}
+where
+$\boldsymbol{l}=[l_1(\boldsymbol p)\:l_2(\boldsymbol p)]^T$ is
+an objective function vector and $\boldsymbol p$ is the {\sl
+  design} vector $[\:\sigma\:a\:]^T$. Notice that in this case there
+are two objectives and two design variables. The {\sl partial loss
+  functions} $l_i(\sigma,a)$ are defined as 
+\begin{equation}
+\begin{array}{rcl}
+l_1(\boldsymbol p) & = & ~\|\log C^o\left[P(\hat{z}(\boldsymbol
+  p),\boldsymbol p)\right]-\log C\left[P(\hat{z}(\boldsymbol
+  p),\boldsymbol
+  p),\boldsymbol p\right]\|^2_2  \\ \nonumber 
+l_2(\boldsymbol p) & = & ~\|\log
+P^o-M(\boldsymbol p)\hat{z}(\boldsymbol p)\|^2_2
+\end{array}
+\end{equation}
+where 
+\begin{equation}
+\hat{z}(\boldsymbol p)=R(a)Q^{-1}(a)\log P^o
+\end{equation}
+being $Q$, $R$ the matrices of the reduced QR decomposition of $M(\boldsymbol p)$
+which is defined by the relation (\ref{eq:defM}).
+
+% $l_1(\boldsymbol p)  =  ~\|\log
+% C^*\left(D(z,\boldsymbol p)\right)-\log 
+% C\left(D(z,\boldsymbol p),\boldsymbol p\right)\|^2$ and
+% $l_2(\boldsymbol p)  =  ~\|\log D^*-\log 
+% D(z,\boldsymbol p)\|^2$  % because is very improbable that $l_C$ and $l_D$
+% would be {\sl extremized} by the same set of parameters,
+% $\boldsymbol p^*$.   
+
+Note that it is highly probable that these objectives would both be
+conflicting, in general, and no single $\boldsymbol{\hat p}=(\hat
+\sigma,\hat a)$ would generally minimize simultaneously the pair of
+objective functions $l_i$. Tipically here, there is no single, global
+solution, and often, it is necessary to determine a {\sl set} of
+points that all fit a predetermined definition for an optimum. Thus,
+the predominant concept in defining is that of Pareto optimality
+\cite{P:1906}.  
+
+One of the most common and basic approach for multiobjective
+optimization requires to build a weighted sum of the objectives (see
+for instance \cite{EKO:1990,M:2005}). The result is the following
+scalarized utility function, which is minimized: 
+ \begin{equation}
+\label{Utility}
+\tilde l=\omega_1 l_1+\omega_2 l_2.
+\end{equation} 
+When an appropriate set of solutions is obtained by the
+single-objective optimization of $\tilde l$, the solutions can
+approximate a Pareto front. The weighted-sum method parametrically
+changes the weights among objective functions $l_1$ and 
+$l_2$ to obtain this Pareto front. If the two weights are positive
+then minimizing the utility provides a sufficient condition for Pareto
+optimality, which means the minimum of (\ref{Utility}) is always
+Pareto optimal \cite[Sect. 4.1.1, pp. 41--42]{M:2005}. Thus,
+consistent calibration carried out with consistent families involves
+the entire Pareto optimal set, in contrast to the unique solution
+appearing in the two-step scalar problem.
+
+At this point, note that the program used by Angelini and Herzel
+\cite{AH:2002,AH:2005} in their works, uses a different goal
+attainment 
+\begin{equation}
+\label{eq:minConsAH}
+\underset{\boldsymbol p}{\min}\: l_1(\boldsymbol p)
+\end{equation}
+where $l_1(\boldsymbol p)$, and $\hat{z}(\boldsymbol p)$ are
+defined trough the identities (\ref{eq:minC}) and (\ref{minDcons}). As
+a consequence, the program used by these authors is a degenerate case
+of (\ref{Utility}) with $\omega_1$ fixed equal to 1 and
+$\omega_2$ to 0, so it just allows to obtain one point of the implied
+trade-off front, which would be potentially only a weak Pareto
+optimum\footnote{Pareto optimal points are WPO, but WPO are not Pareto
+optimal.} (WPO) not a standard Pareto optimum \cite[Sect. 4.1.1,
+p. 42]{M:2005}. 
+
+ % With yield-curve estimation implemented for every
+% fixed $a$, the entire discount function $D(\hat{z}(\boldsymbol p),x,a)$ may be
+% determined and it could be thought that the estimates $\hat{\boldsymbol p}$ have to
+% be 
+% found by solving the non-linear program
+% \begin{equation}
+% \label{eq:minCcons1}
+% \begin{split}
+% SSE_C = & \underset{\boldsymbol p}{\min} ~\|\log
+%  C^*\left[D(\hat{z}(\boldsymbol p))\right]-\log 
+%  C\left[D(\hat{z}(\boldsymbol p),\boldsymbol p,T)\right]\|^2 =\\
+% = & \underset{\boldsymbol p}{\min}\sum_{i=1}^N\varepsilon^2_i(\boldsymbol p).
+% \end{split}
+% \end{equation}
+% However, following the latter program we are not sure that the corresponding
+% yield-curve 
+% at the minimum $\hat{\boldsymbol p}$, $D(\hat{z}(\hat{\boldsymbol p}),x,\hat{\boldsymbol p})$, was
+% the optimal value of the sequence of yield curve estimations implicit in this
+% program (\ref{eq:minCcons1}). In other words, there exist reasonable doubts
+% abouth the convergence 
+% of this algorithm, in the sense of obtained the minimization of the pricing
+% errors of the cap and zero-coupon bond at the same time. Now, we consider the
+% following 
+% decomposition for the total loss function $SSE(\boldsymbol p)$
+% \begin{eqnarray}
+% SSE_D(\boldsymbol p)&=&\|\log  D^*-M(\boldsymbol p)\hat{z}(\boldsymbol p)\|^2,\\
+% SSE_C(\boldsymbol p)&=&\|\log  C^*\left[D(\hat{z}(\boldsymbol p))\right]-\log
+% C\left[D(\hat{z}(\boldsymbol p)),\boldsymbol p,T)\right]\|^2. 
+% \end{eqnarray}
+%   Then, as an heuristic solution, we propose to modify the latter program to
+%   include pricing residuals for the discount through the convex combination 
+% \begin{equation}
+% \label{eq:minCons2}
+% SSE_\lambda  = \underset{\boldsymbol p}{\min}\left((1-\lambda)\,
+% SSE_D(\boldsymbol p)+\lambda\, SSE_C(\boldsymbol p)\right), 
+% \end{equation}
+% for some fixed $\lambda\in [0,1]$.
+% We test the robustness of this fitting algorithm for the MC family by using
+% 1000 
+% extractions from three independent uniform distributions as initial guess for
+% the parameters, $\boldsymbol p^{(0)}$. As representative input data, $(D^*, C^*)$,
+% we use the sample mean along the first 75 trading dates of the second
+% (excited) 
+% period under study. 
+% Figure \ref{CalibTest}, shows the sample mean of the 1000 path iterates
+% generated by 
+% the algorithm for $SSE_C(\boldsymbol p^{(k)})$ and first contribution,
+% $SSE_D(\boldsymbol p^{(k)})$, departing from simulated $\boldsymbol p^{(0)}$. After the
+% initial 
+% movements on the wrong direction, first contribution corrects its behaviour
+% for 
+% searching its own minimum. Moreover, the second contribution exhibits a
+% correct 
+% minimization pattern. Note the slightly better results on both sides with
+% smaller 
+% $\lambda$. Similar results can be obtained with the ANS family and other
+% market scenarios.  
+
+\section{Empirical Results}
+%We compare three different estimations of initial yield curve based on
+%Nelson-Siegel family (henceforth NS), MC and ANS. 
+%
+%Our first objective is to test the stability for the implied estimation of the model
+%parameters $(\sigma,a)$. We consider mean, standard deviation and
+%coefficient of variation of parameter estimates time series. 
+In this context the main goal is to analyze the impact that an 
+alternative interpolation
+scheme has on the fitting capabilities of the model. To this end, we use as a
+measure, the daily (on average) relative pricing errors,
+hereafter $RPE_C$:
+$$
+RPE_C=\frac{1}{N} \sum_{i=1}^N \frac{|C^o_i-C_i(\boldsymbol{\hat p})|}{C^o_i}
+$$
+ The same kind of measure is used for the zero-coupon bond prices and we denote it with
+$RPE_B$: 
+$$
+RPE_B=\frac{1}{M} \sum_{k=1}^M \frac{|P^o_k-P_k(\hat z(\boldsymbol{\hat
+    p}),\boldsymbol{\hat p})|}{P^o_k} 
+$$
+We perform such analysis focusing on US market. The real date consists
+of 282 daily observations, between 2/09/2002 and 30/09/2003. The
+data set is composed of US discount factors for fourteen maturities
+(1, 3, 6, 9 months and from 1 to 10 years) and of implied volatilities
+of at-the-money interest rate caps with maturities 1,2,3,4,5,7,10
+years. This database is provided by Thomson Reuters Datastream.
+
+% \begin{figure}[p]
+% \centering
+% \caption{Average of the US market TSIR and TSV with 99\% confidence levels. \label{Market}} 
+% \includegraphics[width=\textwidth,height=\textheight]{CapsBondSampleAnalysis.pdf}
+% \end{figure}
+
+\begin{figure}[h!]
+\centering
+\caption{Average of the US market TSIR and TSV with 99\% confidence levels.\label{Market}} 
+
+\begin{minipage}[c]{12cm}
+\begin{tikzpicture}
+\begin{axis}[width=12cm, xlabel={maturity (yr)}, ylabel={sample mean
+    $\bar\sigma$ (\%)}]
+\addplot+[error bars/.cd,y dir=both,y explicit] table 
+[x=T, y=flatvol, y error=99conflevel] {VolDataStats.dat};
+\end{axis}
+\end{tikzpicture} 
+\end{minipage}
+
+\begin{minipage}[c]{12cm}
+\begin{tikzpicture}
+\begin{axis}[width=12cm, xlabel={maturity (yr)}, ylabel={sample mean
+    TSIR (\%)}]
+\addplot+[error bars/.cd,y dir=both,y explicit] table 
+[x=x, y=rate, y error=99conflevel] {DataStats.dat};
+\end{axis}
+\end{tikzpicture}
+\end{minipage}
+
+\end{figure}
+
+ As it have been explored before, the daily joint calibration of caps and
+ bonds with consistent families must be properly carried out as a MOO
+ problem. In doing so, we choose an {\sl a posteriori articulation} of
+   preferences, that is, we delay the selection of the solution from
+ the palette of solutions after the weighted-method runs. In response
+ to this articulation of preferences, the decision-maker imposes
+ preferences directly on a set of the potential solution points which
+ depicts the Pareto front. In such a context, weights are typically
+ chosen such that 
+\begin{equation}
+\label{ConvexMOO}
+\sum_{i=1}^Q \omega_i=1
+\end{equation}
+with $\boldsymbol\omega\geq \boldsymbol 0$ leading to a convex
+combination of objectives and this choice can be more helpful than
+unrestricted weights so as not to repeat any weighting vectors in
+terms of its relative values 
+\cite[Sect. 5.3, pp. 73--74]{M:2005}. According to
+this, the weighted-sum method was run for every date in sample with
+the fixed weight vector $\boldsymbol{\omega}$ satisfying 
+(\ref{ConvexMOO}). In doing so, we assume the same ten uniformly
+spread values
+\begin{equation}
+\label{weightSpectrum}
+\omega_1=\frac{1}{10}j  \qquad j=1,2,\dots,10
+\end{equation}
+and $\omega_2=1-\omega_1$ as the second vector weight component for
+all trading dates.
+
+%% Explicacion del Scale Factor (metodo 'scaling')
+We use the following transformation scheme of the objectives, which is
+often called {\sl scaling} \cite{R:1987}:
+\begin{eqnarray}
+l_i^\tau&=& \frac{l_i(\boldsymbol p)}{s_i} \\
+{\rm with}\qquad\frac{l_1 (\boldsymbol p_0)}{s_1}& \approx & \frac{l_2 (\boldsymbol p_0)}{s_2}
+\end{eqnarray}
+where $s_i$ are scalar coefficients, and $\boldsymbol p_0$ is a feasible starting
+point. This approach ensures the objective functions have similar
+orders of magnitude. Thus, the way to solve our joint calibration
+problem is to use the weighted-sum method, which is finally stated as:
+\begin{equation}
+\label{finalMOO}
+\underset{\boldsymbol p}{\min}\: \left( \omega_1 \frac{l_1(\boldsymbol
+  p)}{s_1}+(1-\omega_1) \frac{l_2(\boldsymbol p)}{s_2} \right)
+\end{equation}
+with $\omega_1$ discrete values given by (\ref{weightSpectrum}).
+
+Figure \ref{MCParetoFronts} shows the in-sample fitting results
+performed by the MIN family for some dates of the sample under
+analysis. First of all, notice that efficient frontiers with regular
+shapes appear nicely revealing the intrinsic multi-objective nature of
+the consistent calibration. Moreover, note that it can be found different 
+topologies for this frontiers depending on the date. All the days the
+objectives are conflicting, and beyond a certain point of the Pareto
+front the better we fit the discount bonds the worse we calibrate the caps
+portfolio. However, note that, moving on to the Pareto curve, we can
+achieve better results for both components of the vector objective
+without a trade-off until the above-mentioned Pareto point is
+reached. In other words, the MOO calibration may provide a {\sl
+  better} set of results for the calibration of caps that would
+produced by single optimizing the scalar objective $l_1(\boldsymbol
+p)$. 
+
+\pgfplotstableread{ParetoFronts.dat}{\pareto} 
+\begin{figure}[h!]
+\centering
+\caption{Some daily calibration results for the minimal consistent
+  family.\label{MCParetoFronts}}
+\begin{tikzpicture}
+\begin{axis}[xlabel=$RPE_B (\%)$, ylabel=$RPE_C (\%)$]
+\addplot [black, mark=*, mark size=1pt] table [x={x1}, y={y1}] {\pareto};
+\addplot [black, mark=*, mark size=1pt] table [x={x2}, y={y2}] {\pareto};
+\addplot [black, mark=*, mark size=1pt] table [x={x3}, y={y3}] {\pareto};
+\addplot [black, mark=*, mark size=1pt] table [x={x4}, y={y4}] {\pareto};
+\addplot [black, mark=*, mark size=1pt] table [x={x5}, y={y5}] {\pareto};
+\addplot [black, mark=*, mark size=1pt] table [x={x6}, y={y6}] {\pareto};
+\addplot [black, mark=*, mark size=1pt] table [x={x7}, y={y7}] {\pareto}; 
+\addplot [black, mark=*, mark size=1pt] table [x={x8}, y={y8}] {\pareto}; 
+\addplot [black, mark=*, mark size=1pt] table [x={x9}, y={y9}] {\pareto};
+\end{axis}
+\end{tikzpicture}
+\end{figure} The tables on Figure \ref{ParetoTwoDays} show,
+as a numerical example, two different Pareto sets restricting
+ourselves to the MIN family, the family with the lowest
+dimensionality. If we look on both tables, it must be noted that for a
+fixed trading date the best cap fit results may occur with
+$\omega_1\neq 1$, even if the objectives are competing.
+
+\begin{figure}[h!]
+\caption{Efficient points in the $RPE_B-RPE_C$ space using the method
+  of convex combinations for two different days in sample. %  The
+  % partial objectives, $\omega_1$ and $\omega_2$ are strong
+  % conflicting, for the Day 1 (top). In contrast, the latter ones are
+  % more cooperative for the Day 2 
+  % (bottom).
+  \label{ParetoTwoDays}} 
+\begin{center}
+{\sc Day 1}\\[.1cm]
+\begin{tabular}{cccc}
+\hline \hline
+$\omega_1$ & $\omega_2$  & $RPE_B$ (\%) & $RPE_C$ (\%) \\
+\hline
+0.1 &  0.9 &  0.1036 &  11.5795\\
+0.2 &  0.8 &  0.1645 &  11.2761\\
+0.3 &  0.7 &  0.3160 &  10.2359\\
+0.4 &  0.6 &  0.4864 &   8.8214\\
+0.5 &  0.5 &  0.6573 &   7.1267\\
+0.6 &  0.4 &  0.8136 &   5.3813\\
+0.7 &  0.3 &  0.9343 &   4.3329\\
+{\bf 0.8} &  {\bf 0.2} &  {\bf 0.9941} & {\bf 3.9132}\\
+{\bf 0.9} &  {\bf 0.1} &  {\bf 1.0181} & {\bf 4.0016}\\
+{\bf 1.0} &  {\bf 0.0} &  {\bf 1.0287} & {\bf 4.0718}\\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{center}
+{\sc Day 2}\\[.1cm]
+\begin{tabular}{cccc}
+\hline \hline
+$\omega_1$ & $\omega_2$  & $RPE_B$ (\%) & $RPE_C$ (\%) \\
+\hline
+0.1 &  0.9 &0.0902 &6.1874\\
+0.2 &  0.8 &0.1574 &5.3478\\
+0.3 &  0.7 &0.2295 &4.7551\\
+0.4 &  0.6 &0.2944 &4.4395\\
+0.5 &  0.5 &0.3499 &4.3203\\
+{\bf 0.6} &  {\bf 0.4} & {\bf 0.3962} & {\bf 4.2797}\\
+{\bf 0.7} &  {\bf 0.3} & {\bf 0.4345} & {\bf 4.3490}\\
+{\bf 0.8} &  {\bf 0.2} & {\bf 0.4670} & {\bf 4.4933}\\
+{\bf 0.9} &  {\bf 0.1} & {\bf 0.4930} & {\bf 4.6303}\\
+{\bf 1.0} &  {\bf 0.0} &{\bf 0.5138} & {\bf 4.7546}\\
+\hline
+\end{tabular}
+\end{center}
+\begin{flushleft} The partial objectives, $\omega_1$ and $\omega_2$ are strong
+  conflicting, for the Day 1 (top). In contrast, the latter ones are
+  more cooperative for the Day 2 
+  (bottom).
+\end{flushleft}
+\end{figure}
+
+In Figure \ref{tsWeights}, we analize more deeply the latter fact this
+time for both, MIN and ANS, consistent families. We plot the daily
+distribution of the weight $\omega_1$ which performs the best
+calibration for caps in sample data. As for the lowest dimensional
+family, most of the days the weight vector
+$(\omega_1=0.7,\omega_2=0.3)$ produces the best cap calibration
+results and there is a non-negligible number of bussiness dates where
+other weights than $\omega_1=1.0$ produce better goals than it. As for
+the ANS family, we observe an entirely different distribution, but
+once again, we note that the best cap calibration results may be
+reached with weights different than $\omega_1=1.0$ and even get a large
+number of them with the smallest weight possible, $\omega_1=0.1$. 
+
+\pgfplotstableread{Histograms.dat}{\histo} 
+\begin{figure}[h!]
+\centering
+\caption{Daily empirical distribution of weights with the best $RPE_C$
+  for both consistent families as produced by the multi-objective
+  calibration. \label{tsWeights}} 
+\begin{tikzpicture}
+  \begin{axis}[
+    ybar,
+    ylabel={$\%$},
+    height=9cm,
+    width=12cm,
+    enlarge y limits=false,
+    axis lines*=left,
+    ymin=0,
+    ymax=60,
+    legend style={at={(0.5,-0.2)},
+      anchor=north,legend columns=-1},
+    xtick=data,
+    nodes near coords,
+    every node near coord/.append style={
+      anchor=mid west,
+      rotate=70
+    }
+  ]
+    \addplot table [x={w_1}, y={frec}] {\histo};
+    \addplot table [x={w_1'}, y={frec'}] {\histo};
+    \legend{MIN, ANS}
+\end{axis}
+\end{tikzpicture}
+\end{figure}
+For the shake of simplicity, from now on we will only consider the
+calibration results obtained with daily weights choices that produce
+the best calibration for the caps on every trading date. This {\sl a
+posteriori} articulation of preferences may be followed by a
+decision-maker which want to use consistent calibration as a good risk
+management practice or as an extrapolation tool for marking to market
+less liquid interest-rate derivatives. Following this particular
+articulation of preferences we choose a single Pareto optimum from
+the set that estimates the complete Pareto curve. In Figure
+\ref{SumStats}, we compare summary statistics of the parameter
+estimates and the in-sample fit measures reported by NS, MIN and ANS
+families. In addition, Figure \ref{tsComparison} shows the comparison
+of in-sample fitting results in time series. 
+
+\begin{figure}[h!]
+\centering
+\caption{Time Series Comparison. \label{tsComparison}} 
+\begin{tikzpicture}
+\begin{axis}[
+ylabel={$RPE_C(\%)$},
+no markers,
+legend style={legend columns=-1},
+width=12cm,
+height=9cm,
+xmin=0,
+xmax=280]
+\addplot [very thick,black] table [x={t}, y={capMC}] {tseries.dat};
+\addplot [black] table [x={t}, y={capANS}] {tseries.dat}; 
+\addplot [red] table [x={t}, y={capNS}] {tseries.dat}; 
+\legend{MIN, ANS, NS}
+\end{axis}
+\end{tikzpicture}\vskip 1cm
+
+\begin{tikzpicture}
+\begin{axis}[
+ylabel={$RPE_B(\%)$},
+legend style={anchor=east, legend columns=-1},
+no markers,
+width=12cm,
+height=9cm,
+xmin=0,
+xmax=280]
+\addplot [very thick,black] table [x={t}, y={bondMC}] {tseries.dat};
+\addplot [black] table [x={t}, y={bondANS}] {tseries.dat}; 
+\addplot [red] table [x={t}, y={bondNS}] {tseries.dat}; 
+\legend{MIN, ANS, NS}
+\end{axis}
+\end{tikzpicture}
+\end{figure}
+
+The two consistent families under study report better RPE results when we
+restrict the analysis to cap data. For RPE on bonds, only the ANS
+family outperforms NS in the sample. Recall that this fact is
+acceptable since the MIN family is a forward curve with less number of
+parameters than the other ones proposed. Moreover, on caps, note that
+the MIN family appears to give better results than its consistent 
+counterpart, ANS. Now, this behaviour can be explained because the
+major of dates considered, market data make the objective
+functions $l_1$ and $l_2$ of this family to strongly conflict as seen
+in Figure \ref{tsWeights}.
+
+\begin{figure}[h!]
+\caption{Summary statistics for the calibration results. In-sample
+  descriptive statistics are carried out using the daily Pareto points
+  with the best derivative fit outcomes.\label{SumStats}} 
+\begin{center}
+{\sc Summary Statistics}\\[.1cm]
+\begin{tabular}{cccc}
+\hline \hline
+ & MIN & ANS & NS \\
+\hline
+$\sigma$ & 0.0145 & 0.0127 & 0.0164\\
+$a$ & -0.0096 & 0.0243 & 0.0256\\
+ $C_v(\sigma)$ & 0.1113 & 0.3118 & 0.14\\
+$C_v(a)$ & -3.2659 & 2.4268 & 1.8831\\
+$RPE_C$ (\%) & 3.3361 & 8.3011 & 8.5458\\
+$RPE_B$ (\%) & 0.5688 & 0.061 & 0.0609\\
+\hline
+\end{tabular}
+\end{center}
+\end{figure}
+
+\section{Concluding Remarks}
+When calibrating the Hull-White model, a TSIR curve choice to fit a
+few market data observations is needed. In particular it seems to be
+natural to use families of curves which do not modify their structure
+under the future evolution of the model, the so-called consistent
+families.
+ 
+In this work, we choose three families of curves (two consistent
+families and the popular Nelson-Siegel family) and we conclude that
+this choice have an effective impact on the quality of in-sample
+fitting for US-market data.  Moreover, this paper extends the seminal
+calibration algorithm proposed in Angelini and Herzel \cite{AH:2002}.  
+
+In a consistent approach the parameters of the model are
+estimated jointly with the esmation of initial discount bond
+curve. Therefore, from a rigorous point of view, joint calibration of 
+caps and bonds must be viewed as a multi-objective optimization
+nonlinear problem. Although the main purpose of the algorithm is to
+minimize the relative differences of cap prices too, note that the 
+bi-objective extension of the consistent calibration presents more
+general features. Such extension is structured to allow more numerical
+outcomes and we observe that it allows to better fit results for both,
+caps and bonds, than the above mentioned. In particular, it is
+possible to find better cap calibration outcomes with $\omega_1\neq
+1$, and this is definitively different from what worked Angelini and
+Herzel \cite{AH:2002} on Hull-White model, where only the fixed
+$\omega_1=1$ seems to be considered for all consistent families. The
+empirical findings of this paper show that, in general, consistent
+calibration on every date must to be carried out by analyzing the
+entire shape of the Pareto curve. 
+
+ In this sense, this work confirms and complements the shown by
+ Angelini and Herzel \cite{AH:2002,AH:2005} restricted to a Euro data
+ set. We articulate preferences restricting possible outcomes on every
+ date, by choosing the Pareto points which are responsible of better
+ fit results on caps. Then the minimal consistent family gives the
+ best performance in terms of caps pricing errors and becomes a good
+ candidate for the calibration of the Hull-White model. The ANS
+ consistent family performs very close to the Nelson-Siegel family,
+ though it seems to be the best solution for estimating the discount
+ bond function. Now, this could be explained in the context of vector
+ optimization. We show empirically the usual competing behaviour
+ followed by the objectives through the sample considered. Then, the
+ minimal parameterized consistent family relax the performance on the
+ estimation of the discount bond curve function, allowing minor
+ relative pricing errors on caps.   
+
+% \begin{figure}[p]
+% \centering
+% \caption{Daily calibration results for the minimal consistent family. 
+% The sample is divided into two periods for ease of visualization. \label{MCParetoFrontiers} }
+% %\includegraphics[width=\textwidth,height=\textheight,clip]{MCParetoFrontiers.eps}
+% \includegraphics[width=\textwidth,height=\textheight]{MCParetoFrontiers.pdf}
+% \end{figure}
+
+
+
+% \begin{figure}[p]
+% \centering
+% \caption{On top, daily weights of the multiobjective program with the best $RPE_C$ for both consistent families. On the bottom, we choose the daily values which are responsible for the best $RPE_B$. \label{tsWeights}}
+% \includegraphics[width=\textwidth,height=\textheight]{BetterWeights.pdf}
+% % \includegraphics[scale=0.8,clip]{MCParetoFrontiers.eps}
+% \end{figure}
+
+
+
+

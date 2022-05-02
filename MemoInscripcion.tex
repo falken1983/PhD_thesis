@@ -1,0 +1,312 @@
+\documentclass[a4paper,12pt]{article}
+
+\usepackage[spanish]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\textwidth 15.5cm
+\oddsidemargin -0.1cm
+\evensidemargin -0.1 cm
+% \linespread{1.6} % doble espacio
+\linespread{1.3} % 1.5 espacio
+\begin{document}
+\thispagestyle{empty}
+
+\title{Proyecto de Tesis Doctoral:\\
+``M\'etodos Eficientes para la Calibraci\'on y \\ 
+la Valoraci\'on de Opciones sobre Tipos de Inter\'es"} 
+%``Efficient Methods for Calibrating and\\ 
+%Pricing Interest Rate Options"} 
+\author{Lluís Navarro Girbés\\
+}
+\date{}
+\maketitle
+
+\subsection*{Introducci\' on}
+Cualquier modelo de valoración de derivados sobre tipos de
+interés que merezca el calificativo de realista, debe ajustarse de
+forma óptima a la estructura temporal de tipos de interés (ETTI en adelante) observada en el instante de valoración.     
+ 
+Esta idea, de la que fueron pioneros Ho y Lee \cite{HL:1986}, ha sido
+posteriormente explorada por otros muchos investigadores, desde los
+primeros modelos de libres arbitraje para el tipo de interés
+instantáneo\footnote{Cabe destacar los trabajos de Black y Karasinski \cite{BK:1991} y Hull y White \cite{HW:1990}, entre otros.} hasta los modelos más recientes y complejos que 
+consideran la evolución, en su conjunto, de la curva de tipos {\sl
+  forward} implícitos como un sistema de dimensión infinita de
+ecuaciones diferenciales estocásticas --Heath et al. \cite{HJM:1992}. En particular, esta
+clase de modelos exige como {\sl input} una curva continua de tipos {\sl
+  forward} observados inicialmente. Sin embargo, en los mercados financieros
+solamente están disponibles un conjunto discreto de precios de bonos, por lo que
+en la práctica, se recurre a utilizar distintas familias parametrizadas
+para estimar esta curva contínua mediante los datos disponibles. 
+
+Llegados a este punto, surge de modo natural el siguiente
+dilema: Escojamos una determinada familia parametrizada
+de funciones, $\mathcal{G}$, para representar la curva observada
+inicialmente, y además un modelo de tipos de interés, $\mathcal{M}$,
+libre de arbitraje. Supongamos que utilizamos como {\sl input} del modelo
+$\mathcal{M}$ una curva inicial perteneciente a la familia paramétrica
+$\mathcal{G}$. ¿Generará este modelo de tipos de interés curvas {\sl
+  forward} que se mantengan dentro de esa misma familia $\mathcal{G}$? 
+
+Como cabe suponer, la respuesta será generalmente negativa. 
+
+Así, Bj\"ork y Christensen \cite{BC:1999}, definen los pares consistentes
+$(\mathcal{M},\mathcal{G})$ como aquéllos que cumplen con la condición
+anteriormente mencionada. En particular, centran su análisis sobre el
+problema de la consistencia, tomando como referencia a la familia de
+Nelson y Siegel \cite{NS:1987} y cualquier modelo de tipos de interés de
+la clase Heath-\-Jarrow-\-Morton (HJM, en adelante) con una estructura de volatilidades determinista. En este trabajo precursor, dichos investigadores llegan a la relevante conclusión de que ninguno de tales modelos es consistente con la familia.   
+
+El modelo de Nelson-Siegel resulta ser un ejemplo paradigmático de
+familia paramétrica para la estimación de curvas {\sl forward}, puesto
+que ha sido bien acogido por numerosos bancos centrales europeos como
+instrumento en su gestión --véase Anderson y Sleath \cite{AS:1999}. Aunque podemos calificar como elevado su grado de aceptación entre la comunidad financiera, poco después de que Björk y Christensen obtuviesen
+objeciones teóricas a la utilización de esta familia paramétrica,
+Filipovic \cite{Fil:1999a} demostró que no existe ningún proceso de
+Itô, incluyendo aquéllos que incorporen volatilidad estocástica, que
+sea consistente con la familia.
+
+En estudios recientes, como los de Herzel y Angelini \cite{AH:2002, AH:2005} y los de De Rossi \cite{AH:2005}, se encuentran aplicaciones empíricas de la Teoría de la Consistencia en el entorno HJM, tal y como fue formulada originalmente por Björk
+y Christensen. La principal motivación para este tipo de investigaciones
+radica en el hecho de que cada vez que se requiere la consistencia
+entre una familia paramétrica de curvas y un determinado modelo de
+tipos de interés, si esta familia paramétrica permite un ajuste bueno
+de la ETTI, la combinación $(\mathcal{M},\mathcal{G})$ será muy util
+para la valoración y la gestión de carteras de derivados,
+manteniéndose la coherencia con un análisis econométrico de la
+dinámica de la estructura temporal. En ese sentido, Herzel y Angelini
+apuntan que, si se utiliza este entorno de trabajo para la calibración
+de opciones sobre tipos de interés, además de que se reduce la
+arbitrariedad que supone escoger una determinada familia de funciones
+interpolantes para estimar la ETTI inicial, se mejora la eficiencia en
+el algoritmo de calibración sin, por ello, empeorar la precisión de
+las estimaciones. Sin embargo, el resultado más sobresaliente que
+arrojan sus trabajos tiene que ver, a nuestro juicio, con la
+incidencia directa que tiene el uso de familias consistentes con cada
+uno de los modelos de valoración propuestos. En general, el uso de la
+\emph{calibración consistente} mejora la estabilidad de las
+estimaciones de los parámetros de cada uno de los modelos analizados,
+así como, su capacidad de ajuste y predicción de los precios de
+derivados.   
+
+Buraschi y Corielli \cite{BCo:2005}, van más allá, presentando
+resultados teóricos que indican que el uso de familias paramétricas
+inconsistentes para obtener estructuras temporales iniciales suaves,
+introduce errores inconsistentes temporalmente, que violan los
+argumentos est\'andar para la construcción de carteras au\-to\-fi\-nan\-cia\-das en la implementación de estrategias de cobertura. Por lo tanto, el uso de pares inconsistentes $(\mathcal{M},\mathcal{G})$ puede conducir a una deficiente gestión de riesgos de mercado de carteras de renta fija.  
+
+En conclusión,  parece bastante natural sospechar que la elección de
+un determinado procedimiento de estimación de la estructura temporal
+no se puede desligar del modelo dinámico de valoración de activos utilizado. De hecho, si se cree en un determinado modelo de valoraci\'on de derivados, sólo es coherente hacer uso de curvas parametrizadas que sean \emph{consistentes} con ese modelo.  
+
+Sin embargo, aunque existe una gran cantidad de trabajos relacionados
+con la estimación de la estructura temporal de tipos de interés, su
+influencia en la implementación efectiva de modelos HJM ha sido
+obviada. Moraleda y Pelsser \cite{MP:2000}, comparan algunos modelos
+{\sl spot} y {\sl forward} con datos de {\sl swaps}, {\sl caps} y {\sl
+  floors} del mercado americano entre 1993 y 1994, utilizando
+funciones {\sl spline} lineales para construir la curva inicial
+a partir de los precios de bonos disponibles. Bühler et
+al. \cite{BUWW:1999}, utilizan {\sl splines} cúbicos  para implementar
+modelos {\sl forward} y {\sl spot} en el mercado alemán y contrastar
+su validez empírica entre 1990 y 1993. En el caso español,
+encontramos los trabajos de Navas \cite{Na:1999} y D\'\i az y Tolentino \cite{DT:2003} en los que,
+siguiendo la tónica internacional, se adoptan {\sl splines} cúbicos y
+exponenciales\footnote{En concreto, 
+estos investigadores utilizan una adaptación del método de Vasicek y Fong \cite{VF:1982} a las
+características del mercado español.}, 
+respectivamente. Desafortunadamente, en ninguno de estas
+investigaciones se analiza si tales métodos de estimación de la ETTI
+inicial basados en funciones {\sl spline}, son coherentes con la
+dinámica para los {\sl forward} que impone cada modelo particular.   
+Es preciso remarcar que en todos estos análisis el uso del término
+\emph{consistencia} se refiere única y exclusivamente a la capacidad
+que tienen los modelos analizados para ajustarse a la estructura
+temporal observada inicialmente en contraposición a los modelos
+clásicos de equilibrio. La ingeniosa redefinición del concepto de
+\emph{consistencia} que hace Bj\"ork \cite{B:2001}, basada en
+fundamentos de geometría diferencial sobre variedades, es enteramente 
+diferente, llevando consigo profundas consecuencias, tanto en la
+correcta comprensión de los postulados en los que se asientan los
+mo\-de\-los de no-arbitraje como en la implementación práctica que se
+hace de éstos en la gestión diaria de carteras financieras.
+%
+\subsection*{Objetivos}
+ El objetivo de este trabajo es exponer los principales aspectos
+estudiados por la literatura que ha originado el trabajo seminal
+de Bj\"ork y Christensen \cite{BC:1999}. El grado de abstracción que supone dotar a la clase de modelos de Heath-Jarrow-Morton de
+\emph{autoconsistencia}, tal y como lo entienden todos estos autores,
+es considerable, por lo que no se pretende explorar la teoría de forma
+meticulosa, sino mostrar los rasgos principales de ésta haciendo especial \'enfasis en sus aplicaciones en la valoraci\'on de derivados sobre tipos de inter\'es en un contexto de estimaci\'on consistente de la ETTI. Se persigue pues, mostrar los resultados emp\'\i ricos más relevantes obtenidos, de modo que sirva de guía para enfocar futuros trabajos de investigación en un contexto teórico sólidamente cimentado.   
+
+\subsection*{Metodolog\'\i a}
+El plan de trabajo consta de 4 fases:
+\begin{itemize}
+\item Construir una base de datos de la ETTI y de precios de opciones sobre tipos de inter\'es ultral\'\i quidas.
+\item Calibrar modelos de valoraci\'on de la clase HJM utilizando los precios de opciones sobre tipos de inter\'es as\'\i~como los datos de la ETTI. Para este fin se estudiar\'an extensiones que, siendo capaces de preservar la autoconsistencia din\'amica de estos modelos, mejoren las metodolog\'\i as apuntadas en la introducci\'on. 
+\item Realizar el an\'alisis de los resultados emp\'\i ricos obtenidos para contrastarlos con los m\'etodos tradicionales inconsistentes.  
+\item Finalmente, se abordar\'a el estudio comparativo de distintos m\'etodos num\'ericos en diferencias finitas, que siendo coherentes con la metodolog\'\i a de calibraci\'on consistente y extensiones, permitan la valoraci\'on de opciones m\'as complejas en su especificaci\'on, dada la falta de analiticidad frecuente en ese caso.
+\end{itemize}
+%
+%La BiBliografia
+%
+\begin{thebibliography}{99}
+\bibitem{AS:1999}
+{\sc Anderson, N., \& J. Sleath (1999).} New Estimates of the UK Real
+and Nominal Yield Curves, \emph{Bank of England Quaterly Bulletin}.
+
+\bibitem{AH:2002}
+{\sc Angelini, F., \& S. Herzel (2002).} Consistent Initial Curves
+for Interest Rate Models, \emph{Journal of Derivatives} 9(4), 8--18.
+
+\bibitem{AH:2005}
+{\sc Angelini, F., \& S. Herzel (2005).} Consistent Calibration of
+HJM Models to Cap Implied Volatilities, \emph{Journal of Future Markets} 25, 1093--1120.
+
+%\bibitem[Björk, 2003]{B:2003}
+%{\sc Björk, T. (2003).} On the Geometry of Interest Rate Models, en:
+%Carmona, R.A., Cinlar, E., Ekeland, I., Jouini, E., Scheinkman, J.A., Touzi, N.,
+%\emph{Paris-Princeton Lectures on Mathematical Finance 2003}, Lecture Notes in
+%Mathematics, 1847, Springer-Verlag.  
+
+\bibitem{B:2001}
+{\sc Björk, T., (2001).} A Geometric View of Interest Rate Theory, en:
+Jouini, E., Cvitanic, J. \&  M. Musiela, \emph{Option Pricing, Interest
+Rates and Risk Management}, Cambridge University Press.  
+
+%\bibitem[Björk, 1998]{B:1998}
+%{\sc Björk, T. (1998).} \emph{Arbitrage Theory in Continuous Time},
+%Oxford University Press.   
+%
+%\bibitem[Björk, 1997]{B:1997}
+%{\sc Björk, T. (1997).} Interest Rate Theory, en: Runggaldire, W.,
+%\emph{Financial Mathematics}, Lecture Notes in Mathematics, 1656,
+%Springer-Verlag. 
+
+
+\bibitem{BC:1999}
+{\sc Björk, T., \& B.J. Christensen (1999).} Interest Rate Dynamics
+and Consistent Forward Rate Curves, \emph{Mathematical Finance} 9,
+323-348.  
+
+%\bibitem[Björk y Landen, 2002]{BL:2002}
+%{\sc Björk, T., \& C. Landen (2002).} On the construction of finite
+%dimensional realizations for nonlinear forward rate models,
+%\emph{Finance and Stochastics} 6(3), 303-331. 
+%
+%\bibitem[Björk y Sevensson, 2001]{BS:2001}
+%{\sc Björk, T., \& L. Svensson (2001).} On the existence of finite
+%dimensional realizations for nonlinear forward rate models,
+%\emph{Mathematical Finance} 11(2), 205-243. 
+
+\bibitem{BK:1991}
+  {\sc Black, F., \& P. Karasinski (1991).} Bond and Option Pricing when
+Short Rates are Lognormal, \emph{Financial Analysts Journal} 4, 52-59.
+  127--155.  
+
+\bibitem{BUWW:1999}
+{\sc Bühler, M., Uhrig-Homburg M., Walter U. \& T. Weber (1999)} An
+Empirical Comparison of Forward Rate and Spot Rate Models for Valuing
+Interest Rate Options, \emph{The Journal of Finance} 54, 269--305.
+
+\bibitem{BCo:2005}
+{\sc Buraschi, A., \& F. Corielli (2005).} Risk Management
+Implications of Time-Inconsistency: Model Updating and Recalibration
+of No-Arbitrage Models. \emph{Journal of Banking \& Finance}
+29(11), 2883--2907.
+
+%\bibitem[Chiarella y Kwon, 2001]{CK:2001}
+%{\sc Chiarella, C., \& O.K. Kwon (2001).} Formulation of Popular
+%Interest Rate Models under the HJM Framework, \emph{Asia-Pacific Financial
+%Markets} 8(1), 1--22.
+%
+%\bibitem[Da Prato y Zabczyk, 1992]{PZ:1992}
+%{\sc Da Prato, G. \& J. Zabczyk  (1992).} \emph{Stochastic Equations in Infinite
+%  Dimensions.} Cambridge University Press.
+
+\bibitem{R:2004}
+{\sc De Rossi, G., (2004).} Kalman Filtering of Consistent Forward
+Rate Curves: a Tool to Estimate and Model Dynamically the Term
+Structure, \emph{Journal of Empirical Finance} 11, 277--308.  
+
+\bibitem{DT:2003}
+{\sc Díaz A. \& M. Tolentino (2003).} La Constrastación del Modelo de
+Black-Derman-Toy en el Mercado Español, Working Paper,
+ICAE-Univ. Complutense de Madrid. 
+
+\bibitem{FNN:2011}
+{\sc Falc\'o A., Navarro Ll., \& J. Nave (2011).} On the Calibration of a Gaussian Heath-Jarrow-Morton model using Consistent Forward Rate Curves. \emph{Quantitative Finance}, 11(4), 495--504.
+
+\bibitem{FNN:2009}
+{\sc Falc\'o A., Navarro Ll., \& J. Nave (2009).} The Hull-White Model and Multiobjective Calibration with Consistent Curves: Empirical Evidence. \emph{RACSAM Rev. R. Acad. Cien. Serie A. Mat.}, 103(2), 235--249.
+
+\bibitem{FNN:2009}
+{\sc Falc\'o A., Navarro Ll., \& J. Nave (2008).} A multiobjective approach using consistent rate curves to the calibration of a Gaussian Heath-Jarrow-Morton model, WP-AD Series, 2008-09, IVIE.
+
+
+\bibitem{Fil:1999a}
+{\sc Filipovic D., (1999).} A Note on the Nelson and Siegel
+Family. \emph{Mathematical Finance} 9(4), 349--359.  
+
+%\bibitem[Filipovic, 1999b]{Fil:1999b}
+%{\sc Filipovic D., (1999b).} Invariant Manifolds for weak solutions of
+%stochastic equations. \emph{Probability Theory and Related Fields}  xxx(x), xxx.
+%
+%\bibitem[Filipovic, 2001]{Fil:2001}
+%{\sc Filipovic, D., (2001).} \emph{Consistency Problems for
+%Heath-Jarrow-Morton Interest Rate Models}, Lecture Notes in
+%Mathematics, 1760, Springer-Verlag. 
+
+\bibitem{HJM:1992}
+{\sc Heath, D., R. Jarrow \& A. Morton (1992).} Bond Pricing and the
+Term Structure of Interest Rates: A New Methodology for Contingent
+Claims Valuation, \emph{Econometrica} 60(1), 77--105.  
+
+\bibitem{HL:1986}
+{\sc Ho, T.S.Y, \& S.B. Lee (1986).} Term Structure Movements and the
+Pricing of Interest Rate Contingent Claims. \emph{Journal of Financial
+  and Quantitative Analysis} 411011-1029.
+
+\bibitem{HW:1990}
+{\sc Hull, J., \& A. White (1990).} Pricing Interest Rate
+Derivatives Securities. \emph{The Review of Financial Studies}
+3(4), 573--592.
+
+%\bibitem[Hull y White, 1993]{HW:1993}
+%{\sc Hull, J., \& White, A., (1993).} Single-factor interest rate
+%models and the valuation of interest rate derivative
+%securities. \emph{Journal of Financial and Quantitative Analysis}
+%3(4), 573--592. 
+%
+%\bibitem[Ikeda y Watanabe, 1981]{IW:1981}
+%{\sc Ikeda, N., \& S. Watanabe (1981).} \emph{Stochastic Differential
+%Equations and Diffusion Processes}, North-Holland.
+
+\bibitem{MP:2000}
+{\sc Moraleda, J., \& A. Pelsser (2000).} Forward versus Spot
+Interest-Rate Models of the Term Structure: An Empirical
+Comparison. \emph{The Journal of Derivatives} 7(3)9--21.    
+
+%\bibitem[Musiela, 1993]{Mu:1993}
+%{\sc Musiela, M., (1993)} Stochastic PDEs and term structure models.
+%Working Paper, J. Intern. Finance,  IGR-AFFI, La Baule.
+
+\bibitem{Na:1999}
+{\sc Navas, J.F., (1999).} Consistent versus Non Consistent Term
+Structure Models: Some Evidence from the Spanish Market, \emph{The
+  Journal of Fixed Income}, December, 42-60.
+
+\bibitem{NS:1987}
+{\sc Nelson C.R. \& A.F. Siegel (1987).} Parsimonius Modeling of
+Yield Curves. \emph{Journal of Business} 60(4), 473--489.    
+
+%\bibitem[Olver, 1993]{Olv:1993}
+%{\sc  Olver, P. J. (1993).} \emph{Applications of Lie Groups to Differential
+%  Equations.} Springer-Verlag. 
+
+\bibitem{VF:1982}
+{\sc Vasicek, O.A. \& H.G. Fong (1982).} Term Structure Modelling
+using Exponential Splines, \emph{The Journal of Finance} 37, 339--348.
+\end{thebibliography}
+%
+\end{document}
