@@ -1,0 +1,10 @@
+*aux
+*pdf
+*fls
+*log
+*lof
+*pdfsync
+*toc
+*.out
+*synctex*
+#*#
